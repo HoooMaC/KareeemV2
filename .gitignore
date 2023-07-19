@@ -1,6 +1,6 @@
 .vs
 bin
-bin-intermediate
+bin-int
 **.sln
 **.vcxproj
 **.vcxproj.user
