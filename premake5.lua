@@ -13,6 +13,7 @@ outputdir = "%{cfg.buildcfg}"
 startproject "Client"
 
 IncludeDir = {}
+IncludeDir["GLFW"] = "%{wks.location}/Vendor/GLFW/include"
 
 project "Client"
     location "Client"
@@ -31,12 +32,13 @@ project "Client"
     
     links
     {
-        "Engine"
+        "Engine",
     }
 
     includedirs
     {
         "Engine/src",
+        "%{IncludeDir.GLFW}"
     }
 
     filter "configurations:Debug"
@@ -57,8 +59,7 @@ project "Engine"
     cppdialect  "C++20"
     systemversion "latest"
 
-    pchheader "Kareeem.h"
-	-- pchsource "Core/Kareeem.cpp"
+    pchheader "Core/Kareeem.h"
 	pchsource "%{prj.name}/src/Core/Kareeem.cpp"
 
     targetdir  ("bin/" .. outputdir.. "-%{prj.name}")
@@ -76,6 +77,8 @@ project "Engine"
 
     links 
     {
+        -- "opengl32.lib",
+        "GLFW"
     }
     
     includedirs
@@ -91,3 +94,6 @@ project "Engine"
     filter "configurations:Release"
         defines { "NDEBUG" }
         runtime "Release"
+
+group "Dependencies"
+    include "Vendor/GLFW"
