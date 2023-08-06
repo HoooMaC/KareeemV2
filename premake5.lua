@@ -1,6 +1,7 @@
 workspace "Kareeem"
     architecture "x64"
-    staticruntime "on"
+    staticruntime "off"
+    linkoptions { "/NODEFAULTLIB:MSVCRT" }
 
     configurations 
     {
@@ -30,17 +31,24 @@ project "Client"
         "%{prj.name}/src/**.cpp"
     }
     
-    links
-    {
-        "Engine",
-    }
-
     includedirs
     {
         "Engine/src",
         "%{IncludeDir.GLFW}"
     }
 
+    libdirs
+    {
+        "Vendor/GLFW/lib"
+    }
+
+    links
+    {
+        "Engine"
+        -- "opengl32.lib",
+        -- "glfw3.lib"
+    }
+    
     filter "configurations:Debug"
         kind  "ConsoleApp"
         defines { "_DEBUG" }
@@ -73,12 +81,13 @@ project "Engine"
 
     libdirs
     {
+        "Vendor/GLFW/lib"
     }
 
     links 
     {
-        -- "opengl32.lib",
-        "GLFW"
+        "opengl32.lib",
+        "glfw3.lib"
     }
     
     includedirs
@@ -96,4 +105,3 @@ project "Engine"
         runtime "Release"
 
 group "Dependencies"
-    include "Vendor/GLFW"

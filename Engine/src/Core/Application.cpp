@@ -21,15 +21,6 @@ namespace Karem {
 
 	void Application::Run()
 	{
-		GLFWwindow* window = glfwGetCurrentContext();
-
-		while (glfwWindowShouldClose(window));
-		{
-			//glClear(GL_COLOR_BUFFER_BIT);
-			//glClearColor(0.8f, 0.4f, 0.3f, 1.0f);
-			glfwPollEvents();
-			std::cout << "The Application is Running in Engine \n";
-		}
 	}
 
 	void Application::Shutdown()
