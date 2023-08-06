@@ -6,7 +6,5 @@ class Sandbox : public Karem::Application
 {
 public:
 	Sandbox() {}
-
-
 };
 

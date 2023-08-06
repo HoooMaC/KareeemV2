@@ -1,6 +1,8 @@
 #include "Core/Kareeem.h"
 #include "Application.h"
 
+#include <GLFW/glfw3.h>
+
 namespace Karem {
 
 	Application::Application()
@@ -19,8 +21,13 @@ namespace Karem {
 
 	void Application::Run()
 	{
-		while (m_Running)
+		GLFWwindow* window = glfwGetCurrentContext();
+
+		while (glfwWindowShouldClose(window));
 		{
+			//glClear(GL_COLOR_BUFFER_BIT);
+			//glClearColor(0.8f, 0.4f, 0.3f, 1.0f);
+			glfwPollEvents();
 			std::cout << "The Application is Running in Engine \n";
 		}
 	}
