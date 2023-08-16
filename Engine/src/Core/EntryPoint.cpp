@@ -5,33 +5,9 @@
 
 int main()
 {
-	int succes = glfwInit();
-	if (!succes)
-		std::cout << "failed to initialize GLFW\n";
+	Karem::Application* application = new Karem::Application();
 
-	//Karem::Application* app = Karem::CreateApplication();
+	application->Run();
 
-	GLFWwindow* window = glfwCreateWindow(1280, 720, "Test Window", NULL, NULL);
-	if (!window)
-	{
-		glfwTerminate();
-		return -1;
-	}
-
-	glfwMakeContextCurrent(window);
-
-	while (!glfwWindowShouldClose(window))
-	{
-		glClear(GL_COLOR_BUFFER_BIT);
-		glClearColor(0.8f, 0.3f, 0.4f, 1.0f);
-
-		glfwSwapBuffers(window);
-
-		glfwPollEvents();
-		//std::cout << "The Application is Running in Engine \n";
-	}
-
-	//app->Run();
-
-	glfwTerminate();
+	delete application;
 }

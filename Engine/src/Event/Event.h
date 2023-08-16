@@ -27,22 +27,23 @@ namespace Karem {
 	class Event
 	{
 	public:
+		virtual int GetCategoryFlag() const = 0;
 
-		virtual EventType getEventType() const { return m_Type; }
-		virtual const char* getEventName() const = 0;
-		virtual int getCategoryFlag() const = 0;
-		virtual std::string ToString() const { getEventName(); }
+		virtual EventType GetEventType() const = 0;
+		virtual const char* GetEventName() const = 0;
+
+		virtual std::string ToString() const { GetEventName(); }
+
 		inline bool isInCategory(EventCategory category)
 		{
-			return getCategoryFlag() & category;
+			return GetCategoryFlag() & category;
 		} 
 
 	protected:
 
-		Event(EventType type)
-			: m_Type(type), m_Handled(false) {}
+		Event()
+			: m_Handled(false) {}
 
-		EventType m_Type;
 		bool m_Handled;
 	};
 
@@ -53,9 +54,10 @@ namespace Karem {
 			: m_Event(event) {}
 
 		template<typename T>
+		// std::function<bool(T&)>
 		bool Dispatch(bool(*func)(T&))
 		{
-			if (m_Event.getEventType() == T::getStatictype)
+			if (m_Event.GetEventType() == T::GetStatictype)
 			{
 				m_Event.m_Handled = func(static_cast<T&>(m_Event));
 				return true;

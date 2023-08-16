@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Core/Window.h"
+
 namespace Karem {
 
 	class Application
@@ -14,9 +16,10 @@ namespace Karem {
 		void Init();
 		void Shutdown();
 
-		//void EventHandler();
+		void EventHandler(Event& event);
 
 	private:
+		Window m_Window;
 		bool m_Running = true;
 	};
 

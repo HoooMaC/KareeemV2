@@ -1,7 +1,7 @@
 workspace "Kareeem"
     architecture "x64"
-    staticruntime "off"
-    linkoptions { "/NODEFAULTLIB:MSVCRT" }
+    staticruntime "on"
+    linkoptions { "/NODEFAULTLIB:library" }
 
     configurations 
     {
@@ -39,7 +39,7 @@ project "Client"
 
     libdirs
     {
-        "Vendor/GLFW/lib"
+        -- "Vendor/GLFW/lib"
     }
 
     links
@@ -86,8 +86,9 @@ project "Engine"
 
     links 
     {
-        "opengl32.lib",
-        "glfw3.lib"
+        "GLFW"
+        -- "opengl32.lib",
+        -- "glfw3.lib"
     }
     
     includedirs
@@ -105,3 +106,4 @@ project "Engine"
         runtime "Release"
 
 group "Dependencies"
+    include "Vendor/GLFW"
