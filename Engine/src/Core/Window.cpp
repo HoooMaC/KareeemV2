@@ -35,7 +35,9 @@ namespace Karem {
 
 			// TODO : change this into assertion and set the error callbacks
 			if (!succes)
-				ENGINE_CRITICAL("Failed to Initialized GLFW\n");
+			{
+				ENGINE_CRITICAL("Failed to Initialized GLFW");
+			}
 
 		}
 
@@ -97,6 +99,7 @@ namespace Karem {
 		//	KeyTypedEvent event(codepoint);
 		//	data.EventCallback(event);
 		//});
+
 		glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scancodes, int action, int mods)
 		{
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);

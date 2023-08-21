@@ -51,7 +51,7 @@ namespace Karem {
 			(*it)->EventHandler(event); // Memanggil fungsi yang diinginkan dari shared_ptr
 		}
 
-		ENGINE_TRACE(event);
+		//ENGINE_TRACE(event);
 	}
 
 	bool Application::WindowCloseAction(WindowCloseEvent& event)

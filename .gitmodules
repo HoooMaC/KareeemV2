@@ -5,3 +5,7 @@
 	path = Vendor/spdlog
 	url = https://github.com/HoooMaC/spdlog.git
 	branch = v1.x
+[submodule "Vendor/ImGUI"]
+	path = Vendor/ImGUI
+	url = https://github.com/HoooMaC/imgui.git
+	branch = docking

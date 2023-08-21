@@ -7,7 +7,7 @@ int main()
 {
 	ENGINE_INFO("Engine logging succesfully");
 
-	Karem::Application* application = new Karem::Application();
+	Karem::Application* application = Karem::CreateApplication();
 
 	application->Run();
 

@@ -17,6 +17,7 @@ startproject "Client"
 IncludeDir = {}
 IncludeDir["GLFW"] = "%{wks.location}/Vendor/GLFW/include"
 IncludeDir["glad"] = "%{wks.location}/Vendor/glad/include"
+IncludeDir["ImGUI"] = "%{wks.location}/Vendor/ImGUI"
 IncludeDir["spdlog"] = "%{wks.location}/Vendor/spdlog/include"
 
 project "Client"
@@ -38,7 +39,8 @@ project "Client"
     {
         "Engine/src",
         "%{IncludeDir.GLFW}",
-        "%{IncludeDir.glad}"
+        "%{IncludeDir.glad}",
+        "%{IncludeDir.ImGUI}",
     }
 
     libdirs
@@ -57,7 +59,7 @@ project "Client"
     
     filter "configurations:Logging"
         kind  "ConsoleApp"
-        defines { "_DEBUG" }
+        defines { "_DEBUG", "ACTIVATE_LOGGING" }
         includedirs { "%{IncludeDir.spdlog}" }
         runtime "Debug"
 
@@ -105,7 +107,8 @@ project "Engine"
     {
         "Engine/src",
         "%{IncludeDir.GLFW}",
-        "%{IncludeDir.glad}"
+        "%{IncludeDir.glad}",
+        "%{IncludeDir.ImGUI}",
     }
 
     defines
@@ -129,5 +132,6 @@ project "Engine"
         
 group "Dependencies"
         include "Vendor/GLFW"
+        include "Vendor/ImGUI"
         include "Vendor/glad"
         include "Vendor/spdlog"
