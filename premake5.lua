@@ -100,7 +100,8 @@ project "Engine"
     links 
     {
         "GLFW",
-        "glad"
+        "glad",
+        "ImGUI",
     }
     
     includedirs

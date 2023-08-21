@@ -5,6 +5,7 @@ namespace Karem {
 
 	class ImGUILayer : public Layer
 	{
+	public:
 		ImGUILayer();
 		~ImGUILayer();
 
@@ -14,6 +15,7 @@ namespace Karem {
 		void OnImGUIRender();
 
 		void EventHandler(Event& event);
+	private:
 	};
 
 }

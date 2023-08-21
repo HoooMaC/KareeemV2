@@ -16,6 +16,7 @@ public:
 	Sandbox() 
 	{
 		m_Layers.PushLayer(std::make_shared<AppLayer>());
+		m_Layers.PushLayer(std::make_shared<Karem::ImGUILayer>());
 	}
 };
 

@@ -6,6 +6,8 @@
 
 #include <GLFW/glfw3.h>
 
+#include <imgui.h>
+
 namespace Karem {
 
 	Application::Application()
@@ -29,15 +31,14 @@ namespace Karem {
 
 	void Application::Run()
 	{
-		while (m_Running)
+			while (m_Running)
 		{
-			m_Window.OnUpdate();
-
 			for (std::shared_ptr<Layer>& layer : m_Layers)
 			{
 				layer->OnUpdate(); // Memanggil fungsi yang diinginkan dari shared_ptr
 			}
 
+			m_Window.OnUpdate();
 		}
 	}
 

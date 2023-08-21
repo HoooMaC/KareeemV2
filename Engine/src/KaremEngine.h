@@ -6,4 +6,6 @@
 #include "Core/Application.h"
 
 #include "Core/Layer/Layer.h"
+#include "Core/Layer/ImGUILayer.h"
+
 #include "Core/Layer/Layers.h"
