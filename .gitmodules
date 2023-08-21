@@ -1,3 +1,7 @@
 [submodule "Vendor/GLFW"]
 	path = Vendor/GLFW
-	url = https://github.com/TheCherno/glfw.git
+	url = https://github.com/HoooMaC/glfw.git
+[submodule "Vendor/spdlog"]
+	path = Vendor/spdlog
+	url = https://github.com/HoooMaC/spdlog.git
+	branch = v1.x
