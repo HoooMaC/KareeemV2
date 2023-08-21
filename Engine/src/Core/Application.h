@@ -2,6 +2,8 @@
 
 #include "Core/Window.h"
 
+#include "Event/Event.h"
+#include "Event/AppEvent.h"
 namespace Karem {
 
 	class Application
@@ -18,6 +20,8 @@ namespace Karem {
 
 		void EventHandler(Event& event);
 
+	private:
+		bool WindowCloseAction(WindowCloseEvent& event);
 	private:
 		Window m_Window;
 		bool m_Running = true;

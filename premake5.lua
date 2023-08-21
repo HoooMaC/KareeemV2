@@ -1,10 +1,11 @@
 workspace "Kareeem"
     architecture "x64"
     staticruntime "on"
-    linkoptions { "/NODEFAULTLIB:library" }
+    -- linkoptions { "/NODEFAULTLIB:library" }
 
     configurations 
     {
+        "Logging",
         "Debug", 
         "Release"
     }
@@ -15,6 +16,7 @@ startproject "Client"
 
 IncludeDir = {}
 IncludeDir["GLFW"] = "%{wks.location}/Vendor/GLFW/include"
+IncludeDir["spdlog"] = "%{wks.location}/Vendor/spdlog/include"
 
 project "Client"
     location "Client"
@@ -22,8 +24,8 @@ project "Client"
     cppdialect  "C++20"
     systemversion "latest"
 
-    targetdir  ("bin/" .. outputdir.. "-%{prj.name}")
-    objdir  ("bin-int/" .. outputdir .. "-%{prj.name}")
+    targetdir  ("%{wks.location}/bin/" .. outputdir.. "-%{prj.name}")
+    objdir  ("%{wks.location}/bin-int/" .. outputdir .. "-%{prj.name}")
 
     files
     {
@@ -39,16 +41,19 @@ project "Client"
 
     libdirs
     {
-        -- "Vendor/GLFW/lib"
     }
 
     links
     {
         "Engine"
-        -- "opengl32.lib",
-        -- "glfw3.lib"
     }
     
+    filter "configurations:Logging"
+        kind  "ConsoleApp"
+        defines { "_DEBUG" }
+        includedirs { "%{IncludeDir.spdlog}" }
+        runtime "Debug"
+
     filter "configurations:Debug"
         kind  "ConsoleApp"
         defines { "_DEBUG" }
@@ -86,24 +91,29 @@ project "Engine"
 
     links 
     {
-        "GLFW"
-        -- "opengl32.lib",
-        -- "glfw3.lib"
+        "GLFW",
     }
     
     includedirs
     {
         "Engine/src",
-        "%{IncludeDir.GLFW}"
+        "%{IncludeDir.GLFW}",
     }
 
-    filter "configurations:Debug"
+    filter "configurations:Logging"
+        defines { "_DEBUG", "ACTIVATE_LOGGING" }
+        runtime "Debug"
+        links { "spdlog" }
+        includedirs {" %{IncludeDir.spdlog}" }
+        
+        filter "configurations:Debug"
         defines { "_DEBUG" }
         runtime "Debug"
-
-    filter "configurations:Release"
+        
+        filter "configurations:Release"
         defines { "NDEBUG" }
         runtime "Release"
-
+        
 group "Dependencies"
-    include "Vendor/GLFW"
+        include "Vendor/GLFW"
+        include "Vendor/spdlog"

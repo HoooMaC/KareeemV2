@@ -9,7 +9,7 @@ namespace Karem {
 	public:
 		WindowCloseEvent() {}
 
-		// is equal with EVENT_CLASS_TYPE in Hazel
+		// is equal with EVENT_CLASS_CATEGORY in Hazel
 		int GetCategoryFlag() const override { return EventCategoryApplication; }
 
 		// is equal with EVENT_CLASS_TYPE in Hazel

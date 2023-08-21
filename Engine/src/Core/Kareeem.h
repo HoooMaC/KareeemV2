@@ -17,3 +17,9 @@
 #include <map>
 #include <set>
 #include <unordered_set>
+
+#ifdef ACTIVATE_LOGGING
+#include "DefinedLog/EngineLog.h"
+#else
+#include "UnactiveLog.h"
+#endif

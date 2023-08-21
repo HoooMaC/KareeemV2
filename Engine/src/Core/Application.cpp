@@ -1,6 +1,9 @@
 #include "Core/Kareeem.h"
 #include "Application.h"
 
+#include <Event/Event.h>
+#include <Event/AppEvent.h>
+
 #include <GLFW/glfw3.h>
 
 namespace Karem {
@@ -10,14 +13,18 @@ namespace Karem {
 		Init();
 	}
 
+	void Application::Init()
+	{
+		m_Window.SetEventCallbacks(std::bind(&Application::EventHandler, this, std::placeholders::_1));
+	}
+
 	Application::~Application()
 	{
 		Shutdown();
 	}
 
-	void Application::Init()
+	void Application::Shutdown()
 	{
-		m_Window.SetEventCallbacks(std::bind(&Application::EventHandler, this, std::placeholders::_1));
 	}
 
 	void Application::Run()
@@ -28,12 +35,16 @@ namespace Karem {
 		}
 	}
 
-	void Application::Shutdown()
-	{
-	}
-
 	void Application::EventHandler(Event& event)
 	{
+		EventDispatcher dispatcher(event);
+		dispatcher.Dispatch<WindowCloseEvent>(std::bind(&Application::WindowCloseAction, this, std::placeholders::_1));
+
 	}
 
+	bool Application::WindowCloseAction(WindowCloseEvent& event)
+	{
+		m_Running = false;
+		return true;
+	}
 }
