@@ -42,6 +42,49 @@ namespace Karem {
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 		SetVSync(true);
 
+		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)
+		{
+				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+				data.Width = width;
+				data.Height = height;
+
+				WindowResizeEvent event(data.Width, data.Height);
+				data.EventCallback(event);
+		});
+
+		glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window)
+		{
+				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+				WindowCloseEvent event;
+				data.EventCallback(event);
+		});
+
+		glfwSetScrollCallback(m_Window, [](GLFWwindow* window, double xOffset, double yOffset)
+		{
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+			
+			MouseScrolledEvent event((float)xOffset, (float)yOffset);
+			data.EventCallback(event);
+		});
+
+		glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, double xPos, double yPos)
+		{
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+			MouseMovedEvent event((float)xPos, (float)yPos);
+			data.EventCallback(event);
+		});
+
+		// belum ada key type event
+		//glfwSetCharCallback(m_Window, [](GLFWwindow* window, unsigned int codepoint)
+		//{
+		//	WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+		//	KeyTypedEvent event(codepoint);
+		//	data.EventCallback(event);
+		//});
 		glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scancodes, int action, int mods)
 		{
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
@@ -69,24 +112,27 @@ namespace Karem {
 			}
 		});
 
-		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)
+		glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int mods)
 		{
-				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
-				data.Width = width;
-				data.Height = height;
-
-				WindowResizeEvent event(data.Width, data.Height);
-				data.EventCallback(event);
+			switch (action)
+			{
+				case GLFW_PRESS:
+				{
+					MouseButtonPressedEvent event(button);
+					data.EventCallback(event);
+					break;
+				}
+				case GLFW_RELEASE:
+				{
+					MouseButtonReleasedEvent event(button);
+					data.EventCallback(event);
+					break;
+				}
+			}
 		});
 
-		glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window)
-		{
-				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
-
-				WindowCloseEvent event;
-				data.EventCallback(event);
-		});
 	}
 
 	void Window::Shutdown()

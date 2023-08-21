@@ -40,6 +40,8 @@ namespace Karem {
 		EventDispatcher dispatcher(event);
 		dispatcher.Dispatch<WindowCloseEvent>(std::bind(&Application::WindowCloseAction, this, std::placeholders::_1));
 
+		ENGINE_TRACE(event);
+
 	}
 
 	bool Application::WindowCloseAction(WindowCloseEvent& event)
