@@ -2,6 +2,8 @@
 
 #include "Core/Kareeem.h"
 
+#include "Event/Event.h"
+
 namespace Karem {
 
 	class Layer
@@ -14,6 +16,8 @@ namespace Karem {
 		virtual void OnDetach() {}
 		virtual void OnUpdate() {}
 		virtual void OnImGUIRender() {}
+
+		virtual void EventHandler(Event& event) {}
 	protected:
 		std::string m_DebugName;
 	};

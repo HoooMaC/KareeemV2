@@ -6,6 +6,8 @@ class AppLayer : public Karem::Layer
 public:
 	AppLayer(const std::string& layerName = "Application")
 		: Layer(layerName) {}
+
+	void OnUpdate() override;
 };
 
 class Sandbox : public Karem::Application

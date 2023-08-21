@@ -16,6 +16,7 @@ startproject "Client"
 
 IncludeDir = {}
 IncludeDir["GLFW"] = "%{wks.location}/Vendor/GLFW/include"
+IncludeDir["glad"] = "%{wks.location}/Vendor/glad/include"
 IncludeDir["spdlog"] = "%{wks.location}/Vendor/spdlog/include"
 
 project "Client"
@@ -36,7 +37,8 @@ project "Client"
     includedirs
     {
         "Engine/src",
-        "%{IncludeDir.GLFW}"
+        "%{IncludeDir.GLFW}",
+        "%{IncludeDir.glad}"
     }
 
     libdirs
@@ -46,6 +48,11 @@ project "Client"
     links
     {
         "Engine"
+    }
+    
+    defines
+    {
+        "GLFW_INCLUDE_NONE"
     }
     
     filter "configurations:Logging"
@@ -86,18 +93,24 @@ project "Engine"
 
     libdirs
     {
-        "Vendor/GLFW/lib"
     }
 
     links 
     {
         "GLFW",
+        "glad"
     }
     
     includedirs
     {
         "Engine/src",
         "%{IncludeDir.GLFW}",
+        "%{IncludeDir.glad}"
+    }
+
+    defines
+    {
+        "GLFW_INCLUDE_NONE"
     }
 
     filter "configurations:Logging"
@@ -116,4 +129,5 @@ project "Engine"
         
 group "Dependencies"
         include "Vendor/GLFW"
+        include "Vendor/glad"
         include "Vendor/spdlog"

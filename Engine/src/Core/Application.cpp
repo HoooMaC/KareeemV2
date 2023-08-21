@@ -32,6 +32,12 @@ namespace Karem {
 		while (m_Running)
 		{
 			m_Window.OnUpdate();
+
+			for (std::shared_ptr<Layer>& layer : m_Layers)
+			{
+				layer->OnUpdate(); // Memanggil fungsi yang diinginkan dari shared_ptr
+			}
+
 		}
 	}
 
@@ -40,8 +46,12 @@ namespace Karem {
 		EventDispatcher dispatcher(event);
 		dispatcher.Dispatch<WindowCloseEvent>(std::bind(&Application::WindowCloseAction, this, std::placeholders::_1));
 
-		ENGINE_TRACE(event);
+		for (auto it = m_Layers.rbegin(); it != m_Layers.rend(); ++it)
+		{
+			(*it)->EventHandler(event); // Memanggil fungsi yang diinginkan dari shared_ptr
+		}
 
+		ENGINE_TRACE(event);
 	}
 
 	bool Application::WindowCloseAction(WindowCloseEvent& event)

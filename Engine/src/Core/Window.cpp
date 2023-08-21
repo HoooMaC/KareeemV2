@@ -7,6 +7,8 @@
 #include "Event/KeyEvent.h"
 #include "Event/MouseEvent.h"
 
+#include <glad/glad.h>
+
 namespace Karem {
 
 	static bool s_Initialized = false;
@@ -31,14 +33,24 @@ namespace Karem {
 		{
 			int succes = glfwInit();
 
+			// TODO : change this into assertion and set the error callbacks
 			if (!succes)
-				std::cout << "Failed to Initialized GLFW\n";
+				ENGINE_CRITICAL("Failed to Initialized GLFW\n");
 
-			s_Initialized = true;
 		}
 
 		m_Window = glfwCreateWindow((int)m_Data.Width, (int)m_Data.Height, m_Data.Title.c_str(), nullptr, nullptr);
 		glfwMakeContextCurrent(m_Window);
+
+		if (!s_Initialized)
+		{
+			int initGlad = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+			// TODO : Need some assertion here if the initialization is failed
+
+			s_Initialized = true;
+
+		}
+
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 		SetVSync(true);
 
@@ -142,8 +154,8 @@ namespace Karem {
 
 	void Window::OnUpdate()
 	{
-		//glClear(GL_COLOR_BUFFER_BIT);
-
+		glClear(GL_COLOR_BUFFER_BIT);
+		glClearColor(1.0f, 1.0f, 0.0f, 1.0f);
 		glfwSwapBuffers(m_Window);
 		glfwPollEvents();
 	}
