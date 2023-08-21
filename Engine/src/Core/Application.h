@@ -1,9 +1,11 @@
 #pragma once
 
 #include "Core/Window.h"
+#include "Core/Layers.h"
 
 #include "Event/Event.h"
 #include "Event/AppEvent.h"
+
 namespace Karem {
 
 	class Application
@@ -22,6 +24,8 @@ namespace Karem {
 
 	private:
 		bool WindowCloseAction(WindowCloseEvent& event);
+	protected:
+		Layers m_Layers;
 	private:
 		Window m_Window;
 		bool m_Running = true;
