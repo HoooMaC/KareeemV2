@@ -2,12 +2,13 @@
 
 #include "Window.h"
 
+#include "API/OpenGL/OpenGLContext.h"
+
 #include "Event/Event.h"
 #include "Event/AppEvent.h"
 #include "Event/KeyEvent.h"
 #include "Event/MouseEvent.h"
 
-#include <glad/glad.h>
 
 namespace Karem {
 
@@ -46,11 +47,11 @@ namespace Karem {
 
 		m_Window = glfwCreateWindow((int)m_Data.Width, (int)m_Data.Height, m_Data.Title.c_str(), nullptr, nullptr);
 		glfwMakeContextCurrent(m_Window);
+		m_Context = std::make_unique<OpenGLContext>();
 
 		if (!s_Initialized)
 		{
-			int initGlad = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-			// TODO : Need some assertion here if the initialization is failed
+			m_Context->Init();
 
 			s_Initialized = true;
 

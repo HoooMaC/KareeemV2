@@ -2,6 +2,8 @@
 
 #include "Event/Event.h"
 
+#include "Core/Renderer/GraphicsContext.h"
+
 #include <functional>
 #include <string>
 
@@ -54,6 +56,8 @@ namespace Karem {
 		};
 
 		WindowData m_Data;
+
+		std::unique_ptr<GraphicsContext> m_Context;
 	};
 
 }
