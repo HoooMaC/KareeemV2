@@ -9,3 +9,6 @@
 	path = Vendor/ImGUI
 	url = https://github.com/HoooMaC/imgui.git
 	branch = docking
+[submodule "Vendor/glm"]
+	path = Vendor/glm
+	url = https://github.com/HoooMaC/glm.git

@@ -18,6 +18,8 @@
 #include <set>
 #include <unordered_set>
 
+#include <glm/glm.hpp>
+
 #ifdef ACTIVATE_LOGGING
 #include "DefinedLog/EngineLog.h"
 #else

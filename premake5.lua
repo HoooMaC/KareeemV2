@@ -18,6 +18,7 @@ IncludeDir = {}
 IncludeDir["GLFW"] = "%{wks.location}/Vendor/GLFW/include"
 IncludeDir["glad"] = "%{wks.location}/Vendor/glad/include"
 IncludeDir["ImGUI"] = "%{wks.location}/Vendor/ImGUI"
+IncludeDir["glm"] = "%{wks.location}/Vendor/glm"
 IncludeDir["spdlog"] = "%{wks.location}/Vendor/spdlog/include"
 
 project "Client"
@@ -32,7 +33,9 @@ project "Client"
     files
     {
         "%{prj.name}/src/**.h",
-        "%{prj.name}/src/**.cpp"
+        "%{prj.name}/src/**.cpp",
+        "%{wks.location}/Vendor/glm/glm/**.hpp",
+        "%{wks.location}/Vendor/glm/glm/**.inl",
     }
     
     includedirs
@@ -41,6 +44,7 @@ project "Client"
         "%{IncludeDir.GLFW}",
         "%{IncludeDir.glad}",
         "%{IncludeDir.ImGUI}",
+        "%{IncludeDir.glm}",
     }
 
     libdirs
@@ -110,6 +114,7 @@ project "Engine"
         "%{IncludeDir.GLFW}",
         "%{IncludeDir.glad}",
         "%{IncludeDir.ImGUI}",
+        "%{IncludeDir.glm}",
     }
 
     defines
