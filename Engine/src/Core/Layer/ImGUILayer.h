@@ -15,6 +15,10 @@ namespace Karem {
 		void OnImGUIRender();
 
 		void EventHandler(Event& event);
+
+	public:
+		static void Begin();
+		static void End();
 	private:
 	};
 

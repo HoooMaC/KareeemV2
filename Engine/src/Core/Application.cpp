@@ -1,12 +1,18 @@
 #include "Core/Kareeem.h"
+
 #include "Application.h"
+
+#include "Core/Layer/ImGUILayer.h"
 
 #include <Event/Event.h>
 #include <Event/AppEvent.h>
 
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include <imgui.h>
+#include "backends/imgui_impl_glfw.h"
+#include "backends/imgui_impl_opengl3.h"
 
 namespace Karem {
 
@@ -31,12 +37,15 @@ namespace Karem {
 
 	void Application::Run()
 	{
-			while (m_Running)
+		while (m_Running)
 		{
+
+			ImGUILayer::Begin();
 			for (std::shared_ptr<Layer>& layer : m_Layers)
 			{
 				layer->OnUpdate(); // Memanggil fungsi yang diinginkan dari shared_ptr
 			}
+			ImGUILayer::End();
 
 			m_Window.OnUpdate();
 		}

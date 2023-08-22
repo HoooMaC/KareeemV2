@@ -39,6 +39,9 @@ namespace Karem {
 				ENGINE_CRITICAL("Failed to Initialized GLFW");
 			}
 
+			glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+			glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+
 		}
 
 		m_Window = glfwCreateWindow((int)m_Data.Width, (int)m_Data.Height, m_Data.Title.c_str(), nullptr, nullptr);
@@ -152,15 +155,19 @@ namespace Karem {
 
 	void Window::Shutdown()
 	{
-		glfwDestroyWindow(m_Window);
+		if(s_Initialized)
+		{
+			glfwDestroyWindow(m_Window);
+			glfwTerminate();
+
+			s_Initialized = false;
+		}
 	}
 
 	void Window::OnUpdate()
 	{
-		glClear(GL_COLOR_BUFFER_BIT);
-		glClearColor(1.0f, 1.0f, 0.0f, 1.0f);
-		glfwSwapBuffers(m_Window);
 		glfwPollEvents();
+		glfwSwapBuffers(m_Window);
 	}
 
 	void Window::SetVSync(bool enable)

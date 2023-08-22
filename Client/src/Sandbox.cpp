@@ -1,7 +1,5 @@
 #include "Sandbox.h"
 
-#include <glad/glad.h>
-
 Karem::Application* Karem::CreateApplication()
 {
 	return new Sandbox();
@@ -9,4 +7,5 @@ Karem::Application* Karem::CreateApplication()
 
 void AppLayer::OnUpdate()
 {
+
 }
