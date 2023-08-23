@@ -31,6 +31,9 @@ namespace Karem {
 	private:
 		Window m_Window;
 		bool m_Running = true;
+
+	private:
+		unsigned int m_VertexBuffer, m_VertexArray, m_IndexBuffer, m_ShaderProgram;
 	};
 
 	Application* CreateApplication();

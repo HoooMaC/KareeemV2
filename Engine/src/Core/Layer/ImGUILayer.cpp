@@ -78,6 +78,7 @@ namespace Karem {
 
 	void ImGUILayer::OnUpdate()
 	{
+#if 0
 		static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
 
@@ -125,6 +126,7 @@ namespace Karem {
 		// this is in OnUpdate
 		glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
 		glClear(GL_COLOR_BUFFER_BIT);
+#endif
 	}
 
 	void ImGUILayer::OnDetach()
