@@ -11,29 +11,16 @@ namespace Karem {
 	class Application
 	{
 	public:
-		Application();
-		virtual ~Application();
+		virtual ~Application() {}
 
-		virtual void Run();
+		virtual void Run() = 0;
 
-	private:
-		void Init();
-		void Shutdown();
-
-		void EventHandler(Event& event);
-
-	private:
-		bool WindowCloseAction(WindowCloseEvent& event);
+		virtual void EventHandler(Event& event) = 0;
 
 	protected:
-		Layers m_Layers;
+		virtual void Init() = 0;
+		virtual void Shutdown() = 0;
 
-	private:
-		Window m_Window;
-		bool m_Running = true;
-
-	private:
-		unsigned int m_VertexBuffer, m_VertexArray, m_IndexBuffer, m_ShaderProgram;
 	};
 
 	Application* CreateApplication();
