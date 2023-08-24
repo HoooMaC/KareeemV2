@@ -17,8 +17,8 @@ namespace Karem {
 		void EventHandler(Event& event);
 
 	public:
-		static void Begin();
-		static void End();
+		static void BeginScene();
+		static void EndScene();
 	private:
 	};
 

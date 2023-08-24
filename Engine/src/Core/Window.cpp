@@ -55,7 +55,6 @@ namespace Karem {
 			m_Context->Init();
 
 			s_Initialized = true;
-
 		}
 
 		glfwSetWindowUserPointer(m_Window, &m_Data);

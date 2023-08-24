@@ -1,6 +1,9 @@
 #include "Sandbox.h"
 
 #include <glad/glad.h>
+#include <imgui.h>
+#include "backends/imgui_impl_glfw.h"
+#include "backends/imgui_impl_opengl3.h"
 
 const char* vertexShaderSource = R"(
 	#version 330 core
@@ -25,43 +28,8 @@ Karem::Application* Karem::CreateApplication()
 	return new Sandbox();
 }
 
-void AppLayer::OnUpdate()
+void AppLayer::OnAttach()
 {
-}
-
-Sandbox::Sandbox()
-{
-	m_Layers.PushLayer(std::make_shared<AppLayer>());
-	m_Layers.PushLayer(std::make_shared<Karem::ImGUILayer>());
-	Init();
-}
-
-void Sandbox::Run()
-{
-	while (m_Running)
-	{
-		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
-
-		Karem::ImGUILayer::Begin();
-		for (std::shared_ptr<Karem::Layer>& layer : m_Layers)
-		{
-			layer->OnUpdate(); // Memanggil fungsi yang diinginkan dari shared_ptr
-		}
-		Karem::	ImGUILayer::End();
-
-		glUseProgram(m_ShaderProgram);
-		glBindVertexArray(m_VertexArray);
-		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
-
-		m_Window.OnUpdate();
-	}
-}
-
-void Sandbox::Init()
-{
-	m_Window.SetEventCallbacks(std::bind(&Application::EventHandler, this, std::placeholders::_1));
-
 	// Compile dan link shader
 	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertexShader, 1, &vertexShaderSource, nullptr);
@@ -108,11 +76,117 @@ void Sandbox::Init()
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
+}
 
+void AppLayer::OnUpdate()
+{
+	glUseProgram(m_ShaderProgram);
+	glBindVertexArray(m_VertexArray);
+	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
+}
+
+Sandbox::Sandbox()
+{
+	Init();
+
+	PushLayer(std::make_shared<AppLayer>("Test 1"));
+	//m_Layers.PushLayer(std::make_shared<Karem::ImGUILayer>());
+}
+
+Sandbox::~Sandbox()
+{
+	Shutdown();
+}
+
+void Sandbox::Run()
+{
+	while (m_Running)
+	{
+		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		Karem::ImGUILayer::BeginScene();
+
+		m_ControlLayer.OnUpdate();
+
+		// untuk ImGUI, ada loopingnya tersendiri
+		// berarti ada list atau stacknya sendiri
+
+		Karem::ImGUILayer::EndScene();
+
+		for (std::shared_ptr<Karem::Layer>& layer : m_Layers)
+		{
+			if(layer->GetStatus())
+				layer->OnUpdate(); // Memanggil fungsi yang diinginkan dari shared_ptr
+		}
+
+
+
+		m_Window.OnUpdate();
+	}
+}
+
+void Sandbox::Init()
+{
+	m_Window.SetEventCallbacks(std::bind(&Application::EventHandler, this, std::placeholders::_1));
+
+	// ImGUI init
+	GLFWwindow* window = glfwGetCurrentContext();
+
+	// Setup Dear ImGui context
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
+	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
+	//io.ConfigViewportsNoAutoMerge = true;
+	//io.ConfigViewportsNoTaskBarIcon = true;
+
+	// Setup Dear ImGui style
+	ImGui::StyleColorsDark();
+	//ImGui::StyleColorsLight();
+
+	// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
+	ImGuiStyle& style = ImGui::GetStyle();
+	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	{
+		style.WindowRounding = 0.0f;
+		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+	}
+
+	// Setup Platform/Renderer backends
+	ImGui_ImplGlfw_InitForOpenGL(window, true);
+	ImGui_ImplOpenGL3_Init("#version 450");
+
+	// Load Fonts
+	// - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.
+	// - AddFontFromFileTTF() will return the ImFont* so you can store it if you need to select the font among multiple.
+	// - If the file cannot be loaded, the function will return a nullptr. Please handle those errors in your application (e.g. use an assertion, or display an error and quit).
+	// - The fonts will be rasterized at a given size (w/ oversampling) and stored into a texture when calling ImFontAtlas::Build()/GetTexDataAsXXXX(), which ImGui_ImplXXXX_NewFrame below will call.
+	// - Use '#define IMGUI_ENABLE_FREETYPE' in your imconfig file to use Freetype for higher quality font rendering.
+	// - Read 'docs/FONTS.md' for more instructions and details.
+	// - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
+	// - Our Emscripten build process allows embedding fonts to be accessible at runtime from the "fonts/" folder. See Makefile.emscripten for details.
+	//io.Fonts->AddFontDefault();
+	//io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\segoeui.ttf", 18.0f);
+	//io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);
+	//io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);
+	//io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
+	//ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
+	//IM_ASSERT(font != nullptr);
+	io.Fonts->AddFontFromFileTTF("res/font/Helvetica.ttf", 14.f);
+
+	m_ControlLayer.OnAttach();
 }
 
 void Sandbox::Shutdown()
 {
+	// Cleanup
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
 }
 
 void Sandbox::EventHandler(Karem::Event& event)
@@ -122,7 +196,8 @@ void Sandbox::EventHandler(Karem::Event& event)
 
 	for (auto it = m_Layers.rbegin(); it != m_Layers.rend(); ++it)
 	{
-		(*it)->EventHandler(event); // Memanggil fungsi yang diinginkan dari shared_ptr
+		if((*it)->GetStatus())
+			(*it)->EventHandler(event); // Memanggil fungsi yang diinginkan dari shared_ptr
 	}
 
 	//ENGINE_TRACE(event);
@@ -132,4 +207,29 @@ bool Sandbox::WindowCloseAction(Karem::WindowCloseEvent& event)
 {
 	m_Running = false;
 	return true;
+}
+
+void Sandbox::PushLayer(std::shared_ptr<Karem::Layer> layer)
+{
+	m_Layers.PushLayer(layer);
+	// TODO : MAKE AN m_LayerControl add new data in its list
+	m_ControlLayer.AddData(layer->GetLayerData());
+}
+
+void Sandbox::PushOverlay(std::shared_ptr<Karem::Layer> overlay)
+{
+	m_Layers.PushOverlay(overlay);
+	// TODO : MAKE AN m_LayerControl add new data in its list
+}
+
+void Sandbox::PopLayer(std::shared_ptr<Karem::Layer> layer)
+{
+	m_Layers.PopLayer(layer);
+	// TODO : MAKE AN m_LayerControl add new data in its list
+}
+
+void Sandbox::PopOverlay(std::shared_ptr<Karem::Layer> overlay)
+{
+	m_Layers.PopOverlay(overlay);
+	// TODO : MAKE AN m_LayerControl add new data in its list
 }

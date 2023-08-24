@@ -15,10 +15,14 @@ namespace Karem {
 		virtual void OnAttach() {}
 		virtual void OnDetach() {}
 		virtual void OnUpdate() {}
-		virtual void OnImGUIRender() {}
 
 		virtual void EventHandler(Event& event) {}
+
+		inline bool GetStatus() const { return m_Status; }
+		inline std::pair<std::string*, bool*> GetLayerData() { return { &m_DebugName, &m_Status }; }
+
 	protected:
+		bool m_Status;
 		std::string m_DebugName;
 	};
 

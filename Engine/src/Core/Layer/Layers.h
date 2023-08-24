@@ -9,7 +9,7 @@ namespace Karem {
 	{
 	public:
 		Layers();
-		~Layers();
+		virtual ~Layers();
 
 		void PushLayer(std::shared_ptr<Layer> layer);
 		void PushOverlay(std::shared_ptr<Layer> overlay);

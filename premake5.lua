@@ -34,8 +34,6 @@ project "Client"
     {
         "%{prj.name}/src/**.h",
         "%{prj.name}/src/**.cpp",
-        "%{wks.location}/Vendor/glm/glm/**.hpp",
-        "%{wks.location}/Vendor/glm/glm/**.inl",
     }
     
     includedirs

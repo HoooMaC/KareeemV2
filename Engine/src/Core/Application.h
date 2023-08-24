@@ -20,7 +20,9 @@ namespace Karem {
 	protected:
 		virtual void Init() = 0;
 		virtual void Shutdown() = 0;
-
+	protected:
+		Window m_Window;
+		bool m_Running = true;
 	};
 
 	Application* CreateApplication();
