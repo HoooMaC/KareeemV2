@@ -13,6 +13,7 @@ public:
 
 private:
 	std::shared_ptr<Karem::VertexArray> m_VArray;
+	std::shared_ptr<Karem::VertexBuffer> m_VBuffer;
 private:
 	unsigned int m_VertexBuffer, m_VertexArray, m_IndexBuffer, m_ShaderProgram;
 };

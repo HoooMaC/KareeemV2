@@ -1,6 +1,8 @@
 #include "Sandbox.h"
 
 #include <glad/glad.h>
+
+// TEMP : THIS SHOULD NOT BE HERE (MAYBE)
 #include <imgui.h>
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
@@ -60,25 +62,19 @@ void AppLayer::OnAttach()
 	unsigned int indices[3] = { 0, 1, 2 };
 
 	m_VArray = Karem::CreateVertexArray();
-	//glGenVertexArrays(1, &m_VertexArray);
-	//glBindVertexArray(m_VertexArray);
 
-	glGenBuffers(1, &m_VertexBuffer);
-	glGenBuffers(1, &m_IndexBuffer);
-
-	glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	m_VBuffer = Karem::CreateVertexBuffer((void*)vertices, sizeof(vertices));
 
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
 
+	glGenBuffers(1, &m_IndexBuffer);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexBuffer);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+	m_VBuffer->UnBind();
 	m_VArray->UnBind();
-	//glBindVertexArray(0);
 }
 
 void AppLayer::OnUpdate()
@@ -86,7 +82,6 @@ void AppLayer::OnUpdate()
 	glUseProgram(m_ShaderProgram);
 
 	m_VArray->Bind();
-	//glBindVertexArray(m_VertexArray);
 
 	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
 }

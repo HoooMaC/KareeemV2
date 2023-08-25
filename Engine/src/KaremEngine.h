@@ -13,6 +13,7 @@
 #include "Core/Renderer/BufferBase.h"
 
 #include "API/OpenGL/OpenGLVertexArray.h"
+#include "API/OpenGL/OpenGLVertexBuffer.h"
 
 #include "Event/Event.h"
 #include "Event/AppEvent.h"
