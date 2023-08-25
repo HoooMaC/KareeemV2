@@ -16,6 +16,11 @@ namespace Karem {
 		Init(data, size);
 	}
 
+	OpenGLVertexBuffer::~OpenGLVertexBuffer()
+	{
+		Clear();
+	}
+
 	void OpenGLVertexBuffer::Init(void* data, size_t size)
 	{
 		glGenBuffers(1, &m_RendererID);

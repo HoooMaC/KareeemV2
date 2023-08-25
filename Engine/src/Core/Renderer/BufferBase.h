@@ -35,13 +35,13 @@ namespace Karem {
 	public:
 		virtual ~IndexBuffer() = default;
 
-		virtual void Init() = 0;
+		virtual void Init(void* data, uint64_t count) = 0;
 		virtual void Clear() = 0;
 
 		virtual void Bind() const = 0;
 		virtual void UnBind() const = 0;
 	};
 
-	//std::shared_ptr<IndexBuffer> CreateIndexBuffer();
+	std::shared_ptr<IndexBuffer> CreateIndexBuffer(void* data, uint64_t count);
 
 }
