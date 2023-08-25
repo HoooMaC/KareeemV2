@@ -89,8 +89,14 @@ Sandbox::Sandbox()
 {
 	Init();
 
-	PushLayer(std::make_shared<AppLayer>("Test 1"));
-	//m_Layers.PushLayer(std::make_shared<Karem::ImGUILayer>());
+	PushLayer(std::make_shared<AppLayer>());
+	PushLayer(std::make_shared<Test1Layer>("Test1"));
+	PushLayer(std::make_shared<Test1Layer>("Test2"));
+	PushLayer(std::make_shared<Test1Layer>("Test3"));
+	PushLayer(std::make_shared<Test1Layer>("Test4"));
+	PushLayer(std::make_shared<Test1Layer>("Test5"));
+	PushLayer(std::make_shared<Test1Layer>("Test6"));
+	PushLayer(std::make_shared<Test1Layer>("Test7"));
 }
 
 Sandbox::~Sandbox()
@@ -107,10 +113,40 @@ void Sandbox::Run()
 
 		Karem::ImGUILayer::BeginScene();
 
-		m_ControlLayer.OnUpdate();
+
+		ImGui::Begin("Layer Control");
+
+		for (int i = 0; i < m_Layers.GetSize(); i++)
+		{
+			std::shared_ptr<Karem::Layer>& layer = m_Layers.GetLayerAt(i);
+			std::pair<std::string&, bool&> layerData = layer->GetLayerData();
+			ImGui::Checkbox(layerData.first.c_str(), &layerData.second);
+
+			if (i > 0)
+			{
+				ImGui::SameLine();
+				std::string buttonName = "Make up " + layerData.first;
+				if (ImGui::Button(buttonName.c_str()))
+				{
+					std::swap(m_Layers.GetLayerAt(i), m_Layers.GetLayerAt(i - 1));
+				}
+			}
+
+			if (i <  m_Layers.GetSize()-1)
+			{
+				ImGui::SameLine();
+				std::string buttonName = "Make down " + layerData.first;
+				if (ImGui::Button(buttonName.c_str()))
+				{
+					std::swap(m_Layers.GetLayerAt(i), m_Layers.GetLayerAt(i + 1));
+				}
+			}
+		}
 
 		// untuk ImGUI, ada loopingnya tersendiri
 		// berarti ada list atau stacknya sendiri
+
+		ImGui::End();
 
 		Karem::ImGUILayer::EndScene();
 
@@ -119,7 +155,6 @@ void Sandbox::Run()
 			if(layer->GetStatus())
 				layer->OnUpdate(); // Memanggil fungsi yang diinginkan dari shared_ptr
 		}
-
 
 
 		m_Window.OnUpdate();
@@ -177,8 +212,6 @@ void Sandbox::Init()
 	//ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
 	//IM_ASSERT(font != nullptr);
 	io.Fonts->AddFontFromFileTTF("res/font/Helvetica.ttf", 14.f);
-
-	m_ControlLayer.OnAttach();
 }
 
 void Sandbox::Shutdown()
@@ -212,24 +245,19 @@ bool Sandbox::WindowCloseAction(Karem::WindowCloseEvent& event)
 void Sandbox::PushLayer(std::shared_ptr<Karem::Layer> layer)
 {
 	m_Layers.PushLayer(layer);
-	// TODO : MAKE AN m_LayerControl add new data in its list
-	m_ControlLayer.AddData(layer->GetLayerData());
 }
 
 void Sandbox::PushOverlay(std::shared_ptr<Karem::Layer> overlay)
 {
 	m_Layers.PushOverlay(overlay);
-	// TODO : MAKE AN m_LayerControl add new data in its list
 }
 
 void Sandbox::PopLayer(std::shared_ptr<Karem::Layer> layer)
 {
 	m_Layers.PopLayer(layer);
-	// TODO : MAKE AN m_LayerControl add new data in its list
 }
 
 void Sandbox::PopOverlay(std::shared_ptr<Karem::Layer> overlay)
 {
 	m_Layers.PopOverlay(overlay);
-	// TODO : MAKE AN m_LayerControl add new data in its list
 }

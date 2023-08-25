@@ -2,8 +2,6 @@
 
 #include "KaremEngine.h"
 
-#include "ControlLayer.h"
-
 class AppLayer : public Karem::Layer
 {
 public:
@@ -15,6 +13,13 @@ public:
 
 private:
 	unsigned int m_VertexBuffer, m_VertexArray, m_IndexBuffer, m_ShaderProgram;
+};
+
+class Test1Layer : public Karem::Layer
+{
+public:
+	Test1Layer(const std::string& layerName = "TestLayer")
+		: Layer(layerName) {}
 };
 
 class Sandbox : public Karem::Application
@@ -37,7 +42,6 @@ private:
 	void PopLayer(std::shared_ptr<Karem::Layer> layer);
 	void PopOverlay(std::shared_ptr<Karem::Layer> overlay);
 private:
-	ControlLayer m_ControlLayer;
 	Karem::Layers m_Layers;
 };
 

@@ -19,7 +19,7 @@ namespace Karem {
 		virtual void EventHandler(Event& event) {}
 
 		inline bool GetStatus() const { return m_Status; }
-		inline std::pair<std::string*, bool*> GetLayerData() { return { &m_DebugName, &m_Status }; }
+		inline std::pair<std::string&, bool&> GetLayerData() { return { m_DebugName, m_Status }; }
 
 	protected:
 		bool m_Status;
