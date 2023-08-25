@@ -12,6 +12,8 @@ public:
 	void OnUpdate() override;
 
 private:
+	std::shared_ptr<Karem::VertexArray> m_VArray;
+private:
 	unsigned int m_VertexBuffer, m_VertexArray, m_IndexBuffer, m_ShaderProgram;
 };
 

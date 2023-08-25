@@ -59,11 +59,12 @@ void AppLayer::OnAttach()
 
 	unsigned int indices[3] = { 0, 1, 2 };
 
-	glGenVertexArrays(1, &m_VertexArray);
+	m_VArray = Karem::CreateVertexArray();
+	//glGenVertexArrays(1, &m_VertexArray);
+	//glBindVertexArray(m_VertexArray);
+
 	glGenBuffers(1, &m_VertexBuffer);
 	glGenBuffers(1, &m_IndexBuffer);
-
-	glBindVertexArray(m_VertexArray);
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
@@ -75,13 +76,18 @@ void AppLayer::OnAttach()
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
+
+	m_VArray->UnBind();
+	//glBindVertexArray(0);
 }
 
 void AppLayer::OnUpdate()
 {
 	glUseProgram(m_ShaderProgram);
-	glBindVertexArray(m_VertexArray);
+
+	m_VArray->Bind();
+	//glBindVertexArray(m_VertexArray);
+
 	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
 }
 
