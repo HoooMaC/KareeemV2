@@ -41,6 +41,7 @@ namespace Karem {
 				return 1;
 		}
 		// TODO : NEED MAKE SOME ASSERTION HERE
+		return 0;
 	}
 
 	struct BufferElement
@@ -89,6 +90,7 @@ namespace Karem {
 					return 1;
 			}
 			// TO DO : NEED SOME ASSERTION HERE	
+			return 0;
 		}
 	};
 	

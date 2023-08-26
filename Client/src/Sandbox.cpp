@@ -7,138 +7,133 @@
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
 
-const char* vertexShaderSource = R"(
-	#version 330 core
-	layout (location = 0) in vec2 aPos;
-	void main()
-	{
-		gl_Position = vec4(aPos, 0.0, 1.0);
-	}
-)";
-
-const char* fragmentShaderSource = R"(
-	#version 330 core
-	out vec4 FragColor;
-	void main()
-	{
-		FragColor = vec4(1.0, 0.5, 0.2, 1.0);
-	}
-)";
-
 Karem::Application* Karem::CreateApplication()
 {
 	return new Sandbox();
 }
 
-GLenum OpenGLToShaderDataType(Karem::ShaderDataType type)
-{
-	switch (type)
-
-	{
-		case Karem::ShaderDataType::None:
-			return 0;
-		case Karem::ShaderDataType::Float:
-			return GL_FLOAT;
-		case Karem::ShaderDataType::Vec2:
-			return GL_FLOAT;
-		case Karem::ShaderDataType::Vec3:
-			return GL_FLOAT;
-		case Karem::ShaderDataType::Vec4:
-			return GL_FLOAT;
-		case Karem::ShaderDataType::Mat2:
-			return GL_FLOAT;
-		case Karem::ShaderDataType::Mat3:
-			return GL_FLOAT;
-		case Karem::ShaderDataType::Mat4:
-			return GL_FLOAT;
-		case Karem::ShaderDataType::Int:
-			return GL_INT;
-		case Karem::ShaderDataType::Int2:
-			return GL_INT;
-		case Karem::ShaderDataType::Int3:
-			return GL_INT;
-		case Karem::ShaderDataType::Int4:
-			return GL_INT;
-		case Karem::ShaderDataType::Bool:
-			return GL_BOOL;
-	}
-	// TO DO : NEED SOME ASSERTION HERE
-}
-
 void AppLayer::OnAttach()
 {
-	// Compile dan link shader
-	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &vertexShaderSource, nullptr);
-	glCompileShader(vertexShader);
-	// TO DO : need to check the compile status
+	const char* vertexShaderSource = R"(
+	#version 450 core
 
-	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &fragmentShaderSource, nullptr);
-	glCompileShader(fragmentShader);
-	// TO DO : need to check the compile status
+	layout (location = 0) in vec2 aPos;
 
-	m_ShaderProgram = glCreateProgram();
-	glAttachShader(m_ShaderProgram, vertexShader);
-	glAttachShader(m_ShaderProgram, fragmentShader);
-	glLinkProgram(m_ShaderProgram);
-	// TO DO : need to check the link status
+	void main()
+	{
+		gl_Position = vec4(aPos, -1.0, 1.0);
+	}
+	)";	
 
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
+	const char* fragmentShaderSource = R"(
+	#version 450 core
 
-	float vertices[2 * 3] =
+	out vec4 FragColor;
+
+	void main()
+	{
+		FragColor = vec4(1.0, 0.5, 0.2, 1.0);
+	}
+	)";
+
+
+	float triangleVertices[2 * 3] =
 	{
 		-0.5f, -0.5f,
 		 0.5f, -0.5f,
-		 0.0f, 0.5f
+		 0.0f,  0.5f
 	};
 
-	unsigned int indices[3] = { 0, 1, 2 };
+	unsigned int triangleIndices[3] = { 0, 1, 2 };
 
+	m_ShaderTriangle = Karem::Shader::CreateShader(vertexShaderSource, fragmentShaderSource);
 
-	m_VArray = Karem::CreateVertexArray();
-	m_VBuffer = Karem::CreateVertexBuffer((void*)vertices, sizeof(vertices));
-	m_IBuffer = Karem::CreateIndexBuffer((void*)indices, 3);
+	m_VertexArrayTriangle = Karem::VertexArray::CreateVertexArray();
 
+	std::shared_ptr<Karem::VertexBuffer> vertexBufferBasic = Karem::CreateVertexBuffer((void*)triangleVertices, sizeof(triangleVertices));
+	std::shared_ptr<Karem::IndexBuffer> indexBufferBasic = Karem::CreateIndexBuffer((void*)triangleIndices, 3);
+	m_VertexArrayTriangle->AddVertexBuffer(vertexBufferBasic);
+	m_VertexArrayTriangle->SetIndexBuffer(indexBufferBasic);
 
 	{
 		Karem::BufferLayout layout = {
-			{ Karem::ShaderDataType::Vec2, "position" }
+			{ Karem::ShaderDataType::Vec2, "aPos" }
 		};
-
-		m_VBuffer->SetLayout(layout);
+		vertexBufferBasic->SetLayout(layout);
 	}
-		
-	int32_t index = 0;
-	for (auto& element : m_VBuffer->GetLayout())
+	
+	vertexBufferBasic->ApplyLayout();
+
+	m_VertexArrayTriangle->UnBind();
+
+	const char* vertexShaderSquareSource = R"(
+	#version 450 core
+
+	layout (location = 0) in vec3 aPos;
+	layout (location = 1) in vec4 aColor;
+
+	out vec4 vColor;
+
+	void main()
 	{
-		glEnableVertexAttribArray(index);
-		glVertexAttribPointer(
-			index,
-			element.GetCount(),
-			OpenGLToShaderDataType(element.Type),
-			element.Normalized ? GL_TRUE : GL_FALSE,
-			element.Size,
-			(const void*)element.Offset
-		);
-		index++;
+		vColor = aColor;
+		gl_Position = vec4(aPos, 1.0);
+	}
+	)";
+
+	const char* fragmentShaderSquareSource = R"(
+	#version 450 core
+
+	in vec4 vColor;
+	out vec4 FragColor;
+
+	void main()
+	{
+		FragColor = vColor;
+	}
+	)";
+
+	m_ShaderSquare = Karem::Shader::CreateShader(vertexShaderSquareSource, fragmentShaderSquareSource);
+
+	float squareVertices[4 * 7] =
+	{
+		-0.5f, -0.3f, -1.0f, 0.2f, 0.0f, 0.8f, 1.0f, // kiri bawah
+		 0.5f, -0.3f, -1.0f, 0.2f, 0.0f, 0.8f, 1.0f, // kanan bawah
+		 0.5f,  0.3f, -1.0f, 0.2f, 0.0f, 0.8f, 1.0f, // kanan atas
+		-0.5f,  0.3f, -1.0f, 0.2f, 0.0f, 0.8f, 1.0f  // kiri atas
+	};
+
+	uint32_t squareIndices[6] = { 0, 1, 2, 2, 3, 0 };
+
+	m_VertexArraySquare = Karem::VertexArray::CreateVertexArray();
+	std::shared_ptr<Karem::VertexBuffer> squareVertexBuffer = Karem::CreateVertexBuffer((void*)squareVertices, sizeof(squareVertices));
+	std::shared_ptr<Karem::IndexBuffer> squareIndexBuffer = Karem::CreateIndexBuffer((void*)squareIndices, 6);
+	m_VertexArraySquare->AddVertexBuffer(squareVertexBuffer);
+	m_VertexArraySquare->SetIndexBuffer(squareIndexBuffer);
+	
+	{
+		Karem::BufferLayout layout = {
+			{ Karem::ShaderDataType::Vec3, "aPos" },
+			{ Karem::ShaderDataType::Vec4, "aColor" }
+		};
+		squareVertexBuffer->SetLayout(layout);
 	}
 
+	squareVertexBuffer->ApplyLayout();
 
-	m_IBuffer->UnBind();
-	m_VBuffer->UnBind();
-	m_VArray->UnBind();
+	m_VertexArraySquare->UnBind();
 }
 
 void AppLayer::OnUpdate()
 {
-	glUseProgram(m_ShaderProgram);
+	m_ShaderSquare->Bind();
+	m_VertexArraySquare->Bind();
+	glDrawElements(GL_TRIANGLES, m_VertexArraySquare->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 
-	m_IBuffer->Bind();
-	m_VArray->Bind();
+	m_ShaderTriangle->Bind();
+	m_VertexArrayTriangle->Bind();
+	glDrawElements(GL_TRIANGLES, m_VertexArrayTriangle->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 
-	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
 }
 
 Sandbox::Sandbox()
@@ -146,13 +141,6 @@ Sandbox::Sandbox()
 	Init();
 
 	PushLayer(std::make_shared<AppLayer>());
-	PushLayer(std::make_shared<Test1Layer>("Test1"));
-	PushLayer(std::make_shared<Test1Layer>("Test2"));
-	PushLayer(std::make_shared<Test1Layer>("Test3"));
-	PushLayer(std::make_shared<Test1Layer>("Test4"));
-	PushLayer(std::make_shared<Test1Layer>("Test5"));
-	PushLayer(std::make_shared<Test1Layer>("Test6"));
-	PushLayer(std::make_shared<Test1Layer>("Test7"));
 }
 
 Sandbox::~Sandbox()
@@ -232,12 +220,10 @@ void Sandbox::Init()
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
 	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
-	//io.ConfigViewportsNoAutoMerge = true;
-	//io.ConfigViewportsNoTaskBarIcon = true;
 
 	// Setup Dear ImGui style
-	//ImGui::StyleColorsDark();
-	ImGui::StyleColorsLight();
+	ImGui::StyleColorsDark();
+	//ImGui::StyleColorsLight();
 
 	// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
 	ImGuiStyle& style = ImGui::GetStyle();

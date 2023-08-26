@@ -6,11 +6,6 @@
 
 namespace Karem {
 
-	std::shared_ptr<VertexArray> CreateVertexArray()
-	{
-		return std::make_shared<OpenGLVertexArray>();
-	}
-
 	OpenGLVertexArray::OpenGLVertexArray()
 	{
 		Init();
@@ -29,6 +24,18 @@ namespace Karem {
 	void OpenGLVertexArray::UnBind() const
 	{
 		glBindVertexArray(0);
+	}
+
+	void OpenGLVertexArray::AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer)
+	{
+		glBindVertexArray(m_RendererID);
+		m_VertexBufferContainer.emplace_back(vertexBuffer);
+		vertexBuffer->Bind();
+	}
+
+	void OpenGLVertexArray::SetIndexBuffer(const std::shared_ptr<IndexBuffer>& indexBuffer)
+	{
+		m_IndexBuffer = indexBuffer;
 	}
 
 	void OpenGLVertexArray::Init()

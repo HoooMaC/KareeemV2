@@ -6,6 +6,42 @@
 
 namespace Karem {
 
+	GLenum OpenGLToShaderDataType(Karem::ShaderDataType type)
+	{
+		switch (type)
+
+		{
+		case Karem::ShaderDataType::None:
+			return 0;
+		case Karem::ShaderDataType::Float:
+			return GL_FLOAT;
+		case Karem::ShaderDataType::Vec2:
+			return GL_FLOAT;
+		case Karem::ShaderDataType::Vec3:
+			return GL_FLOAT;
+		case Karem::ShaderDataType::Vec4:
+			return GL_FLOAT;
+		case Karem::ShaderDataType::Mat2:
+			return GL_FLOAT;
+		case Karem::ShaderDataType::Mat3:
+			return GL_FLOAT;
+		case Karem::ShaderDataType::Mat4:
+			return GL_FLOAT;
+		case Karem::ShaderDataType::Int:
+			return GL_INT;
+		case Karem::ShaderDataType::Int2:
+			return GL_INT;
+		case Karem::ShaderDataType::Int3:
+			return GL_INT;
+		case Karem::ShaderDataType::Int4:
+			return GL_INT;
+		case Karem::ShaderDataType::Bool:
+			return GL_BOOL;
+		}
+		// TO DO : NEED SOME ASSERTION HERE
+		return 0;
+	}
+
 	std::shared_ptr<VertexBuffer> CreateVertexBuffer(void* data, size_t size)
 	{
 		return std::make_shared<OpenGLVertexBuffer>(data, size);
@@ -31,6 +67,24 @@ namespace Karem {
 	void OpenGLVertexBuffer::Clear()
 	{
 		glDeleteBuffers(1, &m_RendererID);
+	}
+
+	void OpenGLVertexBuffer::ApplyLayout()
+	{
+		int32_t index = 0;
+		for (auto& element : m_Layout)
+		{
+			glEnableVertexAttribArray(index);
+			glVertexAttribPointer(
+				index,
+				element.GetCount(),
+				OpenGLToShaderDataType(element.Type),
+				element.Normalized ? GL_TRUE : GL_FALSE,
+				element.Size,
+				(const void*)element.Offset
+			);
+			index++;
+		}
 	}
 
 	void OpenGLVertexBuffer::Bind() const

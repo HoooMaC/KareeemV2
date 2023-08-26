@@ -12,18 +12,11 @@ public:
 	void OnUpdate() override;
 
 private:
-	std::shared_ptr<Karem::VertexArray> m_VArray;
-	std::shared_ptr<Karem::VertexBuffer> m_VBuffer;
-	std::shared_ptr<Karem::IndexBuffer> m_IBuffer;
+	std::shared_ptr<Karem::VertexArray> m_VertexArrayTriangle;
+	std::shared_ptr<Karem::Shader> m_ShaderTriangle;
 private:
-	unsigned int m_VertexBuffer, m_VertexArray, m_IndexBuffer, m_ShaderProgram;
-};
-
-class Test1Layer : public Karem::Layer
-{
-public:
-	Test1Layer(const std::string& layerName = "TestLayer")
-		: Layer(layerName) {}
+	std::shared_ptr<Karem::VertexArray> m_VertexArraySquare;
+	std::shared_ptr<Karem::Shader> m_ShaderSquare;
 };
 
 class Sandbox : public Karem::Application

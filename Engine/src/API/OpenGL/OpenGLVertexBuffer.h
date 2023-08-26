@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/Renderer/BufferBase.h"
+#include "Core/Renderer/BaseBuffer.h"
 #include "Core/Renderer/BufferLayout.h"
 
 namespace Karem {
@@ -14,6 +14,7 @@ namespace Karem {
 		void Init(void* data, size_t size) override;
 		void Clear() override;
 
+		void ApplyLayout() override;
 		void SetLayout(BufferLayout layout) override { m_Layout = layout; }
 		BufferLayout GetLayout() const override { return m_Layout; }
 

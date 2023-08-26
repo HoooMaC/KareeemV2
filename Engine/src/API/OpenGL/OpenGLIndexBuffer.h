@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/Renderer/BufferBase.h"
+#include "Core/Renderer/BaseBuffer.h"
 
 namespace Karem {
 
@@ -16,8 +16,10 @@ namespace Karem {
 		void Bind() const override;
 		void UnBind() const override;
 
+		inline int32_t GetCount() const { return (int)m_Indices.size(); }
 	private:
 		uint32_t m_RendererID;
+		std::vector<uint32_t> m_Indices;
 	};	
 
 }

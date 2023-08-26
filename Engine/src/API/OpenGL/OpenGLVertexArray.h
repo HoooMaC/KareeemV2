@@ -1,6 +1,8 @@
 #pragma once
 
-#include "Core/Renderer/BufferBase.h"
+#include "Core/Renderer/BaseBuffer.h"
+
+#include <vector>
 
 namespace Karem {
 
@@ -15,8 +17,17 @@ namespace Karem {
 
 		void Bind() const;
 		void UnBind() const;
+
+
+		void AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer) override;
+		void SetIndexBuffer(const std::shared_ptr<IndexBuffer>& indexBuffer) override;
+
+		inline const std::shared_ptr<IndexBuffer>& GetIndexBuffer() const { return m_IndexBuffer; }
+
 	private:
 		uint32_t m_RendererID;
+		std::vector<std::shared_ptr<VertexBuffer>> m_VertexBufferContainer;
+		std::shared_ptr<IndexBuffer> m_IndexBuffer;
 	};
 
 }
