@@ -11,6 +11,7 @@
 #include "Core/Layer/Layers.h"
 
 #include "Core/Renderer/BufferBase.h"
+#include "Core/Renderer/BufferLayout.h"
 
 #include "API/OpenGL/OpenGLVertexArray.h"
 #include "API/OpenGL/OpenGLVertexBuffer.h"

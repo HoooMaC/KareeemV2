@@ -30,6 +30,41 @@ Karem::Application* Karem::CreateApplication()
 	return new Sandbox();
 }
 
+GLenum OpenGLToShaderDataType(Karem::ShaderDataType type)
+{
+	switch (type)
+
+	{
+		case Karem::ShaderDataType::None:
+			return 0;
+		case Karem::ShaderDataType::Float:
+			return GL_FLOAT;
+		case Karem::ShaderDataType::Vec2:
+			return GL_FLOAT;
+		case Karem::ShaderDataType::Vec3:
+			return GL_FLOAT;
+		case Karem::ShaderDataType::Vec4:
+			return GL_FLOAT;
+		case Karem::ShaderDataType::Mat2:
+			return GL_FLOAT;
+		case Karem::ShaderDataType::Mat3:
+			return GL_FLOAT;
+		case Karem::ShaderDataType::Mat4:
+			return GL_FLOAT;
+		case Karem::ShaderDataType::Int:
+			return GL_INT;
+		case Karem::ShaderDataType::Int2:
+			return GL_INT;
+		case Karem::ShaderDataType::Int3:
+			return GL_INT;
+		case Karem::ShaderDataType::Int4:
+			return GL_INT;
+		case Karem::ShaderDataType::Bool:
+			return GL_BOOL;
+	}
+	// TO DO : NEED SOME ASSERTION HERE
+}
+
 void AppLayer::OnAttach()
 {
 	// Compile dan link shader
@@ -66,8 +101,30 @@ void AppLayer::OnAttach()
 	m_VBuffer = Karem::CreateVertexBuffer((void*)vertices, sizeof(vertices));
 	m_IBuffer = Karem::CreateIndexBuffer((void*)indices, 3);
 
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
+
+	{
+		Karem::BufferLayout layout = {
+			{ Karem::ShaderDataType::Vec2, "position" }
+		};
+
+		m_VBuffer->SetLayout(layout);
+	}
+		
+	int32_t index = 0;
+	for (auto& element : m_VBuffer->GetLayout())
+	{
+		glEnableVertexAttribArray(index);
+		glVertexAttribPointer(
+			index,
+			element.GetCount(),
+			OpenGLToShaderDataType(element.Type),
+			element.Normalized ? GL_TRUE : GL_FALSE,
+			element.Size,
+			(const void*)element.Offset
+		);
+		index++;
+	}
+
 
 	m_IBuffer->UnBind();
 	m_VBuffer->UnBind();
@@ -179,8 +236,8 @@ void Sandbox::Init()
 	//io.ConfigViewportsNoTaskBarIcon = true;
 
 	// Setup Dear ImGui style
-	ImGui::StyleColorsDark();
-	//ImGui::StyleColorsLight();
+	//ImGui::StyleColorsDark();
+	ImGui::StyleColorsLight();
 
 	// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
 	ImGuiStyle& style = ImGui::GetStyle();
@@ -190,26 +247,9 @@ void Sandbox::Init()
 		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 	}
 
-	// Setup Platform/Renderer backends
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init("#version 450");
 
-	// Load Fonts
-	// - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.
-	// - AddFontFromFileTTF() will return the ImFont* so you can store it if you need to select the font among multiple.
-	// - If the file cannot be loaded, the function will return a nullptr. Please handle those errors in your application (e.g. use an assertion, or display an error and quit).
-	// - The fonts will be rasterized at a given size (w/ oversampling) and stored into a texture when calling ImFontAtlas::Build()/GetTexDataAsXXXX(), which ImGui_ImplXXXX_NewFrame below will call.
-	// - Use '#define IMGUI_ENABLE_FREETYPE' in your imconfig file to use Freetype for higher quality font rendering.
-	// - Read 'docs/FONTS.md' for more instructions and details.
-	// - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
-	// - Our Emscripten build process allows embedding fonts to be accessible at runtime from the "fonts/" folder. See Makefile.emscripten for details.
-	//io.Fonts->AddFontDefault();
-	//io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\segoeui.ttf", 18.0f);
-	//io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);
-	//io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);
-	//io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
-	//ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
-	//IM_ASSERT(font != nullptr);
 	io.Fonts->AddFontFromFileTTF("res/font/Helvetica.ttf", 14.f);
 }
 

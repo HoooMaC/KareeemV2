@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Core/Renderer/BufferLayout.h"
+
 namespace Karem {
 
 	class VertexArray
@@ -23,6 +25,9 @@ namespace Karem {
 
 		virtual void Init(void* data, size_t size) = 0;
 		virtual void Clear() = 0;
+
+		virtual void SetLayout(BufferLayout layout) = 0;
+		virtual BufferLayout GetLayout() const = 0;
 
 		virtual void Bind() const = 0;
 		virtual void UnBind() const = 0;
