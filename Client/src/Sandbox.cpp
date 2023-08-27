@@ -14,50 +14,27 @@ Karem::Application* Karem::CreateApplication()
 
 void AppLayer::OnAttach()
 {
-	const char* vertexShaderSource = R"(
-	#version 450 core
-
-	layout (location = 0) in vec2 aPos;
-
-	void main()
+	float triangleVertices[3 * 3] =
 	{
-		gl_Position = vec4(aPos, -1.0, 1.0);
-	}
-	)";	
-
-	const char* fragmentShaderSource = R"(
-	#version 450 core
-
-	out vec4 FragColor;
-
-	void main()
-	{
-		FragColor = vec4(1.0, 0.5, 0.2, 1.0);
-	}
-	)";
-
-
-	float triangleVertices[2 * 3] =
-	{
-		-0.5f, -0.5f,
-		 0.5f, -0.5f,
-		 0.0f,  0.5f
+		-0.5f, -0.5f, 0.5f,
+		 0.5f, -0.5f, 0.5f,
+		 0.0f,  0.5f, 0.5f
 	};
 
 	unsigned int triangleIndices[3] = { 0, 1, 2 };
 
-	m_ShaderTriangle = Karem::Shader::CreateShader(vertexShaderSource, fragmentShaderSource);
+	m_ShaderTriangle = Karem::Shader::CreateShader("res\\shader\\basic_vertex_shader.glsl", "res\\shader\\basic_fragment_shader.glsl");
 
 	m_VertexArrayTriangle = Karem::VertexArray::CreateVertexArray();
 
-	std::shared_ptr<Karem::VertexBuffer> vertexBufferBasic = Karem::CreateVertexBuffer((void*)triangleVertices, sizeof(triangleVertices));
-	std::shared_ptr<Karem::IndexBuffer> indexBufferBasic = Karem::CreateIndexBuffer((void*)triangleIndices, 3);
+	std::shared_ptr<Karem::VertexBuffer> vertexBufferBasic = Karem::VertexBuffer::CreateVertexBuffer((void*)triangleVertices, sizeof(triangleVertices));
+	std::shared_ptr<Karem::IndexBuffer> indexBufferBasic = Karem::IndexBuffer::CreateIndexBuffer((void*)triangleIndices, 3);
 	m_VertexArrayTriangle->AddVertexBuffer(vertexBufferBasic);
 	m_VertexArrayTriangle->SetIndexBuffer(indexBufferBasic);
 
 	{
 		Karem::BufferLayout layout = {
-			{ Karem::ShaderDataType::Vec2, "aPos" }
+			{ Karem::ShaderDataType::Vec3, "aPos" }
 		};
 		vertexBufferBasic->SetLayout(layout);
 	}
@@ -66,48 +43,21 @@ void AppLayer::OnAttach()
 
 	m_VertexArrayTriangle->UnBind();
 
-	const char* vertexShaderSquareSource = R"(
-	#version 450 core
-
-	layout (location = 0) in vec3 aPos;
-	layout (location = 1) in vec4 aColor;
-
-	out vec4 vColor;
-
-	void main()
-	{
-		vColor = aColor;
-		gl_Position = vec4(aPos, 1.0);
-	}
-	)";
-
-	const char* fragmentShaderSquareSource = R"(
-	#version 450 core
-
-	in vec4 vColor;
-	out vec4 FragColor;
-
-	void main()
-	{
-		FragColor = vColor;
-	}
-	)";
-
-	m_ShaderSquare = Karem::Shader::CreateShader(vertexShaderSquareSource, fragmentShaderSquareSource);
+	m_ShaderSquare = Karem::Shader::CreateShader("res\\shader\\position_color_vertex.glsl", "res\\shader\\position_color_fragment.glsl");
 
 	float squareVertices[4 * 7] =
 	{
-		-0.5f, -0.3f, -1.0f, 0.2f, 0.0f, 0.8f, 1.0f, // kiri bawah
-		 0.5f, -0.3f, -1.0f, 0.2f, 0.0f, 0.8f, 1.0f, // kanan bawah
-		 0.5f,  0.3f, -1.0f, 0.2f, 0.0f, 0.8f, 1.0f, // kanan atas
-		-0.5f,  0.3f, -1.0f, 0.2f, 0.0f, 0.8f, 1.0f  // kiri atas
+		-0.7f, -0.7f, 0.6f, 0.2f, 0.0f, 0.8f, 1.0f, // kiri bawah
+		 0.7f, -0.7f, 0.6f, 0.2f, 0.0f, 0.8f, 1.0f, // kanan bawah
+		 0.7f,  0.7f, 0.6f, 0.2f, 0.0f, 0.8f, 1.0f, // kanan atas
+		-0.7f,  0.7f, 0.6f, 0.2f, 0.0f, 0.8f, 1.0f  // kiri atas
 	};
 
 	uint32_t squareIndices[6] = { 0, 1, 2, 2, 3, 0 };
 
 	m_VertexArraySquare = Karem::VertexArray::CreateVertexArray();
-	std::shared_ptr<Karem::VertexBuffer> squareVertexBuffer = Karem::CreateVertexBuffer((void*)squareVertices, sizeof(squareVertices));
-	std::shared_ptr<Karem::IndexBuffer> squareIndexBuffer = Karem::CreateIndexBuffer((void*)squareIndices, 6);
+	std::shared_ptr<Karem::VertexBuffer> squareVertexBuffer = Karem::VertexBuffer::CreateVertexBuffer((void*)squareVertices, sizeof(squareVertices));
+	std::shared_ptr<Karem::IndexBuffer> squareIndexBuffer = Karem::IndexBuffer::CreateIndexBuffer((void*)squareIndices, 6);
 	m_VertexArraySquare->AddVertexBuffer(squareVertexBuffer);
 	m_VertexArraySquare->SetIndexBuffer(squareIndexBuffer);
 	
@@ -126,14 +76,8 @@ void AppLayer::OnAttach()
 
 void AppLayer::OnUpdate()
 {
-	m_ShaderSquare->Bind();
-	m_VertexArraySquare->Bind();
-	glDrawElements(GL_TRIANGLES, m_VertexArraySquare->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
-
-	m_ShaderTriangle->Bind();
-	m_VertexArrayTriangle->Bind();
-	glDrawElements(GL_TRIANGLES, m_VertexArrayTriangle->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
-
+	Karem::Renderer::Draw(m_VertexArrayTriangle, m_ShaderTriangle);
+	Karem::Renderer::Draw(m_VertexArraySquare, m_ShaderSquare);
 }
 
 Sandbox::Sandbox()
@@ -152,8 +96,8 @@ void Sandbox::Run()
 {
 	while (m_Running)
 	{
-		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		Karem::RendererCommand::Clear();
+		Karem::RendererCommand::ClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 
 		Karem::ImGUILayer::BeginScene();
 

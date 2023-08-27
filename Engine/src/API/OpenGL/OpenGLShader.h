@@ -15,7 +15,8 @@ namespace Karem{
 
 		void Bind() const override;
 		void UnBind() const override;
-
+	private:
+		std::string ReadFile(const std::string& fileSource);
 	private:
 		uint32_t m_RendererID;
 	};

@@ -18,9 +18,10 @@ namespace Karem {
 
 		virtual void Bind() const = 0;
 		virtual void UnBind() const = 0;
+
+		static std::shared_ptr<VertexBuffer> CreateVertexBuffer(void* data, size_t size);
 	};
 
-	std::shared_ptr<VertexBuffer> CreateVertexBuffer(void* data, size_t size);
 
 	class IndexBuffer
 	{
@@ -34,9 +35,10 @@ namespace Karem {
 		virtual void UnBind() const = 0;
 
 		virtual int32_t GetCount() const = 0;
+
+		static std::shared_ptr<IndexBuffer> CreateIndexBuffer(void* data, uint64_t count);
 	};
 
-	std::shared_ptr<IndexBuffer> CreateIndexBuffer(void* data, uint64_t count);
 
 	class VertexArray
 	{

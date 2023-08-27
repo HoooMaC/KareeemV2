@@ -124,6 +124,7 @@ namespace Karem {
 				element.Offset = offset;
 				offset += element.Size;
 				m_Stride += element.Size;
+
 			}
 
 		}

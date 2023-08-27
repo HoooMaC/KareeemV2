@@ -6,11 +6,6 @@
 
 namespace Karem {
 
-	std::shared_ptr<IndexBuffer> CreateIndexBuffer(void* data, uint64_t count)
-	{
-		return std::make_shared<OpenGLIndexBuffer>(data, count);
-	}
-
 	OpenGLIndexBuffer::OpenGLIndexBuffer(void* data, uint64_t count)
 	{
 		Init(data, count);

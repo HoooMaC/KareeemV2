@@ -6,8 +6,10 @@
 
 namespace Karem {
 
-	OpenGLShader::OpenGLShader(const std::string& vertexShader, const std::string& fragmentShader)
+	OpenGLShader::OpenGLShader(const std::string& vertexShaderFilePath, const std::string& fragmentShaderFilePath)
 	{
+		std::string vertexShader = ReadFile(vertexShaderFilePath);
+		std::string fragmentShader = ReadFile(fragmentShaderFilePath);
 		Init(vertexShader, fragmentShader);
 	}
 
@@ -54,6 +56,29 @@ namespace Karem {
 	void OpenGLShader::UnBind() const
 	{
 		glUseProgram(0);
+	}
+
+	std::string OpenGLShader::ReadFile(const std::string& fileSource)
+	{
+		// TODO: insert return statement here
+		std::ifstream input(fileSource);
+
+		if (!input.is_open())
+		{
+			// TODO : make some Assertion here
+			ENGINE_ERROR("FILE IS NOT FOUND");
+			__debugbreak();
+			return "";
+		}
+
+		std::stringstream buffer;
+		buffer << input.rdbuf();
+
+		//ENGINE_DEBUG("{}", buffer.str());
+
+		input.close();
+
+		return buffer.str();
 	}
 
 }

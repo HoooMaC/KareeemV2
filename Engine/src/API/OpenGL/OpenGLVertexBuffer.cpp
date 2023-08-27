@@ -42,11 +42,6 @@ namespace Karem {
 		return 0;
 	}
 
-	std::shared_ptr<VertexBuffer> CreateVertexBuffer(void* data, size_t size)
-	{
-		return std::make_shared<OpenGLVertexBuffer>(data, size);
-	}
-
 	OpenGLVertexBuffer::OpenGLVertexBuffer(void* data, size_t size)
 	{
 		Init(data, size);
@@ -80,7 +75,7 @@ namespace Karem {
 				element.GetCount(),
 				OpenGLToShaderDataType(element.Type),
 				element.Normalized ? GL_TRUE : GL_FALSE,
-				element.Size,
+				m_Layout.GetStride(),
 				(const void*)element.Offset
 			);
 			index++;
