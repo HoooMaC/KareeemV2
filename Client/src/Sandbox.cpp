@@ -2,6 +2,8 @@
 
 #include <glad/glad.h>
 
+
+
 // TEMP : THIS SHOULD NOT BE HERE (MAYBE)
 #include <imgui.h>
 #include "backends/imgui_impl_glfw.h"
@@ -24,7 +26,7 @@ void AppLayer::OnAttach()
 	unsigned int triangleIndices[3] = { 0, 1, 2 };
 
 	m_ShaderTriangle = Karem::Shader::CreateShader("res\\shader\\basic_vertex_shader.glsl", "res\\shader\\basic_fragment_shader.glsl");
-
+	//std::dynamic_pointer_cast<Karem::OpenGLShader>(m_ShaderTriangle)->UpdateUniform("uMul", (void*)data);
 	m_VertexArrayTriangle = Karem::VertexArray::CreateVertexArray();
 
 	std::shared_ptr<Karem::VertexBuffer> vertexBufferBasic = Karem::VertexBuffer::CreateVertexBuffer((void*)triangleVertices, sizeof(triangleVertices));
@@ -44,7 +46,7 @@ void AppLayer::OnAttach()
 	m_VertexArrayTriangle->UnBind();
 
 	m_ShaderSquare = Karem::Shader::CreateShader("res\\shader\\position_color_vertex.glsl", "res\\shader\\position_color_fragment.glsl");
-
+	
 	float squareVertices[4 * 7] =
 	{
 		-0.7f, -0.7f, 0.6f, 0.2f, 0.0f, 0.8f, 1.0f, // kiri bawah
@@ -76,6 +78,7 @@ void AppLayer::OnAttach()
 
 void AppLayer::OnUpdate()
 {
+	std::dynamic_pointer_cast<Karem::OpenGLShader>(m_ShaderTriangle)->BindAndUploadUniform();
 	Karem::Renderer::Draw(m_VertexArrayTriangle, m_ShaderTriangle);
 	Karem::Renderer::Draw(m_VertexArraySquare, m_ShaderSquare);
 }

@@ -10,7 +10,6 @@ namespace Karem {
 	public:
 		virtual ~Shader() = default;
 
-		virtual void Init(const std::string& vertexShader, const std::string& fragmentShader) = 0;
 		virtual void Clear() = 0;
 
 		virtual void Bind() const = 0;

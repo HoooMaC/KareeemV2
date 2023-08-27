@@ -16,6 +16,9 @@
 #include "Core/Renderer/RenderCommand.h"
 #include "Core/Renderer/BaseRendererAPI.h"
 
+#include "API/OpenGL/OpenGLShader.h"
+#include "API/OpenGL/OpenGLIndexBuffer.h"
+#include "API/OpenGL/OpenGLRendererAPI.h"
 #include "API/OpenGL/OpenGLVertexArray.h"
 #include "API/OpenGL/OpenGLVertexBuffer.h"
 
