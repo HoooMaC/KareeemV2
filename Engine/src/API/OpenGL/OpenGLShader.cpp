@@ -32,6 +32,9 @@ namespace Karem {
 		glGetProgramiv(m_RendererID, GL_ACTIVE_UNIFORMS, &uniformNum);
 		glGetProgramiv(m_RendererID, GL_ACTIVE_UNIFORM_MAX_LENGTH, &maxBuffer);
 
+		ENGINE_DEBUG("Uniform number {}", uniformNum);
+		ENGINE_DEBUG("Uniform max number {}", maxBuffer);
+
 		for (int i = 0; i < uniformNum; i++)
 		{
 			int32_t uniformCount;
@@ -42,11 +45,13 @@ namespace Karem {
 			glGetActiveUniform(m_RendererID, i, maxBuffer, &uniformLength, &uniformCount, &uniformType, uniformName);
 			uniformLocation = glGetUniformLocation(m_RendererID, uniformName);
 
-			ENGINE_DEBUG("Uniform name : {}", uniformName);
+			ENGINE_DEBUG("=================");
+			ENGINE_DEBUG("{} Uniform name : {}", i, uniformName);
 			ENGINE_DEBUG("Uniform Type : {}", uniformType);
 			ENGINE_DEBUG("Uniform Count : {}", uniformCount);
 			ENGINE_DEBUG("Uniform Length : {}", uniformLength);
 			ENGINE_DEBUG("Uniform Location : {}", uniformLocation);
+			ENGINE_DEBUG("=================");
 
 			UniformAttrib uniform(uniformType, uniformCount, uniformLocation);
 
@@ -57,8 +62,15 @@ namespace Karem {
 
 	void OpenGLShader::UpdateUniform(const std::string& name, void* data)
 	{
-		// TO DO : Perlu pengecekan apakah uniform dengan nama "name" ada atau 
-		m_UniformContainer[name].Data = data;
+		// TODO: Check if the uniform with the given "name" exists
+		auto uniformIterator = m_UniformContainer.find(name);
+		if (uniformIterator == m_UniformContainer.end()) {
+			ENGINE_WARN("Uniform {} not found.", name);
+			return;
+		}
+
+		uniformIterator->second.Data = data;
+		UploadUniform(uniformIterator->second);
 	}
 
 	void OpenGLShader::UploadUniform(const UniformAttrib& uniform) const
@@ -105,12 +117,25 @@ namespace Karem {
 
 	uint32_t OpenGLShader::CompileShader(const std::string& source, uint32_t type)
 	{
-		uint32_t programId = glCreateShader(type);
+		uint32_t shaderId = glCreateShader(type);
 		const char* shaderSource = source.c_str();
-		glShaderSource(programId, 1, &shaderSource, nullptr);
-		glCompileShader(programId);
-		return programId;
+		glShaderSource(shaderId, 1, &shaderSource, nullptr);
+		glCompileShader(shaderId);
+
+		// TODO: Check the compilation status
+		int success;
+		glGetShaderiv(shaderId, GL_COMPILE_STATUS, &success);
+		if (!success) {
+			char infoLog[512];
+			glGetShaderInfoLog(shaderId, 512, nullptr, infoLog);
+			ENGINE_ERROR("Error compiling shader :\n{}", infoLog);
+			glDeleteShader(shaderId);
+			return 0; // or appropriate error value
+		}
+
+		return shaderId;
 	}
+
 
 	void OpenGLShader::Bind() const
 	{
@@ -124,8 +149,10 @@ namespace Karem {
 
 	void OpenGLShader::BindAndUploadUniform() const
 	{
+		glUseProgram(m_RendererID);
 		for (const auto& [name, uniform] : m_UniformContainer)
 		{
+			//ENGINE_TRACE("{}", name);
 			UploadUniform(uniform);
 		}
 	}

@@ -2,8 +2,6 @@
 
 #include <glad/glad.h>
 
-
-
 // TEMP : THIS SHOULD NOT BE HERE (MAYBE)
 #include <imgui.h>
 #include "backends/imgui_impl_glfw.h"
@@ -16,46 +14,19 @@ Karem::Application* Karem::CreateApplication()
 
 void AppLayer::OnAttach()
 {
-	float triangleVertices[3 * 3] =
+	float squareVertices[4 * 3] =
 	{
-		-0.5f, -0.5f, 0.5f,
-		 0.5f, -0.5f, 0.5f,
-		 0.0f,  0.5f, 0.5f
+		-0.7f, -0.7f, 0.6f, // kiri bawah
+		 0.7f, -0.7f, 0.6f, // kanan bawah
+		 0.7f,  0.7f, 0.6f, // kanan atas
+		-0.7f,  0.7f, 0.6f  // kiri atas
 	};
-
-	unsigned int triangleIndices[3] = { 0, 1, 2 };
-
-	m_ShaderTriangle = Karem::Shader::CreateShader("res\\shader\\basic_vertex_shader.glsl", "res\\shader\\basic_fragment_shader.glsl");
-	//std::dynamic_pointer_cast<Karem::OpenGLShader>(m_ShaderTriangle)->UpdateUniform("uMul", (void*)data);
-	m_VertexArrayTriangle = Karem::VertexArray::CreateVertexArray();
-
-	std::shared_ptr<Karem::VertexBuffer> vertexBufferBasic = Karem::VertexBuffer::CreateVertexBuffer((void*)triangleVertices, sizeof(triangleVertices));
-	std::shared_ptr<Karem::IndexBuffer> indexBufferBasic = Karem::IndexBuffer::CreateIndexBuffer((void*)triangleIndices, 3);
-	m_VertexArrayTriangle->AddVertexBuffer(vertexBufferBasic);
-	m_VertexArrayTriangle->SetIndexBuffer(indexBufferBasic);
-
-	{
-		Karem::BufferLayout layout = {
-			{ Karem::ShaderDataType::Vec3, "aPos" }
-		};
-		vertexBufferBasic->SetLayout(layout);
-	}
-	
-	vertexBufferBasic->ApplyLayout();
-
-	m_VertexArrayTriangle->UnBind();
+	uint32_t squareIndices[6] = { 0, 1, 2, 2, 3, 0 };
 
 	m_ShaderSquare = Karem::Shader::CreateShader("res\\shader\\position_color_vertex.glsl", "res\\shader\\position_color_fragment.glsl");
-	
-	float squareVertices[4 * 7] =
-	{
-		-0.7f, -0.7f, 0.6f, 0.2f, 0.0f, 0.8f, 1.0f, // kiri bawah
-		 0.7f, -0.7f, 0.6f, 0.2f, 0.0f, 0.8f, 1.0f, // kanan bawah
-		 0.7f,  0.7f, 0.6f, 0.2f, 0.0f, 0.8f, 1.0f, // kanan atas
-		-0.7f,  0.7f, 0.6f, 0.2f, 0.0f, 0.8f, 1.0f  // kiri atas
-	};
-
-	uint32_t squareIndices[6] = { 0, 1, 2, 2, 3, 0 };
+	m_SquareColor = glm::vec4(1.0f);
+	m_ShaderSquare->Bind();
+	std::dynamic_pointer_cast<Karem::OpenGLShader>(m_ShaderSquare)->UpdateUniform("uColor", (void*)glm::value_ptr(m_SquareColor));
 
 	m_VertexArraySquare = Karem::VertexArray::CreateVertexArray();
 	std::shared_ptr<Karem::VertexBuffer> squareVertexBuffer = Karem::VertexBuffer::CreateVertexBuffer((void*)squareVertices, sizeof(squareVertices));
@@ -66,20 +37,31 @@ void AppLayer::OnAttach()
 	{
 		Karem::BufferLayout layout = {
 			{ Karem::ShaderDataType::Vec3, "aPos" },
-			{ Karem::ShaderDataType::Vec4, "aColor" }
 		};
 		squareVertexBuffer->SetLayout(layout);
 	}
 
 	squareVertexBuffer->ApplyLayout();
-
 	m_VertexArraySquare->UnBind();
 }
 
 void AppLayer::OnUpdate()
 {
-	std::dynamic_pointer_cast<Karem::OpenGLShader>(m_ShaderTriangle)->BindAndUploadUniform();
-	Karem::Renderer::Draw(m_VertexArrayTriangle, m_ShaderTriangle);
+	static bool increment = true;
+	if (increment)
+	{
+		m_SquareColor.g += 0.01f;
+	}
+	else
+	{
+		m_SquareColor.g -= 0.01f;
+	}
+
+	if (m_SquareColor.g < 0.0f or m_SquareColor.g > 1.0f)
+	{
+		increment = !increment;
+	}
+
 	Karem::Renderer::Draw(m_VertexArraySquare, m_ShaderSquare);
 }
 
@@ -101,6 +83,12 @@ void Sandbox::Run()
 	{
 		Karem::RendererCommand::Clear();
 		Karem::RendererCommand::ClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
+
+		for (std::shared_ptr<Karem::Layer>& layer : m_Layers)
+		{
+			if (layer->GetStatus())
+				layer->OnUpdate(); // Memanggil fungsi yang diinginkan dari shared_ptr
+		}
 
 		Karem::ImGUILayer::BeginScene();
 
@@ -136,17 +124,8 @@ void Sandbox::Run()
 
 		// untuk ImGUI, ada loopingnya tersendiri
 		// berarti ada list atau stacknya sendiri
-
 		ImGui::End();
-
 		Karem::ImGUILayer::EndScene();
-
-		for (std::shared_ptr<Karem::Layer>& layer : m_Layers)
-		{
-			if(layer->GetStatus())
-				layer->OnUpdate(); // Memanggil fungsi yang diinginkan dari shared_ptr
-		}
-
 
 		m_Window.OnUpdate();
 	}

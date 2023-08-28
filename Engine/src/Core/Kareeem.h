@@ -19,6 +19,7 @@
 #include <unordered_set>
 
 #include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #ifdef ACTIVATE_LOGGING
 #include "DefinedLog/EngineLog.h"

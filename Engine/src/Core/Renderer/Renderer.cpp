@@ -2,6 +2,9 @@
 
 #include "Renderer.h"
 
+// I think this shouldn't be here
+#include "API/OpenGL/OpenGLShader.h"
+
 namespace Karem {
 
 	
@@ -20,7 +23,7 @@ namespace Karem {
 
 	void Renderer::Draw(const std::shared_ptr<VertexArray>& vertexArray, const std::shared_ptr<Shader>& shader)
 	{
-		shader->Bind();
+		std::dynamic_pointer_cast<Karem::OpenGLShader>(shader)->BindAndUploadUniform();
 
 		RendererCommand::Draw(vertexArray);
 	}
