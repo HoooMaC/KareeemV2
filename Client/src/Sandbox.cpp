@@ -7,62 +7,10 @@
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
 
+#include "TestLayer.h"
 Karem::Application* Karem::CreateApplication()
 {
 	return new Sandbox();
-}
-
-void AppLayer::OnAttach()
-{
-	float squareVertices[4 * 3] =
-	{
-		-0.7f, -0.7f, 0.6f, // kiri bawah
-		 0.7f, -0.7f, 0.6f, // kanan bawah
-		 0.7f,  0.7f, 0.6f, // kanan atas
-		-0.7f,  0.7f, 0.6f  // kiri atas
-	};
-	uint32_t squareIndices[6] = { 0, 1, 2, 2, 3, 0 };
-
-	m_ShaderSquare = Karem::Shader::CreateShader("res\\shader\\position_color_vertex.glsl", "res\\shader\\position_color_fragment.glsl");
-	m_SquareColor = glm::vec4(1.0f);
-	m_ShaderSquare->Bind();
-	std::dynamic_pointer_cast<Karem::OpenGLShader>(m_ShaderSquare)->UpdateUniform("uColor", (void*)glm::value_ptr(m_SquareColor));
-
-	m_VertexArraySquare = Karem::VertexArray::CreateVertexArray();
-	std::shared_ptr<Karem::VertexBuffer> squareVertexBuffer = Karem::VertexBuffer::CreateVertexBuffer((void*)squareVertices, sizeof(squareVertices));
-	std::shared_ptr<Karem::IndexBuffer> squareIndexBuffer = Karem::IndexBuffer::CreateIndexBuffer((void*)squareIndices, 6);
-	m_VertexArraySquare->AddVertexBuffer(squareVertexBuffer);
-	m_VertexArraySquare->SetIndexBuffer(squareIndexBuffer);
-	
-	{
-		Karem::BufferLayout layout = {
-			{ Karem::ShaderDataType::Vec3, "aPos" },
-		};
-		squareVertexBuffer->SetLayout(layout);
-	}
-
-	squareVertexBuffer->ApplyLayout();
-	m_VertexArraySquare->UnBind();
-}
-
-void AppLayer::OnUpdate()
-{
-	static bool increment = true;
-	if (increment)
-	{
-		m_SquareColor.g += 0.01f;
-	}
-	else
-	{
-		m_SquareColor.g -= 0.01f;
-	}
-
-	if (m_SquareColor.g < 0.0f or m_SquareColor.g > 1.0f)
-	{
-		increment = !increment;
-	}
-
-	Karem::Renderer::Draw(m_VertexArraySquare, m_ShaderSquare);
 }
 
 Sandbox::Sandbox()
@@ -70,6 +18,7 @@ Sandbox::Sandbox()
 	Init();
 
 	PushLayer(std::make_shared<AppLayer>());
+	//PushLayer(std::make_shared<TestLayer>("just for testing"));
 }
 
 Sandbox::~Sandbox()

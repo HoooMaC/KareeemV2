@@ -32,8 +32,8 @@ namespace Karem {
 		glGetProgramiv(m_RendererID, GL_ACTIVE_UNIFORMS, &uniformNum);
 		glGetProgramiv(m_RendererID, GL_ACTIVE_UNIFORM_MAX_LENGTH, &maxBuffer);
 
-		ENGINE_DEBUG("Uniform number {}", uniformNum);
-		ENGINE_DEBUG("Uniform max number {}", maxBuffer);
+		//ENGINE_DEBUG("Uniform number {}", uniformNum);
+		//ENGINE_DEBUG("Uniform max number {}", maxBuffer);
 
 		for (int i = 0; i < uniformNum; i++)
 		{
@@ -42,16 +42,17 @@ namespace Karem {
 			int32_t uniformLength;
 			int32_t uniformLocation;
 			char* uniformName = new char[maxBuffer];
+
 			glGetActiveUniform(m_RendererID, i, maxBuffer, &uniformLength, &uniformCount, &uniformType, uniformName);
 			uniformLocation = glGetUniformLocation(m_RendererID, uniformName);
 
-			ENGINE_DEBUG("=================");
-			ENGINE_DEBUG("{} Uniform name : {}", i, uniformName);
-			ENGINE_DEBUG("Uniform Type : {}", uniformType);
-			ENGINE_DEBUG("Uniform Count : {}", uniformCount);
-			ENGINE_DEBUG("Uniform Length : {}", uniformLength);
-			ENGINE_DEBUG("Uniform Location : {}", uniformLocation);
-			ENGINE_DEBUG("=================");
+			//ENGINE_DEBUG("=================");
+			//ENGINE_DEBUG("{} Uniform name : {}", i, uniformName);
+			//ENGINE_DEBUG("Uniform Type : {}", uniformType);
+			//ENGINE_DEBUG("Uniform Count : {}", uniformCount);
+			//ENGINE_DEBUG("Uniform Length : {}", uniformLength);
+			//ENGINE_DEBUG("Uniform Location : {}", uniformLocation);
+			//ENGINE_DEBUG("=================");
 
 			UniformAttrib uniform(uniformType, uniformCount, uniformLocation);
 
@@ -90,6 +91,7 @@ namespace Karem {
 		case GL_BOOL:			ENGINE_INFO("BOOLEAN HASN'T SUPPORTED YET");
 		default:
 			ENGINE_WARN("INVALID UNIFORM TYPE");
+			return;
 		}
 	}
 

@@ -28,9 +28,9 @@ namespace Karem{
 
 		void Bind() const override;
 		void UnBind() const override;
-		void BindAndUploadUniform() const;
 
-		void UpdateUniform(const std::string& name, void* data);
+		void BindAndUploadUniform() const;
+		void UpdateUniform(const std::string& name, void* data) override;
 	private:
 		
 		std::string ReadFile(const std::string& fileSource);

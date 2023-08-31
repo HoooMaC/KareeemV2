@@ -6,7 +6,7 @@
 
 namespace Karem {
 
-	std::shared_ptr<Shader> Shader::CreateShader(const std::string& vertexShader, const std::string& fragmentShader)
+	std::shared_ptr<Shader> CreateShader(const std::string& vertexShader, const std::string& fragmentShader)
 	{
 		return std::make_shared<OpenGLShader>(vertexShader, fragmentShader);
 	}
