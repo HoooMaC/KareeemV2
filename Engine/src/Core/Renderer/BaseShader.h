@@ -15,6 +15,7 @@ namespace Karem {
 		virtual void Bind() const = 0;
 		virtual void UnBind() const = 0;
 
+		virtual void BindAndUploadUniform() const = 0;
 		virtual void UpdateUniform(const std::string& name, void* data) = 0;
 	};
 

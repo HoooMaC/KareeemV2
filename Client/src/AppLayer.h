@@ -10,9 +10,4 @@ public:
 
 	void OnAttach() override;
 	void OnUpdate() override;
-	
-private:
-	glm::vec4 m_SquareColor;
-	glm::mat4 m_ProjectionMatrix;
-
 };

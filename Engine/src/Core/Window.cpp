@@ -9,6 +9,7 @@
 #include "Event/KeyEvent.h"
 #include "Event/MouseEvent.h"
 
+#include <GLFW/glfw3.h>
 
 namespace Karem {
 

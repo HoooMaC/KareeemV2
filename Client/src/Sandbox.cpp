@@ -16,7 +16,7 @@ Sandbox::Sandbox()
 {
 	Init();
 
-	m_Camera = Karem::OrthographicCamera(0.0f, 16.0f, 0.0f, 9.0f);
+	m_Camera = Karem::OrthographicCamera(-16.0f, 16.0f, -9.0f, 9.0f);
 
 	std::shared_ptr<Karem::Shader> shader = Karem::CreateShader("res\\shader\\position_color_vertex.glsl", "res\\shader\\position_color_fragment.glsl");
 	std::shared_ptr<Karem::VertexArray> vertexArray = Karem::CreateVertexArray();
@@ -39,12 +39,6 @@ void Sandbox::Run()
 	{
 		Karem::RendererCommand::Clear();
 		Karem::RendererCommand::ClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
-
-		for (std::shared_ptr<Karem::Layer>& layer : m_Layers)
-		{
-			if (layer->GetStatus())
-				layer->OnUpdate(); // Memanggil fungsi yang diinginkan dari shared_ptr
-		}
 
 		Karem::Renderer::BeginScene(m_Camera);
 
@@ -87,6 +81,12 @@ void Sandbox::Run()
 			Karem::ImGUILayer::EndScene();
 		}
 
+		for (std::shared_ptr<Karem::Layer>& layer : m_Layers)
+		{
+			if (layer->GetStatus())
+				layer->OnUpdate(); // Memanggil fungsi yang diinginkan dari shared_ptr
+		}
+
 		Karem::Renderer::EndScene();
 
 		Karem::Renderer::Draw();
@@ -100,7 +100,7 @@ void Sandbox::Init()
 	m_Window.SetEventCallbacks(std::bind(&Application::EventHandler, this, std::placeholders::_1));
 
 	// ImGUI init
-	GLFWwindow* window = glfwGetCurrentContext();
+	GLFWwindow* window = Karem::GraphicsContext::GetContextCurrent();
 
 	// Setup Dear ImGui context
 	IMGUI_CHECKVERSION();
@@ -141,6 +141,7 @@ void Sandbox::EventHandler(Karem::Event& event)
 {
 	Karem::EventDispatcher dispatcher(event);
 	dispatcher.Dispatch<Karem::WindowCloseEvent>(std::bind(&Sandbox::WindowCloseAction, this, std::placeholders::_1));
+	dispatcher.Dispatch<Karem::KeyPressedEvent>(std::bind(&Sandbox::KeyPressedAction, this, std::placeholders::_1));
 
 	for (auto it = m_Layers.rbegin(); it != m_Layers.rend(); ++it)
 	{
@@ -154,6 +155,22 @@ void Sandbox::EventHandler(Karem::Event& event)
 bool Sandbox::WindowCloseAction(Karem::WindowCloseEvent& event)
 {
 	m_Running = false;
+	return true;
+}
+
+bool Sandbox::KeyPressedAction(Karem::KeyPressedEvent& event)
+{
+	float& rotation = m_Camera.GetRotation();
+	if (event.GetKeyCode() == KAREM_KEY_E)
+	{
+		rotation += 10.0f;
+		m_Camera.SetRotation(rotation);
+	}
+	else if (event.GetKeyCode() == KAREM_KEY_Q)
+	{
+		rotation -= 10.0f;
+		m_Camera.SetRotation(rotation);
+	}
 	return true;
 }
 

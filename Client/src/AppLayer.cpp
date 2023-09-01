@@ -10,19 +10,20 @@
 
 void AppLayer::OnAttach()
 {
+
+	float middleX = 0, middleY = 0;
+	float size = 6;
+
 	float squareVertices[4 * 3] =
 	{
-		   0.0f,  0.0f, 0.6f, // kiri bawah
-		   1.5f,  0.0f, 0.6f, // kanan bawah
-		   1.5f,  1.5f, 0.6f, // kanan atas
-		   0.0f,  1.5f, 0.6f  // kiri atas
+		   middleX - (size / 2),  middleY - (size / 2), 0.6f, // kiri bawah
+		   middleX + (size / 2),  middleY - (size / 2), 0.6f, // kanan bawah
+		   middleX + (size / 2),  middleY + (size / 2), 0.6f, // kanan atas
+		   middleX - (size / 2),  middleY + (size / 2), 0.6f  // kiri atas
 	};
 	uint32_t squareIndices[6] = { 0, 1, 2, 2, 3, 0 };
 
-	m_ProjectionMatrix = glm::ortho(0.0f, 16.0f, 0.0f, 9.0f);
-
-	m_SquareColor = { 1.0f, 0.8f, 0.3f, 1.0f };
-
+	// mungkin disini harusnya nggak ada, apalagi kalau batch rendering
 	std::shared_ptr<Karem::VertexBuffer> squareVertexBuffer = Karem::CreateVertexBuffer((void*)squareVertices, sizeof(squareVertices));
 	std::shared_ptr<Karem::IndexBuffer> squareIndexBuffer = Karem::CreateIndexBuffer((void*)squareIndices, 6);
 
@@ -40,19 +41,5 @@ void AppLayer::OnAttach()
 
 void AppLayer::OnUpdate()
 {
-	static bool increment = true;
-	if (increment)
-	{
-		m_SquareColor.g += 0.01f;
-	}
-	else
-	{
-		m_SquareColor.g -= 0.01f;
-	}
-	if (m_SquareColor.g < 0.0f or m_SquareColor.g > 1.0f)
-	{
-		increment = !increment;
-	}
-
-	Karem::Renderer::UpdateUniform("uColor", (void*)glm::value_ptr(m_SquareColor));
+	// disini seharusnya Submit data
 }

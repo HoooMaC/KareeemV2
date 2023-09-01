@@ -15,6 +15,7 @@
 #include "Core/Renderer/BufferLayout.h"
 #include "Core/Renderer/RenderCommand.h"
 #include "Core/Renderer/BaseRendererAPI.h"
+#include "Core/Renderer/GraphicsContext.h"
 #include "Core/Renderer/OrthographicCamera.h"
 
 #include "API/OpenGL/OpenGLShader.h"
@@ -26,4 +27,5 @@
 #include "Event/Event.h"
 #include "Event/AppEvent.h"
 #include "Event/KeyEvent.h"
+#include "Event/KeyCode.h"
 #include "Event/MouseEvent.h"

@@ -66,12 +66,14 @@ namespace Karem {
 		// TODO: Check if the uniform with the given "name" exists
 		auto uniformIterator = m_UniformContainer.find(name);
 		if (uniformIterator == m_UniformContainer.end()) {
-			ENGINE_WARN("Uniform {} not found.", name);
-			return;
+			uniformIterator = m_UniformContainer.find(name + "[0]");
+			if (uniformIterator == m_UniformContainer.end()) {
+				ENGINE_WARN("Uniform {} not found.", name);
+				return;
+			}
 		}
 
 		uniformIterator->second.Data = data;
-		UploadUniform(uniformIterator->second);
 	}
 
 	void OpenGLShader::UploadUniform(const UniformAttrib& uniform) const
@@ -84,7 +86,7 @@ namespace Karem {
 		case GL_FLOAT_VEC4:		return glUniform4fv(uniform.Location, uniform.Count, (const float*)uniform.Data);
 		case GL_FLOAT_MAT2:		return glUniformMatrix2fv(uniform.Location, uniform.Count, GL_FALSE, (const float*)uniform.Data);
 		case GL_FLOAT_MAT3:		return glUniformMatrix3fv(uniform.Location, uniform.Count, GL_FALSE, (const float*)uniform.Data);
-		case GL_FLOAT_MAT4:		return glUniformMatrix4fv(uniform.Location, uniform.Count, GL_FALSE, (const float*)uniform.Data);	
+		case GL_FLOAT_MAT4:		return glUniformMatrix4fv(uniform.Location, uniform.Count, GL_FALSE, (const float*)uniform.Data);
 		case GL_INT:			return glUniform1iv(uniform.Location, uniform.Count, (const int*)uniform.Data);
 		case GL_INT_VEC2:		return glUniform2iv(uniform.Location, uniform.Count, (const int*)uniform.Data);
 		case GL_INT_VEC3:		return glUniform3iv(uniform.Location, uniform.Count, (const int*)uniform.Data);

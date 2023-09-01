@@ -17,6 +17,7 @@ protected:
 
 private:
 	bool WindowCloseAction(Karem::WindowCloseEvent& event);
+	bool KeyPressedAction(Karem::KeyPressedEvent& event);
 	
 	void PushLayer(std::shared_ptr<Karem::Layer> layer);
 	void PushOverlay(std::shared_ptr<Karem::Layer> overlay);

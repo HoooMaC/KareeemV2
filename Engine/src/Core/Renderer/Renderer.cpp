@@ -19,7 +19,7 @@ namespace Karem {
 	void Renderer::BeginScene(OrthographicCamera& camera)
 	{
 		m_RendererShader->Bind();
-		m_RendererShader->UpdateUniform("uProjection", (void*)glm::value_ptr(camera.GetProjectionMatrix()));
+		m_RendererShader->UpdateUniform("uProjectionView", (void*)glm::value_ptr(camera.GetViewProjectionMatrix()));
 	}
 
 	void Renderer::EndScene()
@@ -28,8 +28,7 @@ namespace Karem {
 
 	void Renderer::Draw()
 	{
-		std::dynamic_pointer_cast<Karem::OpenGLShader>(m_RendererShader)->BindAndUploadUniform();
-
+		m_RendererShader->BindAndUploadUniform();
 		RendererCommand::Draw(m_RendererVertexArray);
 	}
 

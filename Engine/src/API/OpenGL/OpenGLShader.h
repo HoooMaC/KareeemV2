@@ -29,7 +29,7 @@ namespace Karem{
 		void Bind() const override;
 		void UnBind() const override;
 
-		void BindAndUploadUniform() const;
+		void BindAndUploadUniform()	const override;
 		void UpdateUniform(const std::string& name, void* data) override;
 	private:
 		
