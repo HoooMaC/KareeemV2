@@ -9,5 +9,5 @@ public:
 		: Layer(layerName) {}
 
 	void OnAttach() override;
-	void OnUpdate() override;
+	void OnUpdate(Karem::TimeStep ts) override;
 };

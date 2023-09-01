@@ -39,7 +39,7 @@ void AppLayer::OnAttach()
 	squareVertexBuffer->ApplyLayout();
 }
 
-void AppLayer::OnUpdate()
+void AppLayer::OnUpdate(Karem::TimeStep ts)
 {
 	// disini seharusnya Submit data
 }

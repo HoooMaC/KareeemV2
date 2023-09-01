@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/Kareeem.h"
+#include "Core/TimeStep.h"
 
 #include "Event/Event.h"
 
@@ -14,7 +15,7 @@ namespace Karem {
 
 		virtual void OnAttach() {}
 		virtual void OnDetach() {}
-		virtual void OnUpdate() {}
+		virtual void OnUpdate(TimeStep ts) {}
 
 		virtual void EventHandler(Event& event) {}
 

@@ -27,5 +27,7 @@ private:
 	Karem::Layers m_Layers;
 	Karem::OrthographicCamera m_Camera;
 	std::shared_ptr<Karem::Shader> m_Shader;
+
+	float m_LastFrameTime = 0.0f;
 };
 

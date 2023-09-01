@@ -7,6 +7,8 @@
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
 
+#include <GLFW/glfw3.h>
+
 Karem::Application* Karem::CreateApplication()
 {
 	return new Sandbox();
@@ -37,19 +39,23 @@ void Sandbox::Run()
 {
 	while (m_Running)
 	{
+		float time = glfwGetTime();
+		Karem::TimeStep timeStep = time - m_LastFrameTime;
+		m_LastFrameTime = time;
+
 		Karem::RendererCommand::Clear();
 		Karem::RendererCommand::ClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 
 		if (Karem::Input::IsKeyPressed(KAREM_KEY_E))
 		{
 			float& rotation = m_Camera.GetRotation();
-			rotation += 10.0f;
+			rotation += 180.0f * timeStep;
 			m_Camera.SetRotation(rotation);
 		}
 		else if (Karem::Input::IsKeyPressed(KAREM_KEY_Q))
 		{
 			float& rotation = m_Camera.GetRotation();
-			rotation -= 10.0f;
+			rotation -= 180.0f * timeStep;
 			m_Camera.SetRotation(rotation);
 		}
 
@@ -97,7 +103,7 @@ void Sandbox::Run()
 		for (std::shared_ptr<Karem::Layer>& layer : m_Layers)
 		{
 			if (layer->GetStatus())
-				layer->OnUpdate(); // Memanggil fungsi yang diinginkan dari shared_ptr
+				layer->OnUpdate(timeStep); // Memanggil fungsi yang diinginkan dari shared_ptr
 		}
 
 		Karem::Renderer::EndScene();

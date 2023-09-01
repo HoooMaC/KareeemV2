@@ -4,6 +4,8 @@
 #include "Core/Kareeem.h"
 
 #include "Core/Application.h"
+#include "Core/TimeStep.h"
+
 #include "Event/Event.h"
 #include "Event/Input.h"
 #include "Event/AppEvent.h"
