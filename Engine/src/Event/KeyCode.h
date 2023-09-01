@@ -144,3 +144,7 @@
 #define KAREM_MOD_SUPER           0x0008
 #define KAREM_MOD_CAPS_LOCK       0x0010
 #define KAREM_MOD_NUM_LOCK        0x0020
+
+#define KAREM_RELEASE                0
+#define KAREM_PRESS                  1
+#define KAREM_REPEAT                 2

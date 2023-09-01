@@ -40,6 +40,19 @@ void Sandbox::Run()
 		Karem::RendererCommand::Clear();
 		Karem::RendererCommand::ClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 
+		if (Karem::Input::IsKeyPressed(KAREM_KEY_E))
+		{
+			float& rotation = m_Camera.GetRotation();
+			rotation += 10.0f;
+			m_Camera.SetRotation(rotation);
+		}
+		else if (Karem::Input::IsKeyPressed(KAREM_KEY_Q))
+		{
+			float& rotation = m_Camera.GetRotation();
+			rotation -= 10.0f;
+			m_Camera.SetRotation(rotation);
+		}
+
 		Karem::Renderer::BeginScene(m_Camera);
 
 		{
@@ -160,17 +173,17 @@ bool Sandbox::WindowCloseAction(Karem::WindowCloseEvent& event)
 
 bool Sandbox::KeyPressedAction(Karem::KeyPressedEvent& event)
 {
-	float& rotation = m_Camera.GetRotation();
-	if (event.GetKeyCode() == KAREM_KEY_E)
-	{
-		rotation += 10.0f;
-		m_Camera.SetRotation(rotation);
-	}
-	else if (event.GetKeyCode() == KAREM_KEY_Q)
-	{
-		rotation -= 10.0f;
-		m_Camera.SetRotation(rotation);
-	}
+	//float& rotation = m_Camera.GetRotation();
+	//if (event.GetKeyCode() == KAREM_KEY_E)
+	//{
+	//	rotation += 10.0f;
+	//	m_Camera.SetRotation(rotation);
+	//}
+	//else if (event.GetKeyCode() == KAREM_KEY_Q)
+	//{
+	//	rotation -= 10.0f;
+	//	m_Camera.SetRotation(rotation);
+	//}
 	return true;
 }
 
