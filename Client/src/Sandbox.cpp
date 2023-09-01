@@ -7,7 +7,6 @@
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
 
-#include "TestLayer.h"
 Karem::Application* Karem::CreateApplication()
 {
 	return new Sandbox();
@@ -16,6 +15,14 @@ Karem::Application* Karem::CreateApplication()
 Sandbox::Sandbox()
 {
 	Init();
+
+	m_Camera = Karem::OrthographicCamera(0.0f, 16.0f, 0.0f, 9.0f);
+
+	std::shared_ptr<Karem::Shader> shader = Karem::CreateShader("res\\shader\\position_color_vertex.glsl", "res\\shader\\position_color_fragment.glsl");
+	std::shared_ptr<Karem::VertexArray> vertexArray = Karem::CreateVertexArray();
+
+	Karem::Renderer::SetShader(shader);
+	Karem::Renderer::SetVertexArray(vertexArray);
 
 	PushLayer(std::make_shared<AppLayer>());
 	//PushLayer(std::make_shared<TestLayer>("just for testing"));
@@ -39,42 +46,50 @@ void Sandbox::Run()
 				layer->OnUpdate(); // Memanggil fungsi yang diinginkan dari shared_ptr
 		}
 
-		Karem::ImGUILayer::BeginScene();
+		Karem::Renderer::BeginScene(m_Camera);
 
-
-		ImGui::Begin("Layer Control");
-
-		for (int i = 0; i < m_Layers.GetSize(); i++)
 		{
-			std::shared_ptr<Karem::Layer>& layer = m_Layers.GetLayerAt(i);
-			std::pair<std::string&, bool&> layerData = layer->GetLayerData();
-			ImGui::Checkbox(layerData.first.c_str(), &layerData.second);
+			Karem::ImGUILayer::BeginScene();
 
-			if (i > 0)
+			ImGui::Begin("Layer Control");
+
+			for (int i = 0; i < m_Layers.GetSize(); i++)
 			{
-				ImGui::SameLine();
-				std::string buttonName = "Make up " + layerData.first;
-				if (ImGui::Button(buttonName.c_str()))
+				std::shared_ptr<Karem::Layer>& layer = m_Layers.GetLayerAt(i);
+				std::pair<std::string&, bool&> layerData = layer->GetLayerData();
+				ImGui::Checkbox(layerData.first.c_str(), &layerData.second);
+
+				if (i > 0)
 				{
-					std::swap(m_Layers.GetLayerAt(i), m_Layers.GetLayerAt(i - 1));
+					ImGui::SameLine();
+					std::string buttonName = "Make up " + layerData.first;
+					if (ImGui::Button(buttonName.c_str()))
+					{
+						std::swap(m_Layers.GetLayerAt(i), m_Layers.GetLayerAt(i - 1));
+					}
+				}
+
+				if (i < m_Layers.GetSize() - 1)
+				{
+					ImGui::SameLine();
+					std::string buttonName = "Make down " + layerData.first;
+					if (ImGui::Button(buttonName.c_str()))
+					{
+						std::swap(m_Layers.GetLayerAt(i), m_Layers.GetLayerAt(i + 1));
+					}
 				}
 			}
 
-			if (i <  m_Layers.GetSize()-1)
-			{
-				ImGui::SameLine();
-				std::string buttonName = "Make down " + layerData.first;
-				if (ImGui::Button(buttonName.c_str()))
-				{
-					std::swap(m_Layers.GetLayerAt(i), m_Layers.GetLayerAt(i + 1));
-				}
-			}
+			// untuk ImGUI, ada loopingnya tersendiri
+			// berarti ada list atau stacknya sendiri
+			ImGui::End();
+
+			Karem::ImGUILayer::EndScene();
 		}
 
-		// untuk ImGUI, ada loopingnya tersendiri
-		// berarti ada list atau stacknya sendiri
-		ImGui::End();
-		Karem::ImGUILayer::EndScene();
+		Karem::Renderer::EndScene();
+
+		Karem::Renderer::Draw();
 
 		m_Window.OnUpdate();
 	}

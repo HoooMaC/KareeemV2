@@ -155,6 +155,14 @@ namespace Karem {
 		for (const auto& [name, uniform] : m_UniformContainer)
 		{
 			//ENGINE_TRACE("{}", name);
+			if (uniform.Data == nullptr)
+			{
+				// this should be changed with ASSERTION
+				ENGINE_WARN("Unitiliazed Uniform : {}", name);
+				__debugbreak();
+			}
+
+
 			UploadUniform(uniform);
 		}
 	}

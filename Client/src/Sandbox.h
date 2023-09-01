@@ -24,5 +24,7 @@ private:
 	void PopOverlay(std::shared_ptr<Karem::Layer> overlay);
 private:
 	Karem::Layers m_Layers;
+	Karem::OrthographicCamera m_Camera;
+	std::shared_ptr<Karem::Shader> m_Shader;
 };
 

@@ -21,40 +21,21 @@ void AppLayer::OnAttach()
 
 	m_ProjectionMatrix = glm::ortho(0.0f, 16.0f, 0.0f, 9.0f);
 
-	for (int row = 0; row < 4; row++)
-	{
-		for (int col = 0; col < 4; col++)
-		{
-			std::cout << m_ProjectionMatrix[row][col] << ' ';
-		}
-		std::cout << '\n';
-	}
-
 	m_SquareColor = { 1.0f, 0.8f, 0.3f, 1.0f };
 
-	m_ShaderSquare = Karem::CreateShader("res\\shader\\position_color_vertex.glsl", "res\\shader\\position_color_fragment.glsl");
-	uint32_t shaderID = m_ShaderSquare->GetShaderID();
-	glUseProgram(shaderID);
-
-	//m_ShaderSquare->Bind();
-	m_ShaderSquare->UpdateUniform("uProjection", (void*)glm::value_ptr(m_ProjectionMatrix));
-	m_ShaderSquare->UpdateUniform("uColor", (void*)glm::value_ptr(m_SquareColor));
-
-	m_VertexArraySquare = Karem::CreateVertexArray();
 	std::shared_ptr<Karem::VertexBuffer> squareVertexBuffer = Karem::CreateVertexBuffer((void*)squareVertices, sizeof(squareVertices));
 	std::shared_ptr<Karem::IndexBuffer> squareIndexBuffer = Karem::CreateIndexBuffer((void*)squareIndices, 6);
-	m_VertexArraySquare->AddVertexBuffer(squareVertexBuffer);
-	m_VertexArraySquare->SetIndexBuffer(squareIndexBuffer);
 
-	{
-		Karem::BufferLayout layout = {
-			{ Karem::ShaderDataType::Vec3, "aPos" },
-		};
-		squareVertexBuffer->SetLayout(layout);
-	}
+	Karem::Renderer::AddVertexBuffer(squareVertexBuffer);
+	Karem::Renderer::SetIndexBuffer(squareIndexBuffer);
+	
+	//maybe this can be automated by glGetActiveAttrib
+	Karem::BufferLayout layout = {
+		{ Karem::ShaderDataType::Vec3, "aPos" },
+	};
+	squareVertexBuffer->SetLayout(layout);
 
 	squareVertexBuffer->ApplyLayout();
-	m_VertexArraySquare->UnBind();
 }
 
 void AppLayer::OnUpdate()
@@ -73,5 +54,5 @@ void AppLayer::OnUpdate()
 		increment = !increment;
 	}
 
-	Karem::Renderer::Draw(m_VertexArraySquare, m_ShaderSquare);
+	Karem::Renderer::UpdateUniform("uColor", (void*)glm::value_ptr(m_SquareColor));
 }

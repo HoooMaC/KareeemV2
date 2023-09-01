@@ -15,6 +15,7 @@
 #include "Core/Renderer/BufferLayout.h"
 #include "Core/Renderer/RenderCommand.h"
 #include "Core/Renderer/BaseRendererAPI.h"
+#include "Core/Renderer/OrthographicCamera.h"
 
 #include "API/OpenGL/OpenGLShader.h"
 #include "API/OpenGL/OpenGLIndexBuffer.h"
