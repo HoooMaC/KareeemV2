@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/Renderer/BaseBuffer.h"
+#include "Renderer/BaseBuffer.h"
 
 #include <vector>
 

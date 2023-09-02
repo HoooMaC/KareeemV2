@@ -2,8 +2,8 @@
 
 #include <glm/glm.hpp>
 
-#include "Core/Renderer/BaseShader.h"
-#include "Core/Renderer/BaseBuffer.h"
+#include "Renderer/BaseShader.h"
+#include "Renderer/BaseBuffer.h"
 
 namespace Karem {
 

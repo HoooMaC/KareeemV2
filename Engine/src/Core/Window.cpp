@@ -9,6 +9,8 @@
 #include "Event/KeyEvent.h"
 #include "Event/MouseEvent.h"
 
+#include "imgui_setup.h"
+
 #include <GLFW/glfw3.h>
 
 namespace Karem {
@@ -54,6 +56,8 @@ namespace Karem {
 		if (!s_Initialized)
 		{
 			m_Context->Init();
+
+			//imgui::InitializeImGUI(m_Window);
 
 			s_Initialized = true;
 		}
@@ -159,6 +163,8 @@ namespace Karem {
 	{
 		if(s_Initialized)
 		{
+			imgui::Shutdown();
+
 			glfwDestroyWindow(m_Window);
 			glfwTerminate();
 

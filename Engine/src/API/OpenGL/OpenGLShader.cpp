@@ -11,9 +11,6 @@ namespace Karem {
 		std::string vertexShader = ReadFile(vertexShaderFilePath);
 		std::string fragmentShader = ReadFile(fragmentShaderFilePath);
 
-		// TO DO : separate the compilation of each shader
-		// and check the uniform 
-
 		const char* vertexShaderSource = vertexShader.c_str();
 		const char* fragmentShaderSource = fragmentShader.c_str();
 
@@ -171,7 +168,6 @@ namespace Karem {
 
 	std::string OpenGLShader::ReadFile(const std::string& fileSource)
 	{
-		// TODO: insert return statement here
 		std::ifstream input(fileSource);
 
 		if (!input.is_open())

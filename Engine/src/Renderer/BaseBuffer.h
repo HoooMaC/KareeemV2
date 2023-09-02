@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/Renderer/BufferLayout.h"
+#include "Renderer/BufferLayout.h"
 
 namespace Karem {
 

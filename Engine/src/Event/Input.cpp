@@ -3,9 +3,9 @@
 #include "Input.h"
 
 
-#include "Core/Renderer/GraphicsContext.h"
+#include "Renderer/GraphicsContext.h"
 
-//THIS IS STILL SPECIFIC ON WINDOWs
+//THIS IS STILL SPECIFIC ON WINDOWS
 #include <GLFW/glfw3.h>
 
 namespace Karem {

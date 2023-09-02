@@ -18,7 +18,7 @@ namespace Karem {
 		const glm::mat4& GetViewMatrix() const { return m_ViewMatrix; }
 		const glm::mat4& GetViewProjectionMatrix() const { return m_ViewProjectionMatrix; }
 		 
-		const glm::vec3& GetPosition() const { return m_Position; }
+		glm::vec3& GetPosition() { return m_Position; }
 		void SetPosition(const glm::vec3& position) { m_Position = position; RecalculateMatrix(); }
 
 		float& GetRotation() { return m_Rotation; }

@@ -4,7 +4,7 @@
 
 #include <glm/glm.hpp>
 
-#include "Core/Renderer/BaseRendererAPI.h"
+#include "Renderer/BaseRendererAPI.h"
 
 namespace Karem {
 

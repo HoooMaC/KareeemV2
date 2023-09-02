@@ -12,7 +12,7 @@ void AppLayer::OnAttach()
 {
 
 	float middleX = 0, middleY = 0;
-	float size = 6;
+	float size = 0.5;
 
 	float squareVertices[4 * 3] =
 	{
@@ -37,9 +37,22 @@ void AppLayer::OnAttach()
 	squareVertexBuffer->SetLayout(layout);
 
 	squareVertexBuffer->ApplyLayout();
+
+
 }
 
 void AppLayer::OnUpdate(Karem::TimeStep ts)
 {
+	glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(1.5f));
+	for(int y = 0; y < 20; y++)
+	{
+		for (int x = 0; x < 20; x++)
+		{
+			glm::mat4 transform = glm::translate(glm::mat4(1.0f), { (float)x, float(y), 0.0f}) * scale;
+			Karem::Renderer::UpdateUniform("uModel", glm::value_ptr(transform));
+			Karem::Renderer::Draw();
+		}
+	}
 	// disini seharusnya Submit data
+
 }

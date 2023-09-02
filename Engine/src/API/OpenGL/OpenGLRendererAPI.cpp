@@ -12,6 +12,7 @@ namespace Karem {
 
 	void OpenGLRendererAPI::SetViewPort(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
 	{
+		glViewport(x, y, width, height);
 	}
 
 	void OpenGLRendererAPI::ClearColor(const glm::vec4& color)

@@ -4,10 +4,10 @@
 
 #include "RenderCommand.h"
 
-#include "Core/Renderer/BaseBuffer.h"
-#include "Core/Renderer/BaseShader.h"
-#include "Core/Renderer/BaseRendererAPI.h"
-#include "Core/Renderer/OrthographicCamera.h"
+#include "Renderer/BaseBuffer.h"
+#include "Renderer/BaseShader.h"
+#include "Renderer/BaseRendererAPI.h"
+#include "Renderer/OrthographicCamera.h"
 
 
 namespace Karem {

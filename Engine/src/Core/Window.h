@@ -2,7 +2,7 @@
 
 #include "Event/Event.h"
 
-#include "Core/Renderer/GraphicsContext.h"
+#include "Renderer/GraphicsContext.h"
 
 #include <functional>
 #include <string>

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Core/Renderer/BaseBuffer.h"
-#include "Core/Renderer/BufferLayout.h"
+#include "Renderer/BaseBuffer.h"
+#include "Renderer/BufferLayout.h"
 
 namespace Karem {
 

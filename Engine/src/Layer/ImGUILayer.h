@@ -1,5 +1,5 @@
 #pragma once
-#include "Core/Layer/Layer.h"
+#include "Layer/Layer.h"
 
 namespace Karem {
 
@@ -15,11 +15,6 @@ namespace Karem {
 		void OnImGUIRender();
 
 		void EventHandler(Event& event);
-
-	public:
-		static void BeginScene();
-		static void EndScene();
-	private:
 	};
 
 }
