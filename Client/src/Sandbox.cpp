@@ -1,5 +1,7 @@
 #include "Sandbox.h"
 
+#include "TriangleLayer.h"
+
 #include <glad/glad.h>
 
 // TEMP : THIS SHOULD NOT BE HERE (MAYBE)
@@ -16,19 +18,14 @@ Karem::Application* Karem::CreateApplication()
 }
 
 Sandbox::Sandbox()
+	: Application({"Sandbox Application", 1920, 1080})
 {
 	Init();
 
 	m_Camera = Karem::OrthographicCamera(-16.0f, 16.0f, -9.0f, 9.0f);
-
-	std::shared_ptr<Karem::Shader> shader = Karem::CreateShader("res\\shader\\position_color_vertex.glsl", "res\\shader\\position_color_fragment.glsl");
-	std::shared_ptr<Karem::VertexArray> vertexArray = Karem::CreateVertexArray();
-
-	Karem::Renderer::SetShader(shader);
-	Karem::Renderer::SetVertexArray(vertexArray);
-
+	
+	PushLayer(std::make_shared<TriangleLayer>());
 	PushLayer(std::make_shared<AppLayer>());
-	//PushLayer(std::make_shared<TestLayer>("just for testing"));
 }
 
 Sandbox::~Sandbox()
@@ -46,8 +43,12 @@ void Sandbox::Run()
 
 		Karem::RendererCommand::Clear();
 		Karem::RendererCommand::ClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
-
-		if (Karem::Input::IsKeyPressed(KAREM_KEY_E))
+		if (Karem::Input::IsKeyPressed(KAREM_KEY_R))
+		{
+			m_Camera.SetRotation(0);
+			m_Camera.SetPosition(glm::vec3(0.0f));
+		}
+		else if (Karem::Input::IsKeyPressed(KAREM_KEY_E))
 		{
 			float& rotation = m_Camera.GetRotation();
 			rotation += 180.0f * timeStep;
@@ -87,6 +88,10 @@ void Sandbox::Run()
 		}
 
 		Karem::Renderer::BeginScene(m_Camera);
+
+		// this is temporary just for experiment
+		std::dynamic_pointer_cast<TriangleLayer>(m_Layers.GetLayerAt(0))->setProjectionView(m_Camera.GetViewProjectionMatrix());
+		std::dynamic_pointer_cast<AppLayer>(m_Layers.GetLayerAt(1))->setProjectionView(m_Camera.GetViewProjectionMatrix());
 
 		imgui::BeginFrame();
 

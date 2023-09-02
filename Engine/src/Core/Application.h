@@ -11,6 +11,8 @@ namespace Karem {
 	class Application
 	{
 	public:
+		Application() = default;
+		Application(const WindowProperty& props) : m_Window(props) {}
 		virtual ~Application() {}
 
 		virtual void Run() = 0;

@@ -40,6 +40,7 @@ namespace Karem {
 	void Renderer::SetVertexArray(const std::shared_ptr<VertexArray>& vertexArray)
 	{ 
 		m_RendererVertexArray = vertexArray;
+		m_RendererVertexArray->Bind();
 	}
 
 	void Renderer::AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer)
