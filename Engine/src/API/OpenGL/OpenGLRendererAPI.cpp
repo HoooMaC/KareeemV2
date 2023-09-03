@@ -1,7 +1,7 @@
 #include "Core/Kareeem.h"
+#include "Core/CoreFunction.h"
 
 #include "OpenGLRendererAPI.h"
-
 #include <glad/glad.h>
 
 namespace Karem {
@@ -17,6 +17,12 @@ namespace Karem {
 
 	void OpenGLRendererAPI::ClearColor(const glm::vec4& color)
 	{
+		glClearColor(color.r, color.g, color.b, color.a);
+	}
+
+	void OpenGLRendererAPI::ClearColor(const std::string& hexColor)
+	{
+		glm::vec4 color = HexToVec4(hexColor);
 		glClearColor(color.r, color.g, color.b, color.a);
 	}
 

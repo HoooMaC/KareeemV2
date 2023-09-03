@@ -42,7 +42,7 @@ void Sandbox::Run()
 		m_LastFrameTime = time;
 
 		Karem::RendererCommand::Clear();
-		Karem::RendererCommand::ClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
+		Karem::RendererCommand::ClearColor("#3F1D38");
 		if (Karem::Input::IsKeyPressed(KAREM_KEY_R))
 		{
 			m_Camera.SetRotation(0);

@@ -3,8 +3,9 @@
 //All the Library is Here
 #include "Core/Kareeem.h"
 
-#include "Core/Application.h"
 #include "Core/TimeStep.h"
+#include "Core/Application.h"
+#include "Core/CoreFunction.h"
 
 #include "Event/Event.h"
 #include "Event/Input.h"

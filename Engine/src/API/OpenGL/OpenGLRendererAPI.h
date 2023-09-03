@@ -11,6 +11,7 @@ namespace Karem {
 
 		void SetViewPort(uint32_t x, uint32_t y, uint32_t width, uint32_t height) override;
 		void ClearColor(const glm::vec4& color) override;
+		void ClearColor(const std::string& hexColor) override;
 		void Clear() override;
 
 		void Draw(const std::shared_ptr<VertexArray>& vertexArray) override;
