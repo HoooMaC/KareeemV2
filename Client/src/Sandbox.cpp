@@ -130,7 +130,7 @@ void Sandbox::EventHandler(Karem::Event& event)
 	for (auto it = m_Layers.rbegin(); it != m_Layers.rend(); ++it)
 	{
 		if((*it)->GetStatus())
-			(*it)->EventHandler(event); // Memanggil fungsi yang diinginkan dari shared_ptr
+			(*it)->EventHandler(event);
 	}
 
 	//ENGINE_TRACE(event);

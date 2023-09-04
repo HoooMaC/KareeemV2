@@ -4,12 +4,13 @@ void TriangleLayer::OnAttach()
 {
 	float middleX = 0, middleY = 0;
 	float size = 0.5;
+	glm::vec4 triangleColor = Karem::HexToVec4("#DBF227");
 
 	float triangleVertices[] =
 	{
-		   middleX - (size / 2),  middleY - (size / 2), 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, // kiri bawah
-		   middleX + (size / 2),  middleY - (size / 2), 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, // kanan bawah
-		   middleX			   ,  middleY + (size / 2), 1.0f, 1.0f, 1.0f, 1.0f, 1.0f // atas
+		   middleX - (size / 2),  middleY - (size / 2), 1.0f, triangleColor.r, triangleColor.g, triangleColor.b, triangleColor.a,  // kiri bawah
+		   middleX + (size / 2),  middleY - (size / 2), 1.0f, triangleColor.r, triangleColor.g, triangleColor.b, triangleColor.a,  // kanan bawah
+		   middleX			   ,  middleY + (size / 2), 1.0f, triangleColor.r, triangleColor.g, triangleColor.b, triangleColor.a // atas
 	};
 	uint32_t triagleIndices[6] = { 0, 1, 2 };
 

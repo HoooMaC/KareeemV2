@@ -89,7 +89,7 @@ namespace Karem {
 		case GL_INT_VEC3:		return glUniform3iv(uniform.Location, uniform.Count, (const int*)uniform.Data);
 		case GL_BOOL:			ENGINE_INFO("BOOLEAN HASN'T SUPPORTED YET");
 		default:
-			ENGINE_WARN("INVALID UNIFORM TYPE");
+			ENGINE_ASSERT(false, "INVALID UNIFORM TYPE");
 			return;
 		}
 	}
@@ -157,8 +157,7 @@ namespace Karem {
 			if (uniform.Data == nullptr)
 			{
 				// this should be changed with ASSERTION
-				ENGINE_WARN("Unitiliazed Uniform : {}", name);
-				__debugbreak();
+				ENGINE_ASSERT(false, "Unitiliazed Uniform : {}", name);
 			}
 
 
@@ -173,8 +172,7 @@ namespace Karem {
 		if (!input.is_open())
 		{
 			// TODO : make some Assertion here
-			ENGINE_ERROR("FILE IS NOT FOUND");
-			__debugbreak();
+			ENGINE_ASSERT(false, "FILE IS NOT FOUND");
 			return "";
 		}
 

@@ -11,7 +11,7 @@ namespace Karem {
         std::regex hexPattern("^#?([0-9a-fA-F]{6}|[0-9a-fA-F]{8})$");
         if (!std::regex_match(hexColor, hexPattern))
         {
-            std::cerr << "Invalid hex color format" << std::endl;
+            ENGINE_WARN("Invalid hex color format");
             return glm::vec4(0.0f);
         }
 

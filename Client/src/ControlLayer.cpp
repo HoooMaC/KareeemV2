@@ -7,7 +7,7 @@ void ControlLayer::OnUpdate(Karem::TimeStep ts)
 {
 	ImGui::Begin("Layer Control");
 
-	for (int i = 0; i < m_LayerCount; i++)
+	for (uint32_t i = 0; i < m_LayerCount; i++)
 	{
 		std::shared_ptr<Karem::Layer>& layer = m_LayerContainerRef.GetLayerAt(i);
 		std::pair<std::string&, bool&> layerData = layer->GetLayerData();
@@ -23,7 +23,7 @@ void ControlLayer::OnUpdate(Karem::TimeStep ts)
 			}
 		}
 
-		if (i < m_LayerCount - 1)
+		if (i < (m_LayerCount - 1))
 		{
 			ImGui::SameLine();
 			std::string buttonName = "Make down " + layerData.first;

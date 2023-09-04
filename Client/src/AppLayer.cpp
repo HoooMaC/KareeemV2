@@ -12,6 +12,7 @@ void AppLayer::OnAttach()
 {
 	float middleX = 0, middleY = 0;
 	float size = 0.5;
+	static glm::vec4 color = Karem::HexToVec4("#66FA44");
 
 	float squareVertices[4 * 3] =
 	{
@@ -27,6 +28,7 @@ void AppLayer::OnAttach()
 
 	Karem::Renderer::SetShader(m_SquareShader);
 	Karem::Renderer::SetVertexArray(m_SquareVertexArray);
+	Karem::Renderer::UpdateUniform("uColor", (void*)glm::value_ptr(color));
 
 	// mungkin disini harusnya nggak ada, apalagi kalau batch rendering
 	std::shared_ptr<Karem::VertexBuffer> squareVertexBuffer = Karem::CreateVertexBuffer((void*)squareVertices, sizeof(squareVertices));
