@@ -20,6 +20,7 @@ IncludeDir["glad"] = "%{wks.location}/Vendor/glad/include"
 IncludeDir["ImGUI"] = "%{wks.location}/Vendor/ImGUI"
 IncludeDir["spdlog"] = "%{wks.location}/Vendor/spdlog/include"
 IncludeDir["glm"] = "%{wks.location}/Vendor/glm"
+IncludeDir["stb_image"] = "%{wks.location}/Engine/src/external/stb_image"
 
 project "Client"
     location "Client"
@@ -113,6 +114,7 @@ project "Engine"
         "%{IncludeDir.glad}",
         "%{IncludeDir.ImGUI}",
         "%{IncludeDir.glm}",
+        "%{IncludeDir.stb_image}",
     }
 
     defines

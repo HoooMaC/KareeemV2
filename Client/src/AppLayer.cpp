@@ -11,8 +11,7 @@
 void AppLayer::OnAttach()
 {
 	float middleX = 0, middleY = 0;
-	float size = 0.5;
-	static glm::vec4 color = Karem::HexToVec4("#66FA44");
+	float size = 1;
 
 	float squareVertices[4 * 3] =
 	{
@@ -28,7 +27,6 @@ void AppLayer::OnAttach()
 
 	Karem::Renderer::SetShader(m_SquareShader);
 	Karem::Renderer::SetVertexArray(m_SquareVertexArray);
-	Karem::Renderer::UpdateUniform("uColor", (void*)glm::value_ptr(color));
 
 	// mungkin disini harusnya nggak ada, apalagi kalau batch rendering
 	std::shared_ptr<Karem::VertexBuffer> squareVertexBuffer = Karem::CreateVertexBuffer((void*)squareVertices, sizeof(squareVertices));
@@ -44,8 +42,6 @@ void AppLayer::OnAttach()
 	squareVertexBuffer->SetLayout(layout);
 
 	squareVertexBuffer->ApplyLayout();
-
-
 }
 
 void AppLayer::OnUpdate(Karem::TimeStep ts)
@@ -78,6 +74,31 @@ void AppLayer::OnUpdate(Karem::TimeStep ts)
 	{
 		for (int x = 0; x < 20; x++)
 		{
+			glm::vec4 color;
+			if (y % 2 == 0)
+			{
+				if (x % 2 == 0)
+				{
+					color = Karem::HexToVec4("#32A89C");
+				}
+				else
+				{
+					color = Karem::HexToVec4("#00635A");
+				}
+			}
+			else
+			{
+				if (x % 2 == 0)
+				{
+					color = Karem::HexToVec4("#00E3CC");
+				}
+				else
+				{
+					color = Karem::HexToVec4("#009688");
+				}
+			}
+			Karem::Renderer::UpdateUniform("uColor", (void*)glm::value_ptr(color));
+
 			glm::mat4 transform = glm::translate(glm::mat4(1.0f), { (float)x + pos.x, float(y) + pos.y, 0.0f}) * scale;
 			Karem::Renderer::UpdateUniform("uProjectionView", (void*)glm::value_ptr(m_ProjectionViewMatrix));
 			Karem::Renderer::UpdateUniform("uModel", glm::value_ptr(transform));

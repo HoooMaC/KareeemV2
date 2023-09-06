@@ -111,10 +111,6 @@ void Sandbox::Run()
 
 void Sandbox::Init()
 {
-	m_Window.SetEventCallbacks(std::bind(&Application::EventHandler, this, std::placeholders::_1));
-	GLFWwindow* window = Karem::GraphicsContext::GetContextCurrent();
-	imgui::InitializeImGUI(window);
-
 	m_ControlLayer = std::make_shared<ControlLayer>(m_Layers);
 }
 

@@ -6,13 +6,16 @@
 #include "Event/Event.h"
 #include "Event/AppEvent.h"
 
+#include "imgui_setup.h"
+
 namespace Karem {
 
 	class Application
 	{
 	public:
 		Application() = default;
-		Application(const WindowProperty& props) : m_Window(props) {}
+		Application(const WindowProperty& props);
+
 		virtual ~Application() {}
 
 		virtual void Run() = 0;
