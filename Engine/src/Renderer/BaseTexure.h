@@ -2,6 +2,9 @@
 
 #include <memory>
 #include <string>
+
+#include "Renderer/TextureFormat.h"
+
 namespace Karem {
 
 	class Texture
@@ -23,6 +26,6 @@ namespace Karem {
 	{
 	};
 
-	std::shared_ptr<Texture2D> CreateTexture2D(const std::string& filePath, uint32_t slot = 0);
+	std::shared_ptr<Texture2D> CreateTexture2D(const std::string& filePath, uint32_t slot = 0, uint32_t filter = KAREM_NEAREST);
 
 }

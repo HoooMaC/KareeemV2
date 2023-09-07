@@ -7,10 +7,10 @@
 
 namespace Karem {
 
-	OpenGLTexture2D::OpenGLTexture2D(const std::string& filePath, uint32_t slot)
+	OpenGLTexture2D::OpenGLTexture2D(const std::string& filePath, uint32_t slot, uint32_t filter)
 		: m_FilePath(filePath), m_Slot(slot), m_Width(0), m_Height(0), m_BPP(0), m_RendererID(0)
 	{
-		CreateTexture();
+		CreateTexture(filter);
 	}
 
 	OpenGLTexture2D::~OpenGLTexture2D()
@@ -28,15 +28,15 @@ namespace Karem {
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
-	void OpenGLTexture2D::CreateTexture()
+	void OpenGLTexture2D::CreateTexture(uint32_t filter)
 	{	
 		glGenTextures(1, &m_RendererID);
 		glBindTexture(GL_TEXTURE_2D, m_RendererID);
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
 
 		stbi_set_flip_vertically_on_load(true);
 

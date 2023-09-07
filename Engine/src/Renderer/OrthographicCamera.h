@@ -1,6 +1,10 @@
 #pragma once
 
 #include "Core/Kareeem.h"
+#include "Core/TimeStep.h"
+
+#include "Event/Event.h"
+#include "Event/MouseEvent.h"
 
 namespace Karem {
 
@@ -8,9 +12,12 @@ namespace Karem {
 	{
 	public:
 		OrthographicCamera() = default;
-		OrthographicCamera(float left, float right, float bottom, float top) 
-			: m_ProjectionMatrix(glm::ortho(left, right, bottom, top)), m_ViewMatrix(1.0f)
+		OrthographicCamera(float aspectRatio, bool rotation = true) 
+			: m_AspectRatio(aspectRatio)
 		{
+			m_ProjectionMatrix = glm::ortho(-m_AspectRatio, m_AspectRatio, -m_Zoom, m_Zoom, -1.0f, 1.0f);
+			m_ViewMatrix = glm::mat4(1.0f);
+
 			m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
 		}
 
@@ -24,6 +31,13 @@ namespace Karem {
 		float& GetRotation() { return m_Rotation; }
 		void SetRotation(float rotation) { m_Rotation = rotation; RecalculateMatrix(); }
 
+		float& GetZoom() { return m_Zoom; }
+		void SetZoom(float zoom) { m_Zoom = zoom; RecalculateMatrix(); }
+
+	public:
+		void OnUpdate(TimeStep ts);
+		void OnEvent(Event& e);
+
 	private:
 		void RecalculateMatrix()
 		{
@@ -33,14 +47,17 @@ namespace Karem {
 			m_ViewMatrix = glm::inverse(transform);
 			m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
 		}
-
 	private:
+		bool MouseScrolledEventAction(MouseScrolledEvent& event);
+	private:
+		float m_AspectRatio;
 		glm::mat4 m_ProjectionMatrix;
 		glm::mat4 m_ViewMatrix;
 		glm::mat4 m_ViewProjectionMatrix;
 
 		glm::vec3 m_Position = glm::vec3(0.0f);
 		float m_Rotation = 0.0f;
+		float m_Zoom = 1.0f;
 	};
 
 }

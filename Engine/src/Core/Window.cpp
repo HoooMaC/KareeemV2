@@ -86,6 +86,7 @@ namespace Karem {
 			
 			MouseScrolledEvent event((float)xOffset, (float)yOffset);
 			data.EventCallback(event);
+			//ENGINE_TRACE(event);
 		});
 
 		glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, double xPos, double yPos)

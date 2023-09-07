@@ -24,6 +24,7 @@
 #include "Renderer/BaseTexure.h"
 #include "Renderer/BufferLayout.h"
 #include "Renderer/RenderCommand.h"
+#include "Renderer/TextureFormat.h"
 #include "Renderer/BaseRendererAPI.h"
 #include "Renderer/GraphicsContext.h"
 #include "Renderer/OrthographicCamera.h"

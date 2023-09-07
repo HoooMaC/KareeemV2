@@ -1,3 +1,4 @@
+#pragma once
 #include "Event/Event.h"
 
 namespace Karem {

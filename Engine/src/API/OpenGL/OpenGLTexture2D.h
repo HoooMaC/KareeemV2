@@ -9,7 +9,7 @@ namespace Karem {
 	class OpenGLTexture2D : public Texture2D
 	{
 	public:
-		OpenGLTexture2D(const std::string& filePath, uint32_t slot);
+		OpenGLTexture2D(const std::string& filePath, uint32_t slot, uint32_t filter);
 		~OpenGLTexture2D();
 
 		uint32_t GetWidth() const override { return m_Width; }
@@ -22,7 +22,7 @@ namespace Karem {
 		void Bind() const override;
 		void UnBind() const override;
 	private:
-		void CreateTexture();
+		void CreateTexture(uint32_t filter);
 		void ClearTexture();
 
 	private:

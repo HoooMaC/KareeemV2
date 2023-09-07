@@ -18,6 +18,10 @@ namespace Karem {
 		
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LESS);
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 		glEnable(GL_DEBUG_OUTPUT);
 		glDebugMessageCallback([](GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar * message, const void* userParam) {
 			// Output informasi error ke konsol

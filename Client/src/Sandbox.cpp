@@ -1,6 +1,6 @@
 #include "Sandbox.h"
 
-#include "TriangleLayer.h"
+//#include "TriangleLayer.h"
 
 #include <glad/glad.h>
 
@@ -21,16 +21,51 @@ Sandbox::Sandbox()
 	: Application({"Sandbox Application", 1920, 1080})
 {
 	Init();
-
-	m_Camera = Karem::OrthographicCamera(-16.0f, 16.0f, -9.0f, 9.0f);
-	
-	PushLayer(std::make_shared<TriangleLayer>());
-	PushLayer(std::make_shared<AppLayer>());
 }
 
-Sandbox::~Sandbox()
+void Sandbox::Init()
 {
-	Shutdown();
+	float middleX = 0, middleY = 0;
+	float size = 1;
+
+	glm::vec4 color = Karem::HexToVec4("#0099DD");
+
+	float squareVertices[4 * 9] =
+	{
+		   middleX - (size / 2),  middleY - (size / 2), 0.0f, color.r, color.g, color.b, color.a, 0.0f, 0.0f, // kiri bawah
+		   middleX + (size / 2),  middleY - (size / 2), 0.0f, color.r, color.g, color.b, color.a, 1.0f, 0.0f, // kanan bawah
+		   middleX + (size / 2),  middleY + (size / 2), 0.0f, color.r, color.g, color.b, color.a, 1.0f, 1.0f, // kanan atas
+		   middleX - (size / 2),  middleY + (size / 2), 0.0f, color.r, color.g, color.b, color.a, 0.0f, 1.0f  // kiri atas
+	};
+
+	uint32_t squareIndices[6] = { 0, 1, 2, 2, 3, 0 };
+
+	m_Camera = Karem::OrthographicCamera((float)1920 / 1080);
+	m_Shader = Karem::CreateShader("res\\shader\\position_color_vertex.glsl", "res\\shader\\position_color_fragment.glsl");
+	m_VertexArray = Karem::CreateVertexArray();
+	m_TextureBasic = Karem::CreateTexture2D("res\\texture\\diamond_sword.png");
+	m_TextureSlot = m_TextureBasic->GetSlot();
+
+	Karem::Renderer::SetShader(m_Shader);
+	Karem::Renderer::SetVertexArray(m_VertexArray);
+	Karem::Renderer::UpdateUniform("uTexture", (void*)&m_TextureSlot);
+
+	// mungkin disini harusnya nggak ada, apalagi kalau batch rendering
+	std::shared_ptr<Karem::VertexBuffer> squareVertexBuffer = Karem::CreateVertexBuffer((void*)squareVertices, sizeof(squareVertices));
+	std::shared_ptr<Karem::IndexBuffer> squareIndexBuffer = Karem::CreateIndexBuffer((void*)squareIndices, 6);
+
+	Karem::Renderer::AddVertexBuffer(squareVertexBuffer);
+	Karem::Renderer::SetIndexBuffer(squareIndexBuffer);
+
+	//maybe this can be automated by glGetActiveAttrib
+	Karem::BufferLayout layout = {
+		{ Karem::ShaderDataType::Vec3, "aPos" },
+		{ Karem::ShaderDataType::Vec4, "aColor" },
+		{ Karem::ShaderDataType::Vec2, "aTexCoord" }
+	};
+	squareVertexBuffer->SetLayout(layout);
+
+	squareVertexBuffer->ApplyLayout();
 }
 
 void Sandbox::Run()
@@ -41,67 +76,23 @@ void Sandbox::Run()
 		Karem::TimeStep timeStep = time - m_LastFrameTime;
 		m_LastFrameTime = time;
 
+		m_Camera.OnUpdate(timeStep);
+
 		Karem::RendererCommand::Clear();
 		Karem::RendererCommand::ClearColor("#3F1D38");
-		if (Karem::Input::IsKeyPressed(KAREM_KEY_R))
-		{
-			m_Camera.SetRotation(0);
-			m_Camera.SetPosition(glm::vec3(0.0f));
-		}
-		else if (Karem::Input::IsKeyPressed(KAREM_KEY_E))
-		{
-			float& rotation = m_Camera.GetRotation();
-			rotation += 180.0f * timeStep;
-			m_Camera.SetRotation(rotation);
-		}
-		else if (Karem::Input::IsKeyPressed(KAREM_KEY_Q))
-		{
-			float& rotation = m_Camera.GetRotation();
-			rotation -= 180.0f * timeStep;
-			m_Camera.SetRotation(rotation);
-		}
-
-		if (Karem::Input::IsKeyPressed(KAREM_KEY_D))
-		{
-			glm::vec3 pos = m_Camera.GetPosition();
-			pos.x += 10.0f * timeStep;
-			m_Camera.SetPosition(pos);
-		}
-		else if(Karem::Input::IsKeyPressed(KAREM_KEY_A))
-		{
-			glm::vec3 pos = m_Camera.GetPosition();
-			pos.x -= 10.0f * timeStep;
-			m_Camera.SetPosition(pos);
-		}
-
-		if(Karem::Input::IsKeyPressed(KAREM_KEY_W))
-		{
-			glm::vec3 pos = m_Camera.GetPosition();
-			pos.y += 10.0f * timeStep;
-			m_Camera.SetPosition(pos);
-		}
-		else if (Karem::Input::IsKeyPressed(KAREM_KEY_S))
-		{
-			glm::vec3 pos = m_Camera.GetPosition();
-			pos.y -= 10.0f * timeStep;
-			m_Camera.SetPosition(pos);
-		}
 
 		Karem::Renderer::BeginScene(m_Camera);
 
-		// this is temporary just for experiment
-		std::dynamic_pointer_cast<TriangleLayer>(m_Layers.GetLayerAt(0))->setProjectionView(m_Camera.GetViewProjectionMatrix());
-		std::dynamic_pointer_cast<AppLayer>(m_Layers.GetLayerAt(1))->setProjectionView(m_Camera.GetViewProjectionMatrix());
-
 		imgui::BeginFrame();
 
-		for (std::shared_ptr<Karem::Layer>& layer : m_Layers)
-		{
-			if (layer->GetStatus())
-				layer->OnUpdate(timeStep);
-		}
+		//for (std::shared_ptr<Karem::Layer>& layer : m_Layers)
+		//{
+		//	if (layer->GetStatus())
+		//		layer->OnUpdate(timeStep);
+		//}
 
-		m_ControlLayer->OnUpdate(timeStep);
+		Karem::Renderer::Draw();
+
 		imgui::EndFrame();
 		Karem::Renderer::EndScene();
 			
@@ -109,9 +100,9 @@ void Sandbox::Run()
 	}
 }
 
-void Sandbox::Init()
+Sandbox::~Sandbox()
 {
-	m_ControlLayer = std::make_shared<ControlLayer>(m_Layers);
+	Shutdown();
 }
 
 void Sandbox::Shutdown()
@@ -122,12 +113,13 @@ void Sandbox::EventHandler(Karem::Event& event)
 {
 	Karem::EventDispatcher dispatcher(event);
 	dispatcher.Dispatch<Karem::WindowCloseEvent>(std::bind(&Sandbox::WindowCloseAction, this, std::placeholders::_1));
-	
-	for (auto it = m_Layers.rbegin(); it != m_Layers.rend(); ++it)
-	{
-		if((*it)->GetStatus())
-			(*it)->EventHandler(event);
-	}
+
+	m_Camera.OnEvent(event);
+	//for (auto it = m_Layers.rbegin(); it != m_Layers.rend(); ++it)
+	//{
+	//	if((*it)->GetStatus())
+	//		(*it)->EventHandler(event);
+	//}
 
 	//ENGINE_TRACE(event);
 }
@@ -138,26 +130,22 @@ bool Sandbox::WindowCloseAction(Karem::WindowCloseEvent& event)
 	return true;
 }
 
-void Sandbox::PushLayer(std::shared_ptr<Karem::Layer> layer)
-{
-	m_Layers.PushLayer(layer);
-	m_ControlLayer->UpdateLayerCounter(m_Layers.GetSize());
-}
-
-void Sandbox::PushOverlay(std::shared_ptr<Karem::Layer> overlay)
-{
-	m_Layers.PushOverlay(overlay);
-	m_ControlLayer->UpdateLayerCounter(m_Layers.GetSize());
-}
-
-void Sandbox::PopLayer(std::shared_ptr<Karem::Layer> layer)
-{
-	m_Layers.PopLayer(layer);
-	m_ControlLayer->UpdateLayerCounter(m_Layers.GetSize());
-}
-
-void Sandbox::PopOverlay(std::shared_ptr<Karem::Layer> overlay)
-{
-	m_Layers.PopOverlay(overlay);
-	m_ControlLayer->UpdateLayerCounter(m_Layers.GetSize());
-}
+//void Sandbox::PushLayer(std::shared_ptr<Karem::Layer> layer)
+//{
+//	m_Layers.PushLayer(layer);
+//}
+//
+//void Sandbox::PushOverlay(std::shared_ptr<Karem::Layer> overlay)
+//{
+//	m_Layers.PushOverlay(overlay);
+//}
+//
+//void Sandbox::PopLayer(std::shared_ptr<Karem::Layer> layer)
+//{
+//	m_Layers.PopLayer(layer);
+//}
+//
+//void Sandbox::PopOverlay(std::shared_ptr<Karem::Layer> overlay)
+//{
+//	m_Layers.PopOverlay(overlay);
+//}
