@@ -87,7 +87,8 @@ namespace Karem {
 		case GL_INT:			return glUniform1iv(uniform.Location, uniform.Count, (const int*)uniform.Data);
 		case GL_INT_VEC2:		return glUniform2iv(uniform.Location, uniform.Count, (const int*)uniform.Data);
 		case GL_INT_VEC3:		return glUniform3iv(uniform.Location, uniform.Count, (const int*)uniform.Data);
-		case GL_BOOL:			ENGINE_INFO("BOOLEAN HASN'T SUPPORTED YET");
+		case GL_SAMPLER_2D:		return glUniform1iv(uniform.Location, uniform.Count, (const int*)uniform.Data);
+		case GL_BOOL:			ENGINE_INFO("BOOLEAN HASN'T SUPPORTED YET"); break;
 		default:
 			ENGINE_ASSERT(false, "INVALID UNIFORM TYPE");
 			return;
