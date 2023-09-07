@@ -28,7 +28,7 @@ namespace Karem {
 	private:
 		std::string m_FilePath;
 		uint32_t m_Slot;
-		uint32_t m_Width, m_Height;
+		int32_t m_Width, m_Height, m_BPP;
 		uint32_t m_RendererID;
 	};
 

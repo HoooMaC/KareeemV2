@@ -12,8 +12,8 @@ namespace Karem {
 	{
 		switch (RendererAPI::GetAPI())
 		{
-		case API::None: ENGINE_ASSERT(false, "Renderer API::NONE hasn't supported yet");
-		case API::OpenGL: return std::make_shared<OpenGLTexture2D>(filePath, slot);
+			case API::None: ENGINE_ASSERT(false, "Renderer API::NONE hasn't supported yet") break;
+			case API::OpenGL: return std::make_shared<OpenGLTexture2D>(filePath, slot);
 		}
 	}
 
