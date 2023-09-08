@@ -2,15 +2,15 @@
 
 //#include "TriangleLayer.h"
 
-#include <glad/glad.h>
+//#include <glad/glad.h>
 
 // TEMP : THIS SHOULD NOT BE HERE (MAYBE)
-#include "imgui.h"
-#include "imgui_setup.h"
-#include "backends/imgui_impl_glfw.h"
-#include "backends/imgui_impl_opengl3.h"
+//#include "imgui.h"
+//#include "imgui_setup.h"
+//#include "backends/imgui_impl_glfw.h"
+//#include "backends/imgui_impl_opengl3.h"
 
-#include <GLFW/glfw3.h>
+//#include <GLFW/glfw3.h>
 
 Karem::Application* Karem::CreateApplication()
 {
@@ -72,7 +72,8 @@ void Sandbox::Run()
 {
 	while (m_Running)
 	{
-		float time = glfwGetTime();
+		float time = Karem::Platform::GetTime();
+
 		Karem::TimeStep timeStep = time - m_LastFrameTime;
 		m_LastFrameTime = time;
 

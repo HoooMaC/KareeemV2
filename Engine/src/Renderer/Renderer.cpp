@@ -8,8 +8,14 @@
 
 namespace Karem {
 
-	std::shared_ptr<Shader> Renderer::m_RendererShader;
-	std::shared_ptr<VertexArray> Renderer::m_RendererVertexArray;
+	struct RendererData
+	{
+		std::shared_ptr<Shader> m_RendererShader;
+		std::shared_ptr<VertexArray> m_RendererVertexArray;
+	};
+
+	static RendererData s_Data;
+
 
 	void Renderer::Init()
 	{
@@ -18,8 +24,8 @@ namespace Karem {
 
 	void Renderer::BeginScene(OrthographicCamera& camera)
 	{
-		m_RendererShader->Bind();
-		m_RendererShader->UpdateUniform("uProjectionView", (void*)glm::value_ptr(camera.GetViewProjectionMatrix()));
+		s_Data.m_RendererShader->Bind();
+		s_Data.m_RendererShader->UpdateUniform("uProjectionView", (void*)glm::value_ptr(camera.GetViewProjectionMatrix()));
 	}
 
 	void Renderer::EndScene()
@@ -28,35 +34,35 @@ namespace Karem {
 
 	void Renderer::Draw()
 	{
-		m_RendererShader->BindAndUploadUniform();
-		RendererCommand::Draw(m_RendererVertexArray);
+		s_Data.m_RendererShader->BindAndUploadUniform();
+		RendererCommand::Draw(s_Data.m_RendererVertexArray);
 	}
 
 	void Renderer::SetShader(const std::shared_ptr<Shader>& shader)
 	{ 
-		m_RendererShader = shader; 
+		s_Data.m_RendererShader = shader; 
 	}
 
 	void Renderer::SetVertexArray(const std::shared_ptr<VertexArray>& vertexArray)
 	{ 
-		m_RendererVertexArray = vertexArray;
-		m_RendererVertexArray->Bind();
+		s_Data.m_RendererVertexArray = vertexArray;
+		s_Data.m_RendererVertexArray->Bind();
 	}
 
 	void Renderer::AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer)
 	{
-		m_RendererVertexArray->AddVertexBuffer(vertexBuffer);
+		s_Data.m_RendererVertexArray->AddVertexBuffer(vertexBuffer);
 	}
 
 	void Renderer::SetIndexBuffer(const std::shared_ptr<IndexBuffer>& indexBuffer)
 	{
-		m_RendererVertexArray->SetIndexBuffer(indexBuffer);
+		s_Data.m_RendererVertexArray->SetIndexBuffer(indexBuffer);
 	}
 
 	void Renderer::UpdateUniform(const std::string& name, void* data)
 	{
-		m_RendererShader->Bind();
-		m_RendererShader->UpdateUniform(name, data);
+		s_Data.m_RendererShader->Bind();
+		s_Data.m_RendererShader->UpdateUniform(name, data);
 	}
 
 }

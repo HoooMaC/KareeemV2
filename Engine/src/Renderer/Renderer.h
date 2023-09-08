@@ -31,9 +31,6 @@ namespace Karem {
 		static void UpdateUniform(const std::string& name, void* data);
 
 		inline static API GetAPI() { return RendererAPI::GetAPI(); }
-	private:
-		static std::shared_ptr<Shader> m_RendererShader;
-		static std::shared_ptr<VertexArray> m_RendererVertexArray;
 	};
 
 }

@@ -35,3 +35,7 @@
 #include "API/OpenGL/OpenGLVertexArray.h"
 #include "API/OpenGL/OpenGLVertexBuffer.h"
 #include "API/OpenGL/OpenGLTexture2D.h"
+
+// THIS IS SPECIFIC TO WINDOW
+// #define KAREM_WINDOWS
+#include "Platform/Window/Platform.h"
