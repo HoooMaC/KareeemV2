@@ -18,82 +18,10 @@ namespace Karem {
 		GLuint fragmentShaderId = CompileShader(fragmentShaderSource, GL_FRAGMENT_SHADER);
 
 		CreateShader(vertexShaderId, fragmentShaderId);
-
-		GetUniform();
+		
+		ENGINE_DEBUG("Creating a shader with id [{}]", m_RendererID);
 	}
 
-	void OpenGLShader::GetUniform()
-	{
-		int32_t uniformNum;
-		int32_t maxBuffer;
-		glGetProgramiv(m_RendererID, GL_ACTIVE_UNIFORMS, &uniformNum);
-		glGetProgramiv(m_RendererID, GL_ACTIVE_UNIFORM_MAX_LENGTH, &maxBuffer);
-
-		//ENGINE_DEBUG("Uniform number {}", uniformNum);
-		//ENGINE_DEBUG("Uniform max number {}", maxBuffer);
-
-		for (int i = 0; i < uniformNum; i++)
-		{
-			int32_t uniformCount;
-			uint32_t uniformType;
-			int32_t uniformLength;
-			int32_t uniformLocation;
-			char* uniformName = new char[maxBuffer];
-
-			glGetActiveUniform(m_RendererID, i, maxBuffer, &uniformLength, &uniformCount, &uniformType, uniformName);
-			uniformLocation = glGetUniformLocation(m_RendererID, uniformName);
-
-			//ENGINE_DEBUG("=================");
-			//ENGINE_DEBUG("{} Uniform name : {}", i, uniformName);
-			//ENGINE_DEBUG("Uniform Type : {}", uniformType);
-			//ENGINE_DEBUG("Uniform Count : {}", uniformCount);
-			//ENGINE_DEBUG("Uniform Length : {}", uniformLength);
-			//ENGINE_DEBUG("Uniform Location : {}", uniformLocation);
-			//ENGINE_DEBUG("=================");
-
-			UniformAttrib uniform(uniformType, uniformCount, uniformLocation);
-
-			m_UniformContainer[uniformName] = uniform;
-		}
-
-	}
-
-	void OpenGLShader::UpdateUniform(const std::string& name, void* data)
-	{
-		// TODO: Check if the uniform with the given "name" exists
-		auto uniformIterator = m_UniformContainer.find(name);
-		if (uniformIterator == m_UniformContainer.end()) {
-			uniformIterator = m_UniformContainer.find(name + "[0]");
-			if (uniformIterator == m_UniformContainer.end()) {
-				ENGINE_WARN("Uniform {} not found.", name);
-				return;
-			}
-		}
-
-		uniformIterator->second.Data = data;
-	}
-
-	void OpenGLShader::UploadUniform(const UniformAttrib& uniform) const
-	{
-		switch (uniform.Type)
-		{
-		case GL_FLOAT:			return glUniform1fv(uniform.Location, uniform.Count, (const float*)uniform.Data);
-		case GL_FLOAT_VEC2:		return glUniform2fv(uniform.Location, uniform.Count, (const float*)uniform.Data);
-		case GL_FLOAT_VEC3:		return glUniform3fv(uniform.Location, uniform.Count, (const float*)uniform.Data);
-		case GL_FLOAT_VEC4:		return glUniform4fv(uniform.Location, uniform.Count, (const float*)uniform.Data);
-		case GL_FLOAT_MAT2:		return glUniformMatrix2fv(uniform.Location, uniform.Count, GL_FALSE, (const float*)uniform.Data);
-		case GL_FLOAT_MAT3:		return glUniformMatrix3fv(uniform.Location, uniform.Count, GL_FALSE, (const float*)uniform.Data);
-		case GL_FLOAT_MAT4:		return glUniformMatrix4fv(uniform.Location, uniform.Count, GL_FALSE, (const float*)uniform.Data);
-		case GL_INT:			return glUniform1iv(uniform.Location, uniform.Count, (const int*)uniform.Data);
-		case GL_INT_VEC2:		return glUniform2iv(uniform.Location, uniform.Count, (const int*)uniform.Data);
-		case GL_INT_VEC3:		return glUniform3iv(uniform.Location, uniform.Count, (const int*)uniform.Data);
-		case GL_SAMPLER_2D:		return glUniform1iv(uniform.Location, uniform.Count, (const int*)uniform.Data);
-		case GL_BOOL:			ENGINE_INFO("BOOLEAN HASN'T SUPPORTED YET"); break;
-		default:
-			ENGINE_ASSERT(false, "INVALID UNIFORM TYPE");
-			return;
-		}
-	}
 
 	void OpenGLShader::CreateShader(uint32_t vertexShader, uint32_t fragmentShader)
 	{
@@ -142,28 +70,12 @@ namespace Karem {
 	void OpenGLShader::Bind() const
 	{
 		glUseProgram(m_RendererID);
+		ENGINE_DEBUG("Binding shader with id [{}]", m_RendererID);
 	}
 
 	void OpenGLShader::UnBind() const
 	{
 		glUseProgram(0);
-	}
-
-	void OpenGLShader::BindAndUploadUniform() const
-	{
-		glUseProgram(m_RendererID);
-		for (const auto& [name, uniform] : m_UniformContainer)
-		{
-			//ENGINE_TRACE("{}", name);
-			if (uniform.Data == nullptr)
-			{
-				// this should be changed with ASSERTION
-				ENGINE_ASSERT(false, "Unitiliazed Uniform : {}", name);
-			}
-
-
-			UploadUniform(uniform);
-		}
 	}
 
 	std::string OpenGLShader::ReadFile(const std::string& fileSource)

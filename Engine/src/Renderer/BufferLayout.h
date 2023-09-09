@@ -2,12 +2,35 @@
 
 #include "Core/Kareeem.h"
 
+// this is ABSOLUTELY temporary
+#include <glad/glad.h>
+
 namespace Karem {
 
 	enum class ShaderDataType
 	{
 		None = 0, Float, Vec2, Vec3, Vec4, Mat2, Mat3, Mat4, Int, Int2, Int3, Int4, Bool
 	};
+
+	static ShaderDataType UintToShaderDataType(uint32_t type)
+	{
+		switch (type)
+		{
+			case GL_FLOAT:			return ShaderDataType::Float;
+			case GL_FLOAT_VEC2:		return ShaderDataType::Vec2;
+			case GL_FLOAT_VEC3:		return ShaderDataType::Vec3;
+			case GL_FLOAT_VEC4:		return ShaderDataType::Vec4;
+			case GL_FLOAT_MAT2:		return ShaderDataType::Mat2;
+			case GL_FLOAT_MAT3:		return ShaderDataType::Mat3;
+			case GL_FLOAT_MAT4:		return ShaderDataType::Mat4;
+			case GL_INT:			return ShaderDataType::Int;
+			case GL_INT_VEC2:		return ShaderDataType::Int2;
+			case GL_INT_VEC3:		return ShaderDataType::Int3;
+			case GL_INT_VEC4:		return ShaderDataType::Int4;
+		}
+		ENGINE_ASSERT(false, "UNSUPPORTED DATA TYPE");
+		return ShaderDataType::None;
+	}
 
 	static uint32_t ShaderDataTypeSize(ShaderDataType type)
 	{
@@ -103,7 +126,12 @@ namespace Karem {
 			: m_Elements(layoutElement)
 		{
 			CalculateOffsetAndStride();
+		}
 
+		BufferLayout(const std::vector<BufferElement>& layoutElement)
+			: m_Elements(layoutElement)
+		{
+			CalculateOffsetAndStride();
 		}
 
 		inline const std::vector<BufferElement>& GetElements() const { return m_Elements; }

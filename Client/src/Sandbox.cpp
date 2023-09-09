@@ -72,6 +72,8 @@ void Sandbox::Run()
 {
 	while (m_Running)
 	{
+		ENGINE_INFO("NEW LOOP");
+		ENGINE_INFO("===========================");
 		float time = Karem::Platform::GetTime();
 
 		Karem::TimeStep timeStep = time - m_LastFrameTime;

@@ -19,6 +19,7 @@ namespace Karem {
 	void OpenGLVertexArray::Bind() const
 	{
 		glBindVertexArray(m_RendererID);
+		ENGINE_WARN("Binding vertex array with id [{}]", m_RendererID);
 	}
 
 	void OpenGLVertexArray::UnBind() const
@@ -28,7 +29,8 @@ namespace Karem {
 
 	void OpenGLVertexArray::AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer)
 	{
-		glBindVertexArray(m_RendererID);
+		//glBindVertexArray(m_RendererID);
+		Bind();
 		m_VertexBufferContainer.emplace_back(vertexBuffer);
 		vertexBuffer->Bind();
 	}
@@ -41,7 +43,8 @@ namespace Karem {
 	void OpenGLVertexArray::Init()
 	{
 		glGenVertexArrays(1, &m_RendererID);
-		glBindVertexArray(m_RendererID);
+		//glBindVertexArray(m_RendererID);
+		Bind();
 	}
 
 	void OpenGLVertexArray::Clear()

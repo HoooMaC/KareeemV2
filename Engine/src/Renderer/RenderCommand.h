@@ -5,11 +5,15 @@
 #include <glm/glm.hpp>
 
 #include "Renderer/BaseRendererAPI.h"
+#include "Renderer/BufferLayout.h"
 
 namespace Karem {
 
+	class Renderer2D;
+
 	class RendererCommand
 	{
+		friend class Renderer2D;
 	public:
 		inline static void Init()
 		{
@@ -31,9 +35,18 @@ namespace Karem {
 		{
 			s_RendererAPI->Clear();
 		}
-		inline static void Draw(const std::shared_ptr<VertexArray>& vertexArray)
+		inline static void Draw(uint32_t count)
 		{
-			s_RendererAPI->Draw(vertexArray);
+			s_RendererAPI->Draw(count);
+		}
+	private:
+		inline static BufferLayout GetShaderAttributes(const std::shared_ptr<Shader>& shader)
+		{
+			return s_RendererAPI->GetShaderAttributes(shader);
+		}
+		inline static void GetShaderUniforms(const std::shared_ptr<Shader>& shader)
+		{
+			s_RendererAPI->GetShaderUniforms(shader);
 		}
 	private:
 		static std::unique_ptr<RendererAPI> s_RendererAPI;

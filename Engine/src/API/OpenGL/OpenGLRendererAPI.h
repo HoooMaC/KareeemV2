@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Renderer/BaseShader.h"
+#include "Renderer/BufferLayout.h"
 #include "Renderer/BaseRendererAPI.h"
 
 namespace Karem {
@@ -14,7 +16,9 @@ namespace Karem {
 		void ClearColor(const std::string& hexColor) override;
 		void Clear() override;
 
-		void Draw(const std::shared_ptr<VertexArray>& vertexArray) override;
+		void Draw(uint32_t count) override;
+
+		BufferLayout GetShaderAttributes(const std::shared_ptr<Shader>& shader);
 	};
 
 }
