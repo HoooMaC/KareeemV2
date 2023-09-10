@@ -11,9 +11,17 @@ namespace Karem {
 	class Material
 	{
 	public:
+		Material() = default;
 		Material(const std::shared_ptr<Shader>& shader);
+
+		void SetUniformCache(UniformCache& uniforms)
+		{
+			m_UniformList = uniforms;
+		}
 	private:
-		std::vector<Uniform> m_UniformCache;
+		UniformCache m_UniformList;
 	};
+
+	std::shared_ptr<Material> CreateMaterial();
 
 }

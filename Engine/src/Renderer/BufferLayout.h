@@ -1,16 +1,14 @@
 #pragma once
 
 #include "Core/Kareeem.h"
+#include "Renderer/BaseShader.h"
 
 // this is ABSOLUTELY temporary
 #include <glad/glad.h>
 
 namespace Karem {
 
-	enum class ShaderDataType
-	{
-		None = 0, Float, Vec2, Vec3, Vec4, Mat2, Mat3, Mat4, Int, Int2, Int3, Int4, Bool
-	};
+
 
 	static ShaderDataType UintToShaderDataType(uint32_t type)
 	{
@@ -113,6 +111,7 @@ namespace Karem {
 					return 1;
 			}
 			// TO DO : NEED SOME ASSERTION HERE	
+			ENGINE_ASSERT(false, "Unsuppored Data Type");
 			return 0;
 		}
 	};

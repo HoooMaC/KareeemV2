@@ -12,13 +12,8 @@ namespace Karem {
 		virtual void Init(void* data, size_t size) = 0;
 		virtual void Clear() = 0;
 
-		virtual void ApplyLayout() = 0;
-		virtual void SetLayout(BufferLayout layout) = 0;
-		virtual BufferLayout GetLayout() const = 0;
-
 		virtual void Bind() const = 0;
 		virtual void UnBind() const = 0;
-
 	};
 
 	std::shared_ptr<VertexBuffer> CreateVertexBuffer(void* data, size_t size);
@@ -33,9 +28,6 @@ namespace Karem {
 
 		virtual void Bind() const = 0;
 		virtual void UnBind() const = 0;
-
-		virtual int32_t GetCount() const = 0;
-
 	};
 
 	std::shared_ptr<IndexBuffer> CreateIndexBuffer(void* data, uint64_t count);
@@ -54,6 +46,7 @@ namespace Karem {
 		virtual void AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer) = 0;
 		virtual void SetIndexBuffer(const std::shared_ptr<IndexBuffer>& indexBuffer) = 0;
 
+		virtual void ApplyShaderLayout(BufferLayout& layout) const = 0;
 		virtual const std::shared_ptr<IndexBuffer>& GetIndexBuffer() const = 0;
 	};
 

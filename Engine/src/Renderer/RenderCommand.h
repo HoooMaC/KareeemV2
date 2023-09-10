@@ -13,7 +13,6 @@ namespace Karem {
 
 	class RendererCommand
 	{
-		friend class Renderer2D;
 	public:
 		inline static void Init()
 		{
@@ -38,15 +37,6 @@ namespace Karem {
 		inline static void Draw(uint32_t count)
 		{
 			s_RendererAPI->Draw(count);
-		}
-	private:
-		inline static BufferLayout GetShaderAttributes(const std::shared_ptr<Shader>& shader)
-		{
-			return s_RendererAPI->GetShaderAttributes(shader);
-		}
-		inline static void GetShaderUniforms(const std::shared_ptr<Shader>& shader)
-		{
-			s_RendererAPI->GetShaderUniforms(shader);
 		}
 	private:
 		static std::unique_ptr<RendererAPI> s_RendererAPI;

@@ -18,7 +18,8 @@ namespace Karem{
 		void Bind() const override;
 		void UnBind() const override;
 
-		uint32_t GetID() const override { return m_RendererID; }
+		BufferLayout GetShaderAttributes() const override;
+		UniformCache GetShaderUniforms() const override;
 	private:
 		void Clear();
 

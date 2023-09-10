@@ -18,8 +18,6 @@ namespace Karem {
 
 	void OpenGLIndexBuffer::Init(void* data, uint64_t count)
 	{
-		m_Indices = std::vector<uint32_t>((uint32_t*)data, (uint32_t*)data + count);
-
 		glGenBuffers(1, &m_RendererID);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(unsigned int), data, GL_STATIC_DRAW);

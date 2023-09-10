@@ -17,8 +17,6 @@ namespace Karem {
 		void Clear() override;
 
 		void Draw(uint32_t count) override;
-
-		BufferLayout GetShaderAttributes(const std::shared_ptr<Shader>& shader);
 	};
 
 }

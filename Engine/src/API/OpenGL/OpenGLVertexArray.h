@@ -22,6 +22,8 @@ namespace Karem {
 		void AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer) override;
 		void SetIndexBuffer(const std::shared_ptr<IndexBuffer>& indexBuffer) override;
 
+		void ApplyShaderLayout(BufferLayout& layout) const;
+
 		inline const std::shared_ptr<IndexBuffer>& GetIndexBuffer() const { return m_IndexBuffer; }
 
 	private:

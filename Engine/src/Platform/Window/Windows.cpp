@@ -7,7 +7,7 @@ namespace Karem {
 
     float Platform::GetTime()
     {
-        return glfwGetTime();
+        return (float)glfwGetTime();
     }
 
 }

@@ -26,9 +26,6 @@ namespace Karem {
 
 		virtual void Draw(uint32_t count) = 0;
 
-		virtual BufferLayout GetShaderAttributes(const std::shared_ptr<Shader>& shader) = 0;
-		virtual void GetShaderUniforms(const std::shared_ptr<Shader>& shader) = 0;
-
 		inline static API GetAPI() { return s_Api; }
 	private:
 		static API s_Api;

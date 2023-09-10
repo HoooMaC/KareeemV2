@@ -12,9 +12,10 @@ namespace Karem {
 	{
 		switch (RendererAPI::GetAPI())
 		{
-			case API::None: ENGINE_ASSERT(false, "Renderer API::NONE hasn't supported yet") break;
 			case API::OpenGL: return std::make_shared<OpenGLShader>(vertexShader, fragmentShader);
 		}
+		ENGINE_ASSERT(false, "Renderer API::NONE hasn't supported yet");
+		return nullptr;
 	}
 
 }
