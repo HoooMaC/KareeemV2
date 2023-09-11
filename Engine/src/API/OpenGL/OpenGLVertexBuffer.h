@@ -8,10 +8,10 @@ namespace Karem {
 	class OpenGLVertexBuffer : public VertexBuffer
 	{
 	public:
+		OpenGLVertexBuffer(size_t size);
 		OpenGLVertexBuffer(void* data, size_t size);
 		~OpenGLVertexBuffer();
 
-		void Init(void* data, size_t size) override;
 		void Clear() override;
 
 		void Bind() const override;

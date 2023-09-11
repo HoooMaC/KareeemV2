@@ -12,24 +12,17 @@ namespace Karem {
 		OpenGLVertexArray();
 		~OpenGLVertexArray();
 
-		void Init();
 		void Clear();
 
 		void Bind() const;
 		void UnBind() const;
 
-
-		void AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer) override;
-		void SetIndexBuffer(const std::shared_ptr<IndexBuffer>& indexBuffer) override;
+		void UpdateBufferData(void* vbData, void* ibData, uint64_t size, uint64_t count) const override;
 
 		void ApplyShaderLayout(BufferLayout& layout) const;
-
-		inline const std::shared_ptr<IndexBuffer>& GetIndexBuffer() const { return m_IndexBuffer; }
-
 	private:
 		uint32_t m_RendererID;
-		std::vector<std::shared_ptr<VertexBuffer>> m_VertexBufferContainer;
-		std::shared_ptr<IndexBuffer> m_IndexBuffer;
+		uint32_t m_VertexBufferID, m_IndexBufferID;
 	};
 
 }

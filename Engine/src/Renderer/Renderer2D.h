@@ -4,7 +4,11 @@
 
 #include <glm/glm.hpp>
 
+//#include "Renderer/OrthographicCamera.h"
+
 namespace Karem {
+
+	class OrthographicCamera;
 
 	class Renderer2D
 	{
@@ -12,12 +16,12 @@ namespace Karem {
 		static void Initialize();
 		static void Shutdown();
 
-		static void BeginScene(/*Material material*/);
+		/*Material material*/
+		static void BeginScene(const OrthographicCamera& camera);
 		static void EndScene();
 
-		static void SubmitQuad(const std::string& objId, const glm::vec3& pos, const glm::vec2& size, const glm::vec4& color);
+		static void SubmitQuad(const glm::vec3& pos, const glm::vec2& size, const glm::vec4& color);
 	private:
-		static void GenerateQuad(const glm::vec3& pos, const glm::vec2& size, const glm::vec4& color);
 
 		// this is just checking uniform for debug
 		static void Validate();

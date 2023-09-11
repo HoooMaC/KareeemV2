@@ -1,7 +1,5 @@
 #version 450 core
 
-uniform sampler2D uTexture;
-
 in vec2 vTexCoord;
 in vec4 vColor;
 in float vTexIndex;
@@ -16,6 +14,6 @@ void main()
 	}
 	else
 	{
-		FragColor = texture(uTexture, vTexCoord);
+		FragColor = vec4(1.0f);
 	}
 }

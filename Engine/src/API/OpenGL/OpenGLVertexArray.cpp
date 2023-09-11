@@ -44,7 +44,8 @@ namespace Karem {
 
 	OpenGLVertexArray::OpenGLVertexArray()
 	{
-		Init();
+		glGenVertexArrays(1, &m_RendererID);
+		Bind();
 	}
 
 	OpenGLVertexArray::~OpenGLVertexArray()
@@ -63,17 +64,14 @@ namespace Karem {
 		glBindVertexArray(0);
 	}
 
-	void OpenGLVertexArray::AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer)
+	void OpenGLVertexArray::UpdateBufferData(void* vbData, void* ibData, uint64_t size, uint64_t count) const
 	{
-		//glBindVertexArray(m_RendererID);
+		//Bind temp just for testing
 		Bind();
-		m_VertexBufferContainer.emplace_back(vertexBuffer);
-		vertexBuffer->Bind();
-	}
 
-	void OpenGLVertexArray::SetIndexBuffer(const std::shared_ptr<IndexBuffer>& indexBuffer)
-	{
-		m_IndexBuffer = indexBuffer;
+		// for now only support modifying or upadating entire buffer data
+		glBufferSubData(GL_ARRAY_BUFFER, 0, size, vbData);
+		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, count * sizeof(uint32_t), ibData);
 	}
 
 	void OpenGLVertexArray::ApplyShaderLayout(BufferLayout& layout) const
@@ -92,13 +90,6 @@ namespace Karem {
 			);
 			index++;
 		}
-	}
-
-	void OpenGLVertexArray::Init()
-	{
-		glGenVertexArrays(1, &m_RendererID);
-		//glBindVertexArray(m_RendererID);
-		Bind();
 	}
 
 	void OpenGLVertexArray::Clear()

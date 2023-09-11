@@ -20,12 +20,34 @@ namespace Karem {
 		return nullptr;
 	}
 
+	std::shared_ptr<VertexBuffer> CreateVertexBuffer(size_t size)
+	{
+		switch (RendererAPI::GetAPI())
+		{
+		case API::None: ENGINE_ASSERT(false, "Renderer API::NONE hasn't supported yet") break;
+		case API::OpenGL: return std::make_shared<OpenGLVertexBuffer>(size);
+		}
+		return nullptr;
+	}
+
+
 	std::shared_ptr<VertexBuffer> CreateVertexBuffer(void* data, size_t size)
 	{
 		switch (RendererAPI::GetAPI())
 		{
 			case API::None: ENGINE_ASSERT(false, "Renderer API::NONE hasn't supported yet") break;
 			case API::OpenGL: return std::make_shared<OpenGLVertexBuffer>(data, size);
+		}
+		return nullptr;
+	}
+
+	std::shared_ptr<IndexBuffer> CreateIndexBuffer(uint64_t count)
+	{
+
+		switch (RendererAPI::GetAPI())
+		{
+		case API::None: ENGINE_ASSERT(false, "Renderer API::NONE hasn't supported yet") break;
+		case API::OpenGL: return std::make_shared<OpenGLIndexBuffer>(count);
 		}
 		return nullptr;
 	}

@@ -18,6 +18,17 @@ namespace Karem {
 		{
 			m_UniformList = uniforms;
 		}
+
+		void SetUniformData(const std::string& name, void* data)
+		{
+			m_UniformList.SetUniformData(name, data);
+		}
+
+		void ValidateMaterial()
+		{
+			m_UniformList.Validate();
+			//we should also validate other data 
+		}
 	private:
 		UniformCache m_UniformList;
 	};

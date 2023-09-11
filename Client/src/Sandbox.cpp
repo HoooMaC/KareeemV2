@@ -41,7 +41,9 @@ void Sandbox::Run()
 		Karem::RendererCommand::Clear();
 		Karem::RendererCommand::ClearColor("#3F1D38");
 
-		Karem::Renderer2D::BeginScene();
+		Karem::Renderer2D::BeginScene(m_Camera);
+
+		Karem::Renderer2D::SubmitQuad(glm::vec3(0.0f), glm::vec2(1.0f), Karem::HexToVec4("#ffffff"));
 
 		Karem::Renderer2D::EndScene();
 

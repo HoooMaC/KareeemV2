@@ -6,7 +6,6 @@ layout (location = 2) in vec2 aTexCoord;
 layout (location = 3) in float aTexIndex;
 
 uniform mat4 uProjectionView;
-uniform mat4 uModel;
 
 out vec4 vColor;
 out vec2 vTexCoord;
