@@ -82,7 +82,7 @@ namespace Karem {
 
 	BufferLayout OpenGLShader::GetShaderAttributes() const
 	{
-		std::vector<BufferElement> elements;
+		std::map<int32_t, BufferElement> elements;
 
 		int32_t attributeNumber;
 		int32_t maxBuffer;
@@ -96,23 +96,23 @@ namespace Karem {
 		{
 			int32_t attributeCount;
 			uint32_t attributeType;
-			int32_t attributeLength;
-			int32_t attributeIndex = i;
+			//int32_t attributeIndex = i;
 			char* attributeName = new char[maxBuffer];
 
-			glGetActiveAttrib(m_RendererID, i, maxBuffer, &attributeLength, &attributeCount, &attributeType, attributeName);
+			glGetActiveAttrib(m_RendererID, i, maxBuffer, nullptr, &attributeCount, &attributeType, attributeName);
+			int32_t attributeLocation = glGetAttribLocation(m_RendererID, attributeName);
 
 			//ENGINE_DEBUG("=================");
 			//ENGINE_DEBUG("{} Uniform name : {}", i, attributeName);
 			//ENGINE_DEBUG("Attribute Type : {}", attributeType);
 			//ENGINE_DEBUG("Attribute Count : {}", attributeCount);
 			//ENGINE_DEBUG("Attribute Length : {}", attributeLength);
-			//ENGINE_DEBUG("Attribute Location : {}", attributeLocation);
+			ENGINE_DEBUG("Attribute Location : {}", attributeLocation);
 			//ENGINE_DEBUG("=================");
 
 			ShaderDataType type = UintToShaderDataType(attributeType);
 			BufferElement element(type, attributeName);
-			elements.push_back(element);
+			elements[attributeLocation] = element;
 		}
 
 		return elements;

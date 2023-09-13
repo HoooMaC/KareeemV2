@@ -66,18 +66,6 @@ namespace Karem {
 
 	void OpenGLVertexArray::UpdateBufferData(void* vbData, void* ibData, uint64_t size, uint64_t count) const
 	{
-		// this is temporary, Bind temp just for testing
-		//Bind();
-		// Cetak data vbData ke konsol
-		float* vertexData = static_cast<float*>(vbData);
-		for (uint64_t i = 0; i < size / sizeof(float); i += 10)
-		{
-			std::cout << vertexData[i] << " | " << vertexData[i+1] << " | " << vertexData[i+2] << " : " << vertexData[i+3] << " | " << vertexData[i+4] << " | "
-				<< vertexData[i+5] << " | " << vertexData[i+6] << " : " << vertexData[i+7] << " | " << vertexData[i+8] << " | " << vertexData[9] << " |\n ";
-		}
-		std::cout << std::endl;
-
-		//__debugbreak();
 		// for now only support modifying or upadating entire buffer data
 		glBufferSubData(GL_ARRAY_BUFFER, 0, size, vbData);
 		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, count * sizeof(uint32_t), ibData);
@@ -85,19 +73,17 @@ namespace Karem {
 
 	void OpenGLVertexArray::ApplyShaderLayout(BufferLayout& layout) const
 	{
-		int32_t index = 0;
-		for (auto element : layout)
+		for (const auto& [location, element] : layout)
 		{
-			glEnableVertexAttribArray(index);
+			glEnableVertexAttribArray(location);
 			glVertexAttribPointer(
-				index,
+				location,
 				element.GetCount(),
 				OpenGLToShaderDataType(element.Type),
 				element.Normalized ? GL_TRUE : GL_FALSE,
 				layout.GetStride(),
 				(const void*)element.Offset
 			);
-			index++;
 		}
 	}
 

@@ -43,7 +43,8 @@ void Sandbox::Run()
 
 		Karem::Renderer2D::BeginScene(m_Camera);
 
-		Karem::Renderer2D::SubmitTriangle(glm::vec3(0.0f), glm::vec2(1.0f), Karem::HexToVec4("#ffffff"), 1.0f);
+		Karem::Renderer2D::SubmitQuad(glm::vec3(0.0f), glm::vec2(2.0f), Karem::HexToVec4("#DBF227"), 0.0f);
+		Karem::Renderer2D::SubmitTriangle(glm::vec3(0.0f), glm::vec2(0.5f), { 0.5f, 0.0f, 0.8f, 1.0f }, 0.0f);
 
 		Karem::Renderer2D::EndScene();
 

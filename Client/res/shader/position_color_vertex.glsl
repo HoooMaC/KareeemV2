@@ -13,8 +13,8 @@ out float vTexIndex;
 
 void main()
 {
+    gl_Position = uProjectionView  * vec4(aPos, 1.0f);
+    vColor = aColor;    
     vTexCoord = aTexCoord;
-    vColor = aColor;
     vTexIndex = aTexIndex;
-    gl_Position = uProjectionView  * vec4(aPos, 1.0);
 }
