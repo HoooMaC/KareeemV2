@@ -18,7 +18,7 @@ Karem::Application* Karem::CreateApplication()
 }
 
 Sandbox::Sandbox()
-	: Application({"Sandbox Application", 1920, 1080})
+	: Application({ "Sandbox Application", 1920, 1080 })
 {
 	Init();
 }
@@ -34,6 +34,7 @@ void Sandbox::Run()
 	{
 		float time = Karem::Platform::GetTime();
 		Karem::TimeStep timeStep = time - m_LastFrameTime;
+		ENGINE_DEBUG("Frame time {}", timeStep);
 		m_LastFrameTime = time;
 
 		m_Camera.OnUpdate(timeStep);
@@ -43,8 +44,17 @@ void Sandbox::Run()
 
 		Karem::Renderer2D::BeginScene(m_Camera);
 
-		Karem::Renderer2D::SubmitQuad(glm::vec3(0.0f), glm::vec2(2.0f), Karem::HexToVec4("#DBF227"), 0.0f);
-		Karem::Renderer2D::SubmitTriangle(glm::vec3(0.0f), glm::vec2(0.5f), { 0.5f, 0.0f, 0.8f, 1.0f }, 0.0f);
+		constexpr int32_t countQuad = 20;
+
+		for (int y = 0; y < countQuad; y++)
+		{
+			for (int x = 0; x < countQuad; x++)
+			{
+				Karem::Renderer2D::SubmitQuad({ float(x), float(y), 0.0f}, glm::vec2(0.9f), {0.5f, 0.0f, 0.8f, 1.0f}, 0.0f);
+			}
+		}
+
+		Karem::Renderer2D::SubmitTriangle({ 0.0f, 0.0f, 0.1f }, glm::vec2(0.5f), { 0.0f, 0.5f, 0.8f, 1.0f }, 0.0f);
 
 		Karem::Renderer2D::EndScene();
 

@@ -64,7 +64,7 @@ namespace Karem {
 		glBindVertexArray(0);
 	}
 
-	void OpenGLVertexArray::UpdateBufferData(void* vbData, void* ibData, uint64_t size, uint64_t count) const
+	void OpenGLVertexArray::UpdateBufferData(void* vbData, void* ibData, int64_t size, int64_t count) const
 	{
 		// for now only support modifying or upadating entire buffer data
 		glBufferSubData(GL_ARRAY_BUFFER, 0, size, vbData);

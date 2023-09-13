@@ -107,7 +107,7 @@ namespace Karem {
 			//ENGINE_DEBUG("Attribute Type : {}", attributeType);
 			//ENGINE_DEBUG("Attribute Count : {}", attributeCount);
 			//ENGINE_DEBUG("Attribute Length : {}", attributeLength);
-			ENGINE_DEBUG("Attribute Location : {}", attributeLocation);
+			//ENGINE_DEBUG("Attribute Location : {}", attributeLocation);
 			//ENGINE_DEBUG("=================");
 
 			ShaderDataType type = UintToShaderDataType(attributeType);
@@ -142,7 +142,7 @@ namespace Karem {
 			uniformLocation = glGetUniformLocation(m_RendererID, uniformName);
 
 			// this is temporary
-			ENGINE_ASSERT(uniformLocation == -1, "UniformLocation Not Founf");
+			ENGINE_ASSERT(uniformLocation == -1, "UniformLocation Not Found");
 			//ENGINE_DEBUG("=================");
 			//ENGINE_DEBUG("{} Uniform name : {}", i, uniformName);
 			//ENGINE_DEBUG("Uniform Type : {}", uniformType);

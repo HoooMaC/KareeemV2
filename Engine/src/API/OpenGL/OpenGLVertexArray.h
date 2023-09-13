@@ -17,7 +17,7 @@ namespace Karem {
 		void Bind() const;
 		void UnBind() const;
 
-		void UpdateBufferData(void* vbData, void* ibData, uint64_t size, uint64_t count) const override;
+		void UpdateBufferData(void* vbData, void* ibData, int64_t size, int64_t count) const override;
 
 		void ApplyShaderLayout(BufferLayout& layout) const;
 	private:

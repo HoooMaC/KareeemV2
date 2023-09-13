@@ -42,7 +42,7 @@ namespace Karem {
 		virtual void Bind() const = 0;
 		virtual void UnBind() const = 0;
 
-		virtual void UpdateBufferData(void* vbData, void* ibData, uint64_t size, uint64_t count) const = 0;
+		virtual void UpdateBufferData(void* vbData, void* ibData, int64_t size, int64_t count) const = 0;
 
 		virtual void ApplyShaderLayout(BufferLayout& layout) const = 0;
 	};
