@@ -4,15 +4,14 @@
 
 #include <glad/glad.h>
 
+#include "Renderer/BufferLayout.h"
+
 namespace Karem {
 
 	OpenGLShader::OpenGLShader(const std::string& vertexShaderFilePath, const std::string& fragmentShaderFilePath)
 	{
 		std::string vertexShader = ReadFile(vertexShaderFilePath);
 		std::string fragmentShader = ReadFile(fragmentShaderFilePath);
-
-		// TO DO : separate the compilation of each shader
-		// and check the uniform 
 
 		const char* vertexShaderSource = vertexShader.c_str();
 		const char* fragmentShaderSource = fragmentShader.c_str();
@@ -21,79 +20,10 @@ namespace Karem {
 		GLuint fragmentShaderId = CompileShader(fragmentShaderSource, GL_FRAGMENT_SHADER);
 
 		CreateShader(vertexShaderId, fragmentShaderId);
-
-		GetUniform();
+		
+		ENGINE_DEBUG("Creating a shader with id [{}]", m_RendererID);
 	}
 
-	void OpenGLShader::GetUniform()
-	{
-		int32_t uniformNum;
-		int32_t maxBuffer;
-		glGetProgramiv(m_RendererID, GL_ACTIVE_UNIFORMS, &uniformNum);
-		glGetProgramiv(m_RendererID, GL_ACTIVE_UNIFORM_MAX_LENGTH, &maxBuffer);
-
-		//ENGINE_DEBUG("Uniform number {}", uniformNum);
-		//ENGINE_DEBUG("Uniform max number {}", maxBuffer);
-
-		for (int i = 0; i < uniformNum; i++)
-		{
-			int32_t uniformCount;
-			uint32_t uniformType;
-			int32_t uniformLength;
-			int32_t uniformLocation;
-			char* uniformName = new char[maxBuffer];
-
-			glGetActiveUniform(m_RendererID, i, maxBuffer, &uniformLength, &uniformCount, &uniformType, uniformName);
-			uniformLocation = glGetUniformLocation(m_RendererID, uniformName);
-
-			//ENGINE_DEBUG("=================");
-			//ENGINE_DEBUG("{} Uniform name : {}", i, uniformName);
-			//ENGINE_DEBUG("Uniform Type : {}", uniformType);
-			//ENGINE_DEBUG("Uniform Count : {}", uniformCount);
-			//ENGINE_DEBUG("Uniform Length : {}", uniformLength);
-			//ENGINE_DEBUG("Uniform Location : {}", uniformLocation);
-			//ENGINE_DEBUG("=================");
-
-			UniformAttrib uniform(uniformType, uniformCount, uniformLocation);
-
-			m_UniformContainer[uniformName] = uniform;
-		}
-
-	}
-
-	void OpenGLShader::UpdateUniform(const std::string& name, void* data)
-	{
-		// TODO: Check if the uniform with the given "name" exists
-		auto uniformIterator = m_UniformContainer.find(name);
-		if (uniformIterator == m_UniformContainer.end()) {
-			ENGINE_WARN("Uniform {} not found.", name);
-			return;
-		}
-
-		uniformIterator->second.Data = data;
-		UploadUniform(uniformIterator->second);
-	}
-
-	void OpenGLShader::UploadUniform(const UniformAttrib& uniform) const
-	{
-		switch (uniform.Type)
-		{
-		case GL_FLOAT:			return glUniform1fv(uniform.Location, uniform.Count, (const float*)uniform.Data);
-		case GL_FLOAT_VEC2:		return glUniform2fv(uniform.Location, uniform.Count, (const float*)uniform.Data);
-		case GL_FLOAT_VEC3:		return glUniform3fv(uniform.Location, uniform.Count, (const float*)uniform.Data);
-		case GL_FLOAT_VEC4:		return glUniform4fv(uniform.Location, uniform.Count, (const float*)uniform.Data);
-		case GL_FLOAT_MAT2:		return glUniformMatrix2fv(uniform.Location, uniform.Count, GL_FALSE, (const float*)uniform.Data);
-		case GL_FLOAT_MAT3:		return glUniformMatrix3fv(uniform.Location, uniform.Count, GL_FALSE, (const float*)uniform.Data);
-		case GL_FLOAT_MAT4:		return glUniformMatrix4fv(uniform.Location, uniform.Count, GL_FALSE, (const float*)uniform.Data);	
-		case GL_INT:			return glUniform1iv(uniform.Location, uniform.Count, (const int*)uniform.Data);
-		case GL_INT_VEC2:		return glUniform2iv(uniform.Location, uniform.Count, (const int*)uniform.Data);
-		case GL_INT_VEC3:		return glUniform3iv(uniform.Location, uniform.Count, (const int*)uniform.Data);
-		case GL_BOOL:			ENGINE_INFO("BOOLEAN HASN'T SUPPORTED YET");
-		default:
-			ENGINE_WARN("INVALID UNIFORM TYPE");
-			return;
-		}
-	}
 
 	void OpenGLShader::CreateShader(uint32_t vertexShader, uint32_t fragmentShader)
 	{
@@ -142,6 +72,7 @@ namespace Karem {
 	void OpenGLShader::Bind() const
 	{
 		glUseProgram(m_RendererID);
+		ENGINE_DEBUG("Binding shader with id [{}]", m_RendererID);
 	}
 
 	void OpenGLShader::UnBind() const
@@ -149,41 +80,100 @@ namespace Karem {
 		glUseProgram(0);
 	}
 
-	void OpenGLShader::BindAndUploadUniform() const
+	BufferLayout OpenGLShader::GetShaderAttributes() const
 	{
-		glUseProgram(m_RendererID);
-		for (const auto& [name, uniform] : m_UniformContainer)
+		std::map<int32_t, BufferElement> elements;
+
+		int32_t attributeNumber;
+		int32_t maxBuffer;
+		glGetProgramiv(m_RendererID, GL_ACTIVE_ATTRIBUTES, &attributeNumber);
+		glGetProgramiv(m_RendererID, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &maxBuffer);
+
+		//ENGINE_DEBUG("Attribute number {}", attributeNumber);
+		//ENGINE_DEBUG("Attribute max number {}", maxBuffer);
+
+		for (int i = 0; i < attributeNumber; i++)
 		{
-			//ENGINE_TRACE("{}", name);
-			if (uniform.Data == nullptr)
-			{
-				// this should be changed with ASSERTION
-				ENGINE_WARN("Unitiliazed Uniform : {}", name);
-				__debugbreak();
-			}
+			int32_t attributeCount;
+			uint32_t attributeType;
+			//int32_t attributeIndex = i;
+			char* attributeName = new char[maxBuffer];
 
+			glGetActiveAttrib(m_RendererID, i, maxBuffer, nullptr, &attributeCount, &attributeType, attributeName);
+			int32_t attributeLocation = glGetAttribLocation(m_RendererID, attributeName);
 
-			UploadUniform(uniform);
+			//ENGINE_DEBUG("=================");
+			//ENGINE_DEBUG("{} Uniform name : {}", i, attributeName);
+			//ENGINE_DEBUG("Attribute Type : {}", attributeType);
+			//ENGINE_DEBUG("Attribute Count : {}", attributeCount);
+			//ENGINE_DEBUG("Attribute Length : {}", attributeLength);
+			//ENGINE_DEBUG("Attribute Location : {}", attributeLocation);
+			//ENGINE_DEBUG("=================");
+
+			ShaderDataType type = UintToShaderDataType(attributeType);
+			BufferElement element(type, attributeName);
+			elements[attributeLocation] = element;
 		}
+
+		return elements;
+	}
+
+	UniformCache OpenGLShader::GetShaderUniforms() const
+	{
+		std::unordered_map<std::string, UniformElement> uniformList;
+
+		int32_t uniformNum;
+		int32_t maxBuffer;
+		glGetProgramiv(m_RendererID, GL_ACTIVE_UNIFORMS, &uniformNum);
+		glGetProgramiv(m_RendererID, GL_ACTIVE_UNIFORM_MAX_LENGTH, &maxBuffer);
+
+		//ENGINE_DEBUG("Uniform number {}", uniformNum);
+		//ENGINE_DEBUG("Uniform max number {}", maxBuffer);
+
+		for (int i = 0; i < uniformNum; i++)
+		{
+			int32_t uniformCount;
+			uint32_t uniformType;
+			int32_t uniformLength;
+			int32_t uniformLocation;
+			char* uniformName = new char[maxBuffer];
+
+			glGetActiveUniform(m_RendererID, i, maxBuffer, &uniformLength, &uniformCount, &uniformType, uniformName);
+			uniformLocation = glGetUniformLocation(m_RendererID, uniformName);
+
+			// this is temporary
+			ENGINE_ASSERT(uniformLocation == -1, "UniformLocation Not Found");
+			//ENGINE_DEBUG("=================");
+			//ENGINE_DEBUG("{} Uniform name : {}", i, uniformName);
+			//ENGINE_DEBUG("Uniform Type : {}", uniformType);
+			//ENGINE_DEBUG("Uniform Count : {}", uniformCount);
+			//ENGINE_DEBUG("Uniform Length : {}", uniformLength);
+			//ENGINE_DEBUG("Uniform Location : {}", uniformLocation);
+			//ENGINE_DEBUG("=================");
+
+			UniformElement uniform(uniformType, uniformLocation, uniformCount);
+
+			uniformList[uniformName] = uniform;
+		}
+
+		return uniformList;
 	}
 
 	std::string OpenGLShader::ReadFile(const std::string& fileSource)
 	{
-		// TODO: insert return statement here
 		std::ifstream input(fileSource);
 
 		if (!input.is_open())
 		{
 			// TODO : make some Assertion here
-			ENGINE_ERROR("FILE IS NOT FOUND");
-			__debugbreak();
+			ENGINE_ASSERT(false, "FILE IS NOT FOUND");
 			return "";
 		}
 
 		std::stringstream buffer;
 		buffer << input.rdbuf();
 
-		//ENGINE_DEBUG("{}", buffer.str());
+		//ENGINE_DEBUG("\n{}", buffer.str());
 
 		input.close();
 

@@ -9,6 +9,9 @@
 #include "Event/KeyEvent.h"
 #include "Event/MouseEvent.h"
 
+#include "imgui_setup.h"
+
+#include <GLFW/glfw3.h>
 
 namespace Karem {
 
@@ -34,11 +37,7 @@ namespace Karem {
 		{
 			int succes = glfwInit();
 
-			// TODO : change this into assertion and set the error callbacks
-			if (!succes)
-			{
-				ENGINE_CRITICAL("Failed to Initialized GLFW");
-			}
+			ENGINE_ASSERT(succes, "Failed to Initialized GLFW");
 
 			glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 			glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
@@ -53,6 +52,8 @@ namespace Karem {
 		if (!s_Initialized)
 		{
 			m_Context->Init();
+
+			//imgui::InitializeImGUI(m_Window);
 
 			s_Initialized = true;
 		}
@@ -85,6 +86,7 @@ namespace Karem {
 			
 			MouseScrolledEvent event((float)xOffset, (float)yOffset);
 			data.EventCallback(event);
+			//ENGINE_TRACE(event);
 		});
 
 		glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, double xPos, double yPos)
@@ -158,6 +160,8 @@ namespace Karem {
 	{
 		if(s_Initialized)
 		{
+			imgui::Shutdown();
+
 			glfwDestroyWindow(m_Window);
 			glfwTerminate();
 

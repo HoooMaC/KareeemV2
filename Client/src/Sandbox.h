@@ -1,6 +1,5 @@
 #pragma once
 
-#include "AppLayer.h"
 #include "KaremEngine.h"
 
 class Sandbox : public Karem::Application
@@ -18,13 +17,14 @@ protected:
 private:
 	bool WindowCloseAction(Karem::WindowCloseEvent& event);
 	
-	void PushLayer(std::shared_ptr<Karem::Layer> layer);
-	void PushOverlay(std::shared_ptr<Karem::Layer> overlay);
-	void PopLayer(std::shared_ptr<Karem::Layer> layer);
-	void PopOverlay(std::shared_ptr<Karem::Layer> overlay);
+	//void PushLayer(std::shared_ptr<Karem::Layer> layer);
+	//void PushOverlay(std::shared_ptr<Karem::Layer> overlay);
+	//void PopLayer(std::shared_ptr<Karem::Layer> layer);
+	//void PopOverlay(std::shared_ptr<Karem::Layer> overlay);
 private:
-	Karem::Layers m_Layers;
+	//Karem::Layers m_Layers;
 	Karem::OrthographicCamera m_Camera;
-	std::shared_ptr<Karem::Shader> m_Shader;
+
+	float m_LastFrameTime = 0.0f;
 };
 

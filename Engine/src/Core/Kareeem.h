@@ -12,6 +12,7 @@
 #include <cmath>
 
 //STL LIB
+#include <initializer_list>
 #include <vector>
 #include <unordered_map>
 #include <map>

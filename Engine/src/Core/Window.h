@@ -2,12 +2,12 @@
 
 #include "Event/Event.h"
 
-#include "Core/Renderer/GraphicsContext.h"
+#include "Renderer/GraphicsContext.h"
 
 #include <functional>
 #include <string>
 
-#include <GLFW/glfw3.h>
+struct GLFWwindow;
 
 namespace Karem {
 
