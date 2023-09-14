@@ -10,22 +10,24 @@
 //#include "backends/imgui_impl_glfw.h"
 //#include "backends/imgui_impl_opengl3.h"
 
-//#include <GLFW/glfw3.h>
-
 Karem::Application* Karem::CreateApplication()
 {
 	return new Sandbox();
 }
 
+static constexpr int32_t appWidth = 1280, appHeight = 720;
+
 Sandbox::Sandbox()
-	: Application({ "Sandbox Application", 1920, 1080 })
+	: Application({ "Sandbox Application", appWidth, appHeight})
 {
 	Init();
+
+	m_Texture = Karem::CreateTexture2D("res/texture/diamond_sword.png", 3);
 }
 
 void Sandbox::Init()
 {
-	m_Camera = Karem::OrthographicCamera((float)1920 / 1080);
+	m_Camera = Karem::OrthographicCamera((float)appWidth / appHeight);
 }
 
 void Sandbox::Run()
@@ -44,13 +46,13 @@ void Sandbox::Run()
 
 		Karem::Renderer2D::BeginScene(m_Camera);
 
-		constexpr int32_t countQuad = 20;
+		constexpr int32_t countQuad = 10;
 
 		for (int y = 0; y < countQuad; y++)
 		{
 			for (int x = 0; x < countQuad; x++)
 			{
-				Karem::Renderer2D::SubmitQuad({ float(x), float(y), 0.0f}, glm::vec2(0.9f), {0.5f, 0.0f, 0.8f, 1.0f}, 0.0f);
+				Karem::Renderer2D::SubmitQuad({ float(x), float(y), 0.0f}, glm::vec2(0.8f), {0.5f, 0.0f, 0.8f, 1.0f}, 0.0f);
 			}
 		}
 
@@ -100,23 +102,3 @@ bool Sandbox::WindowCloseAction(Karem::WindowCloseEvent& event)
 	m_Running = false;
 	return true;
 }
-
-//void Sandbox::PushLayer(std::shared_ptr<Karem::Layer> layer)
-//{
-//	m_Layers.PushLayer(layer);
-//}
-//
-//void Sandbox::PushOverlay(std::shared_ptr<Karem::Layer> overlay)
-//{
-//	m_Layers.PushOverlay(overlay);
-//}
-//
-//void Sandbox::PopLayer(std::shared_ptr<Karem::Layer> layer)
-//{
-//	m_Layers.PopLayer(layer);
-//}
-//
-//void Sandbox::PopOverlay(std::shared_ptr<Karem::Layer> overlay)
-//{
-//	m_Layers.PopOverlay(overlay);
-//}

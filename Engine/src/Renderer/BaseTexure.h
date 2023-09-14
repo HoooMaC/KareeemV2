@@ -14,6 +14,7 @@ namespace Karem {
 		virtual uint32_t GetWidth() const = 0;
 		virtual uint32_t GetHeight() const = 0;
 		virtual uint32_t GetSlot() const = 0;
+		virtual uint32_t GetTextureID() const = 0;
 		virtual std::string GetFilePath() const = 0;
 
 		virtual void SetSlot(uint32_t slot) = 0;
