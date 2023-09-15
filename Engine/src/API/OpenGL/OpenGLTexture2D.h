@@ -9,6 +9,7 @@ namespace Karem {
 	class OpenGLTexture2D : public Texture2D
 	{
 	public:
+		OpenGLTexture2D(uint32_t slot);
 		OpenGLTexture2D(const std::string& filePath, uint32_t slot, uint32_t filter);
 		~OpenGLTexture2D();
 

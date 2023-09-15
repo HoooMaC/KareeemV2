@@ -78,7 +78,7 @@ namespace Karem {
 		s_TextureBuffer = new TextureBuffer;
 
 
-		s_Data->m_Shader = CreateShader("res\\shader\\position_color_vertex.glsl", "res\\shader\\position_color_fragment.glsl");
+		s_Data->m_Shader = CreateShader("res/shader/vertex.shader.glsl", "res/shader/fragment.shader.glsl");
 		s_Data->m_VertexArray = CreateVertexArray();
 
 		s_Data->vertexBuffer = CreateVertexBuffer(BufferData::maxVertex * sizeof(Vertex));
@@ -98,8 +98,11 @@ namespace Karem {
 		s_TextureBuffer->textureSlotContainer.resize(32);
 		s_TextureBuffer->textureSlotContainer[0] = 0;
 
+		s_TextureBuffer->TextureContainer[0] = Karem::CreateTexture2D(0);
+		s_TextureBuffer->textureSlotContainer[0] = 0;
+
 		// initializing texture
-		for (int i = 0; i < 32; i++)
+		for (int i = 1; i < 32; i++)
 		{
 			std::string filepath = "res/texture/1 (" + std::to_string(i) + ").png";
 			s_TextureBuffer->TextureContainer[i] = Karem::CreateTexture2D(filepath, i);
@@ -178,14 +181,13 @@ namespace Karem {
 		BufferData::indicesOffset += 4;
 	}
 
-	void Renderer2D::SubmitTexturedQuad(const glm::vec3& pos, const glm::vec2& size, float texIndex)
+	void Renderer2D::SubmitQuad(const glm::vec3& pos, const glm::vec2& size, const std::shared_ptr<Texture2D>& texture, float texIndex, const glm::vec4& color)
 	{
 		if (BufferData::vertexIndex + 4 >= BufferData::maxVertex or BufferData::indicesIndex + 6 >= BufferData::maxIndexBuffer)
 		{
 			EndScene();
 		}
 
-		constexpr glm::vec4 color(1.0f);
 
 		float halfWidth = size.x / 2.0f;
 		float halfHeight = size.y / 2.0f;
@@ -213,10 +215,12 @@ namespace Karem {
 		};
 		s_SceneBuffer->indicesData.insert(s_SceneBuffer->indicesData.begin() + BufferData::indicesIndex, newQuadIndices.begin(), newQuadIndices.end());
 
+		s_TextureBuffer->TextureContainer[(int)texIndex] = texture;
+
 		BufferData::indicesIndex += 6;
 		BufferData::indicesOffset += 4;
-
 	}
+
 
 	void Renderer2D::SubmitTriangle(const glm::vec3& pos, const glm::vec2& size, const glm::vec4& color, float texIndex)
 	{

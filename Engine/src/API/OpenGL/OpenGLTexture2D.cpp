@@ -6,6 +6,17 @@
 #include <glad/glad.h>
 
 namespace Karem {
+	OpenGLTexture2D::OpenGLTexture2D(uint32_t slot)
+		: m_FilePath(""), m_Slot(slot), m_Width(0), m_Height(0), m_BPP(0), m_RendererID(0)
+	{
+		uint32_t format = GL_RGBA;
+		unsigned char whitePixel[] = { 255, 255, 255, 255 }; // Putih dengan alpha penuh
+		m_Width = 1;
+		m_Height = 1;
+		m_BPP = 4;
+		glTexImage2D(GL_TEXTURE_2D, 0, format, m_Width, m_Height, 0, format, GL_UNSIGNED_BYTE, whitePixel);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
 
 	OpenGLTexture2D::OpenGLTexture2D(const std::string& filePath, uint32_t slot, uint32_t filter)
 		: m_FilePath(filePath), m_Slot(slot), m_Width(0), m_Height(0), m_BPP(0), m_RendererID(0)

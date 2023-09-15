@@ -26,6 +26,7 @@ Sandbox::Sandbox()
 void Sandbox::Init()
 {
 	m_Camera = Karem::OrthographicCamera((float)appWidth / appHeight);
+	m_Texture = Karem::CreateTexture2D("res/texture/diamond_block.png", 3);
 }
 
 void Sandbox::Run()
@@ -40,7 +41,7 @@ void Sandbox::Run()
 		m_Camera.OnUpdate(timeStep);
 
 		Karem::RendererCommand::Clear();
-		Karem::RendererCommand::ClearColor("#3F1D38");
+		Karem::RendererCommand::ClearColor("#D9D9D9");
 
 		Karem::Renderer2D::BeginScene(m_Camera);
 
@@ -50,10 +51,12 @@ void Sandbox::Run()
 		{
 			for (int x = 0; x < countQuad; x++)
 			{
-				Karem::Renderer2D::SubmitQuad({ float(x), float(y), -0.1f}, glm::vec2(0.8f), {0.5f, 0.0f, 0.8f, 1.0f}, 0.0f);
+				Karem::Renderer2D::SubmitQuad({ float(x), float(y), -0.1f}, glm::vec2(1.0f), m_Texture, 3.0f);
 			}
 		}
-		Karem::Renderer2D::SubmitTexturedQuad(glm::vec3(0.0f), glm::vec2(1.0f), 2.0f);
+
+		Karem::Renderer2D::SubmitQuad(glm::vec3(0.0f), glm::vec2(10.0f), m_Texture, 3.0f/*, { 0.3f, 0.0f, 0.8f, 1.0f }*/);
+
 		Karem::Renderer2D::SubmitTriangle({ 0.0f, 0.0f, 0.1f }, glm::vec2(0.5f), { 0.0f, 0.5f, 0.8f, 1.0f }, 0.0f);
 
 		Karem::Renderer2D::EndScene();
