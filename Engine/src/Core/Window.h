@@ -38,6 +38,7 @@ namespace Karem {
 		virtual void OnUpdate();
 		virtual void SetVSync(bool enable);
 		virtual void SetEventCallbacks(EventCallbackFn callback);
+		virtual void Resize(int width, int height);
 
 		virtual bool IsVSync();
 		virtual uint32_t GetWidth() const;

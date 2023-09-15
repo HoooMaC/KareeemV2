@@ -87,6 +87,7 @@ void Sandbox::EventHandler(Karem::Event& event)
 {
 	Karem::EventDispatcher dispatcher(event);
 	dispatcher.Dispatch<Karem::WindowCloseEvent>(std::bind(&Sandbox::WindowCloseAction, this, std::placeholders::_1));
+	dispatcher.Dispatch<Karem::WindowResizeEvent>(std::bind(&Sandbox::WindowResizeAction, this, std::placeholders::_1));
 
 	m_Camera.OnEvent(event);
 	//for (auto it = m_Layers.rbegin(); it != m_Layers.rend(); ++it)
@@ -101,5 +102,11 @@ void Sandbox::EventHandler(Karem::Event& event)
 bool Sandbox::WindowCloseAction(Karem::WindowCloseEvent& event)
 {
 	m_Running = false;
+	return true;
+}
+
+bool Sandbox::WindowResizeAction(Karem::WindowResizeEvent& event)
+{
+	m_Window.Resize(event.GetWidth(), event.GetHeight());
 	return true;
 }

@@ -16,6 +16,7 @@ protected:
 
 private:
 	bool WindowCloseAction(Karem::WindowCloseEvent& event);
+	bool WindowResizeAction(Karem::WindowResizeEvent& event);
 	
 private:
 	//Karem::Layers m_Layers;

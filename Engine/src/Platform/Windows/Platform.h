@@ -6,6 +6,7 @@ namespace Karem {
 	{
 	public:
 		static float GetTime();
+		static void ResizeWindow(int width, int height);
 	};
 
 }

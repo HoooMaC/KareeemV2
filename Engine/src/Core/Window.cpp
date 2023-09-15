@@ -9,6 +9,8 @@
 #include "Event/KeyEvent.h"
 #include "Event/MouseEvent.h"
 
+#include "Platform/Windows/Platform.h"
+
 #include "imgui_setup.h"
 
 #include <GLFW/glfw3.h>
@@ -188,6 +190,13 @@ namespace Karem {
 	void Window::SetEventCallbacks(EventCallbackFn callback)
 	{
 		m_Data.EventCallback = callback;
+	}
+
+	void Window::Resize(int width, int height)
+	{
+		m_Data.Width = width;
+		m_Data.Height = height;
+		Platform::ResizeWindow(width, height);
 	}
 
 	bool Karem::Window::IsVSync()

@@ -21,7 +21,6 @@ namespace Karem {
 		virtual void Run() = 0;
 
 		virtual void EventHandler(Event& event) = 0;
-
 	protected:
 		virtual void Init() = 0;
 		virtual void Shutdown() = 0;
