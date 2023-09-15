@@ -6,7 +6,7 @@ in float vTexIndex;
 
 out vec4 FragColor;
 
-//uniform sampler2D uTexture[32];
+uniform sampler2D uTexture[32];
 
 void main()
 {
@@ -17,7 +17,7 @@ void main()
     }
     else
     {
-        //FragColor = texture(uTexture[texIndex], vTexCoord);
-        FragColor = vec4(vTexCoord, vTexCoord);
+        FragColor = texture(uTexture[texIndex], vTexCoord);
+        //FragColor = vec4(vTexCoord, 0.0f, 1.0f);
     }
 }

@@ -20,6 +20,7 @@ namespace Karem {
 
 	void OpenGLTexture2D::Bind() const
 	{
+		glActiveTexture(GL_TEXTURE0 + m_Slot);
 		glBindTexture(GL_TEXTURE_2D, m_RendererID);
 	}
 

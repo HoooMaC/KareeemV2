@@ -21,8 +21,6 @@ Sandbox::Sandbox()
 	: Application({ "Sandbox Application", appWidth, appHeight})
 {
 	Init();
-
-	m_Texture = Karem::CreateTexture2D("res/texture/diamond_sword.png", 3);
 }
 
 void Sandbox::Init()
@@ -36,7 +34,7 @@ void Sandbox::Run()
 	{
 		float time = Karem::Platform::GetTime();
 		Karem::TimeStep timeStep = time - m_LastFrameTime;
-		ENGINE_DEBUG("Frame time {}", timeStep);
+		//ENGINE_DEBUG("Frame time {}", timeStep);
 		m_LastFrameTime = time;
 
 		m_Camera.OnUpdate(timeStep);
@@ -52,10 +50,10 @@ void Sandbox::Run()
 		{
 			for (int x = 0; x < countQuad; x++)
 			{
-				Karem::Renderer2D::SubmitQuad({ float(x), float(y), 0.0f}, glm::vec2(0.8f), {0.5f, 0.0f, 0.8f, 1.0f}, 0.0f);
+				Karem::Renderer2D::SubmitQuad({ float(x), float(y), -0.1f}, glm::vec2(0.8f), {0.5f, 0.0f, 0.8f, 1.0f}, 0.0f);
 			}
 		}
-
+		Karem::Renderer2D::SubmitTexturedQuad(glm::vec3(0.0f), glm::vec2(1.0f), 2.0f);
 		Karem::Renderer2D::SubmitTriangle({ 0.0f, 0.0f, 0.1f }, glm::vec2(0.5f), { 0.0f, 0.5f, 0.8f, 1.0f }, 0.0f);
 
 		Karem::Renderer2D::EndScene();
