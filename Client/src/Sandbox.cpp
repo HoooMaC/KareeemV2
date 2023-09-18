@@ -55,7 +55,14 @@ void Sandbox::Run()
 			}
 		}
 
+		static float solidQuadRotation = 0.0f;
+		solidQuadRotation += 45.0f * timeStep;
+		static float texturedQuadRotation = 360.0f;
+		texturedQuadRotation -= 45.0f * timeStep;
+
 		Karem::Renderer2D::SubmitQuad(glm::vec3(0.0f), glm::vec2(10.0f), m_Texture, 3.0f/*, { 0.3f, 0.0f, 0.8f, 1.0f }*/);
+		Karem::Renderer2D::SubmitRotatedQuad({ -0.5f, -0.25f, 0.1f }, glm::vec2(0.75f), glm::radians(solidQuadRotation), { 0.2f, 0.0f, 0.9f, 1.0f});
+		Karem::Renderer2D::SubmitRotatedQuad({  0.5f, -0.25f, 0.2f }, glm::vec2(0.75f), glm::radians(texturedQuadRotation), m_Texture);
 
 		Karem::Renderer2D::SubmitTriangle({ 0.0f, 0.0f, 0.1f }, glm::vec2(0.5f), { 0.0f, 0.5f, 0.8f, 1.0f }, 0.0f);
 

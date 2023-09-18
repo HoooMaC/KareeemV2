@@ -16,16 +16,16 @@
 
 namespace Karem {
 
-	struct Vertex
+	struct Vertex2D
 	{
 		glm::vec3 Position;
 		glm::vec4 Color;
 		glm::vec2 TexCoord;
 		float TexIndex;
-		Vertex()
+		Vertex2D()
 			: Position(glm::vec3(0.0f)), Color(glm::vec4(0.0f)), TexCoord(glm::vec2(0.0f)), TexIndex(0.0f) {}
 
-		Vertex(const glm::vec3& position, const glm::vec4& color, const glm::vec2& texCoord, float texIndex)
+		Vertex2D(const glm::vec3& position, const glm::vec4& color, const glm::vec2& texCoord, float texIndex)
 			: Position(position), Color(color), TexCoord(texCoord), TexIndex(texIndex) {}
 	};
 
@@ -34,7 +34,7 @@ namespace Karem {
 		static constexpr uint64_t maxVertex = 1024;
 		static constexpr uint64_t maxIndexBuffer = maxVertex * 6;
 
-		std::vector<Vertex> vertexData;
+		std::vector<Vertex2D> vertexData;
 		std::vector<uint32_t> indicesData;
 		static uint32_t vertexIndex;
 		static uint32_t indicesIndex;
@@ -81,7 +81,7 @@ namespace Karem {
 		s_Data->m_Shader = CreateShader("res/shader/vertex.shader.glsl", "res/shader/fragment.shader.glsl");
 		s_Data->m_VertexArray = CreateVertexArray();
 
-		s_Data->vertexBuffer = CreateVertexBuffer(BufferData::maxVertex * sizeof(Vertex));
+		s_Data->vertexBuffer = CreateVertexBuffer(BufferData::maxVertex * sizeof(Vertex2D));
 		s_Data->indexBuffer = CreateIndexBuffer(BufferData::maxIndexBuffer);
 
 		// We need a vertex and index buffer
@@ -133,7 +133,7 @@ namespace Karem {
 		s_Data->m_VertexArray->UpdateBufferData(
 			s_SceneBuffer->vertexData.data(),
 			s_SceneBuffer->indicesData.data(),
-			BufferData::vertexIndex * sizeof(Vertex),
+			BufferData::vertexIndex * sizeof(Vertex2D),
 			BufferData::indicesIndex
 		);
 
@@ -154,12 +154,12 @@ namespace Karem {
 		float halfWidth = size.x / 2.0f;
 		float halfHeight = size.y / 2.0f;
 
-		std::vector<Vertex> newQuad =
+		std::vector<Vertex2D> newQuad =
 		{
-			Vertex{ glm::vec3(pos.x - halfWidth, pos.y - halfHeight, pos.z), color, glm::vec2(0.0f, 0.0f), texIndex }, // kiri bawah
-			Vertex{ glm::vec3(pos.x + halfWidth, pos.y - halfHeight, pos.z), color, glm::vec2(1.0f, 0.0f), texIndex }, // kanan bawah
-			Vertex{ glm::vec3(pos.x + halfWidth, pos.y + halfHeight, pos.z), color, glm::vec2(1.0f, 1.0f), texIndex }, // kanan atas
-			Vertex{ glm::vec3(pos.x - halfWidth, pos.y + halfHeight, pos.z), color, glm::vec2(0.0f, 1.0f), texIndex }  // kiri atas
+			Vertex2D{ glm::vec3(pos.x - halfWidth, pos.y - halfHeight, pos.z), color, glm::vec2(0.0f, 0.0f), texIndex }, // kiri bawah
+			Vertex2D{ glm::vec3(pos.x + halfWidth, pos.y - halfHeight, pos.z), color, glm::vec2(1.0f, 0.0f), texIndex }, // kanan bawah
+			Vertex2D{ glm::vec3(pos.x + halfWidth, pos.y + halfHeight, pos.z), color, glm::vec2(1.0f, 1.0f), texIndex }, // kanan atas
+			Vertex2D{ glm::vec3(pos.x - halfWidth, pos.y + halfHeight, pos.z), color, glm::vec2(0.0f, 1.0f), texIndex }  // kiri atas
 		};
 
 		s_SceneBuffer->vertexData.insert(s_SceneBuffer->vertexData.begin() + BufferData::vertexIndex, newQuad.begin(), newQuad.end());
@@ -192,12 +192,12 @@ namespace Karem {
 		float halfWidth = size.x / 2.0f;
 		float halfHeight = size.y / 2.0f;
 
-		std::vector<Vertex> newQuad =
+		std::vector<Vertex2D> newQuad =
 		{
-			Vertex{ glm::vec3(pos.x - halfWidth, pos.y - halfHeight, pos.z), color, glm::vec2(0.0f, 0.0f), texIndex }, // kiri bawah
-			Vertex{ glm::vec3(pos.x + halfWidth, pos.y - halfHeight, pos.z), color, glm::vec2(1.0f, 0.0f), texIndex }, // kanan bawah
-			Vertex{ glm::vec3(pos.x + halfWidth, pos.y + halfHeight, pos.z), color, glm::vec2(1.0f, 1.0f), texIndex }, // kanan atas
-			Vertex{ glm::vec3(pos.x - halfWidth, pos.y + halfHeight, pos.z), color, glm::vec2(0.0f, 1.0f), texIndex }  // kiri atas
+			Vertex2D{ glm::vec3(pos.x - halfWidth, pos.y - halfHeight, pos.z), color, glm::vec2(0.0f, 0.0f), texIndex }, // kiri bawah
+			Vertex2D{ glm::vec3(pos.x + halfWidth, pos.y - halfHeight, pos.z), color, glm::vec2(1.0f, 0.0f), texIndex }, // kanan bawah
+			Vertex2D{ glm::vec3(pos.x + halfWidth, pos.y + halfHeight, pos.z), color, glm::vec2(1.0f, 1.0f), texIndex }, // kanan atas
+			Vertex2D{ glm::vec3(pos.x - halfWidth, pos.y + halfHeight, pos.z), color, glm::vec2(0.0f, 1.0f), texIndex }  // kiri atas
 		};
 
 		s_SceneBuffer->vertexData.insert(s_SceneBuffer->vertexData.begin() + BufferData::vertexIndex, newQuad.begin(), newQuad.end());
@@ -221,6 +221,108 @@ namespace Karem {
 		BufferData::indicesOffset += 4;
 	}
 
+	void Renderer2D::SubmitRotatedQuad(const glm::vec3& pos, const glm::vec2& size, float rotation, const glm::vec4& color, float texIndex)
+	{
+		if (BufferData::vertexIndex + 4 >= BufferData::maxVertex || BufferData::indicesIndex + 6 >= BufferData::maxIndexBuffer)
+		{
+			ENGINE_WARN("Buffer Data is full");
+			return;
+		}
+
+		float halfWidth = size.x / 2.0f;
+		float halfHeight = size.y / 2.0f;
+
+		glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), rotation, glm::vec3(0.0f, 0.0f, 1.0f));
+
+		// Hitung sudut-sudut setelah rotasi
+		glm::vec3 bottomLeft(	-halfWidth,	-halfHeight,	0.0f);
+		glm::vec3 bottomRight(	halfWidth,	-halfHeight,	0.0f);
+		glm::vec3 topRight(		halfWidth,	halfHeight,		0.0f);
+		glm::vec3 topLeft(		-halfWidth,	halfHeight,		0.0f);
+
+		bottomLeft = glm::vec3(rotationMatrix * glm::vec4(bottomLeft, 1.0f));
+		bottomRight = glm::vec3(rotationMatrix * glm::vec4(bottomRight, 1.0f));
+		topRight = glm::vec3(rotationMatrix * glm::vec4(topRight, 1.0f));
+		topLeft = glm::vec3(rotationMatrix * glm::vec4(topLeft, 1.0f));
+
+		std::vector<Vertex2D> newQuad =
+		{
+			Vertex2D{ bottomLeft + pos, color, glm::vec2(0.0f, 0.0f), texIndex }, // kiri bawah
+			Vertex2D{ bottomRight + pos, color, glm::vec2(1.0f, 0.0f), texIndex }, // kanan bawah
+			Vertex2D{ topRight + pos, color, glm::vec2(1.0f, 1.0f), texIndex }, // kanan atas
+			Vertex2D{ topLeft + pos, color, glm::vec2(0.0f, 1.0f), texIndex }  // kiri atas
+		};
+
+		s_SceneBuffer->vertexData.insert(s_SceneBuffer->vertexData.begin() + BufferData::vertexIndex, newQuad.begin(), newQuad.end());
+		BufferData::vertexIndex += 4;
+
+		uint32_t offset = BufferData::indicesOffset;
+		std::vector<uint32_t> newQuadIndices =
+		{
+			offset,
+			offset + 1,
+			offset + 2,
+			offset + 2,
+			offset + 3,
+			offset
+		};
+		s_SceneBuffer->indicesData.insert(s_SceneBuffer->indicesData.begin() + BufferData::indicesIndex, newQuadIndices.begin(), newQuadIndices.end());
+
+		BufferData::indicesIndex += 6;
+		BufferData::indicesOffset += 4;
+	}
+
+	void Renderer2D::SubmitRotatedQuad(const glm::vec3& pos, const glm::vec2& size, float rotation, const std::shared_ptr<Texture2D>& texture, float texIndex, const glm::vec4& color)
+	{
+		if (BufferData::vertexIndex + 4 >= BufferData::maxVertex || BufferData::indicesIndex + 6 >= BufferData::maxIndexBuffer)
+		{
+			EndScene();
+		}
+
+		float halfWidth = size.x / 2.0f;
+		float halfHeight = size.y / 2.0f;
+
+		glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), rotation, glm::vec3(0.0f, 0.0f, 1.0f));
+
+		// Hitung sudut-sudut setelah rotasi
+		glm::vec3 bottomLeft(-halfWidth, -halfHeight, 0.0f);
+		glm::vec3 bottomRight(halfWidth, -halfHeight, 0.0f);
+		glm::vec3 topRight(halfWidth, halfHeight, 0.0f);
+		glm::vec3 topLeft(-halfWidth, halfHeight, 0.0f);
+
+		bottomLeft = glm::vec3(rotationMatrix * glm::vec4(bottomLeft, 1.0f));
+		bottomRight = glm::vec3(rotationMatrix * glm::vec4(bottomRight, 1.0f));
+		topRight = glm::vec3(rotationMatrix * glm::vec4(topRight, 1.0f));
+		topLeft = glm::vec3(rotationMatrix * glm::vec4(topLeft, 1.0f));
+
+		std::vector<Vertex2D> newQuad =
+		{
+			Vertex2D{ bottomLeft + pos, color, glm::vec2(0.0f, 0.0f), texIndex }, // kiri bawah
+			Vertex2D{ bottomRight + pos, color, glm::vec2(1.0f, 0.0f), texIndex }, // kanan bawah
+			Vertex2D{ topRight + pos, color, glm::vec2(1.0f, 1.0f), texIndex }, // kanan atas
+			Vertex2D{ topLeft + pos, color, glm::vec2(0.0f, 1.0f), texIndex }  // kiri atas
+		};
+
+		s_SceneBuffer->vertexData.insert(s_SceneBuffer->vertexData.begin() + BufferData::vertexIndex, newQuad.begin(), newQuad.end());
+		BufferData::vertexIndex += 4;
+
+		uint32_t offset = BufferData::indicesOffset;
+		std::vector<uint32_t> newQuadIndices =
+		{
+			offset,
+			offset + 1,
+			offset + 2,
+			offset + 2,
+			offset + 3,
+			offset
+		};
+		s_SceneBuffer->indicesData.insert(s_SceneBuffer->indicesData.begin() + BufferData::indicesIndex, newQuadIndices.begin(), newQuadIndices.end());
+
+		s_TextureBuffer->TextureContainer[(int)texIndex] = texture;
+
+		BufferData::indicesIndex += 6;
+		BufferData::indicesOffset += 4;
+	}
 
 	void Renderer2D::SubmitTriangle(const glm::vec3& pos, const glm::vec2& size, const glm::vec4& color, float texIndex)
 	{
@@ -233,11 +335,11 @@ namespace Karem {
 		float halfWidth = size.x / 2.0f;
 		float halfHeight = size.y / 2.0f;
 
-		std::vector<Vertex> newTriangle =
+		std::vector<Vertex2D> newTriangle =
 		{
-			Vertex{ glm::vec3(pos.x - halfWidth, pos.y - halfHeight, pos.z), color, glm::vec2(0.0f, 0.0f), texIndex }, // kiri bawah
-			Vertex{ glm::vec3(pos.x + halfWidth, pos.y - halfHeight, pos.z), color, glm::vec2(1.0f, 0.0f), texIndex }, // kanan bawah
-			Vertex{ glm::vec3(pos.x, pos.y + halfHeight, pos.z), color, glm::vec2(0.5f, 1.0f), texIndex } // atas (tengah)
+			Vertex2D{ glm::vec3(pos.x - halfWidth, pos.y - halfHeight, pos.z), color, glm::vec2(0.0f, 0.0f), texIndex }, // kiri bawah
+			Vertex2D{ glm::vec3(pos.x + halfWidth, pos.y - halfHeight, pos.z), color, glm::vec2(1.0f, 0.0f), texIndex }, // kanan bawah
+			Vertex2D{ glm::vec3(pos.x, pos.y + halfHeight, pos.z), color, glm::vec2(0.5f, 1.0f), texIndex } // atas (tengah)
 		};
 
 		s_SceneBuffer->vertexData.insert(s_SceneBuffer->vertexData.begin() + BufferData::vertexIndex, newTriangle.begin(), newTriangle.end());
