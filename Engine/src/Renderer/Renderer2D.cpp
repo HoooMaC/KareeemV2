@@ -34,8 +34,13 @@ namespace Karem {
 		static constexpr uint64_t maxVertex = 1024;
 		static constexpr uint64_t maxIndexBuffer = maxVertex * 6;
 
+		// this is need to change with array, but not std::array
 		std::vector<Vertex2D> vertexData;
 		std::vector<uint32_t> indicesData;
+
+		std::vector<std::shared_ptr<Texture2D>>TextureContainer;
+		std::vector<uint32_t> TextureSlotContainer;
+
 		static uint32_t vertexIndex;
 		static uint32_t indicesIndex;
 		static uint32_t indicesOffset;
@@ -56,26 +61,13 @@ namespace Karem {
 		std::shared_ptr<IndexBuffer> indexBuffer;
 	};
 
-	struct TextureBuffer
-	{
-		std::vector<std::shared_ptr<Texture2D>>TextureContainer;
-		std::vector<uint32_t> textureSlotContainer;
-	};
-
-
-
-
-
-
 	static Renderer2DData* s_Data;
 	static BufferData* s_SceneBuffer;
-	static TextureBuffer* s_TextureBuffer;
 
 	void Renderer2D::Initialize()
 	{
 		s_Data = new Renderer2DData;
 		s_SceneBuffer = new BufferData;
-		s_TextureBuffer = new TextureBuffer;
 
 
 		s_Data->m_Shader = CreateShader("res/shader/vertex.shader.glsl", "res/shader/fragment.shader.glsl");
@@ -94,19 +86,19 @@ namespace Karem {
 		UniformCache uniforms = s_Data->m_Shader->GetShaderUniforms();
 		s_Data->m_Material->SetUniformCache(uniforms);
 
-		s_TextureBuffer->TextureContainer.resize(32);
-		s_TextureBuffer->textureSlotContainer.resize(32);
-		s_TextureBuffer->textureSlotContainer[0] = 0;
+		s_SceneBuffer->TextureContainer.resize(32);
+		s_SceneBuffer->TextureSlotContainer.resize(32);
+		s_SceneBuffer->TextureSlotContainer[0] = 0;
 
-		s_TextureBuffer->TextureContainer[0] = Karem::CreateTexture2D(0);
-		s_TextureBuffer->textureSlotContainer[0] = 0;
+		s_SceneBuffer->TextureContainer[0] = Karem::CreateTexture2D(0);
+		s_SceneBuffer->TextureSlotContainer[0] = 0;
 
 		// initializing texture
 		for (int i = 1; i < 32; i++)
 		{
 			std::string filepath = "res/texture/1 (" + std::to_string(i) + ").png";
-			s_TextureBuffer->TextureContainer[i] = Karem::CreateTexture2D(filepath, i);
-			s_TextureBuffer->textureSlotContainer[i] = i;
+			s_SceneBuffer->TextureContainer[i] = Karem::CreateTexture2D(filepath, i);
+			s_SceneBuffer->TextureSlotContainer[i] = i;
 		}
 	}
 
@@ -114,7 +106,6 @@ namespace Karem {
 	{
 		delete s_Data;
 		delete s_SceneBuffer;
-		delete s_TextureBuffer;
 	}
 
 	void Renderer2D::BeginScene(const OrthographicCamera& camera)
@@ -215,7 +206,7 @@ namespace Karem {
 		};
 		s_SceneBuffer->indicesData.insert(s_SceneBuffer->indicesData.begin() + BufferData::indicesIndex, newQuadIndices.begin(), newQuadIndices.end());
 
-		s_TextureBuffer->TextureContainer[(int)texIndex] = texture;
+		s_SceneBuffer->TextureContainer[(int)texIndex] = texture;
 
 		BufferData::indicesIndex += 6;
 		BufferData::indicesOffset += 4;
@@ -318,7 +309,7 @@ namespace Karem {
 		};
 		s_SceneBuffer->indicesData.insert(s_SceneBuffer->indicesData.begin() + BufferData::indicesIndex, newQuadIndices.begin(), newQuadIndices.end());
 
-		s_TextureBuffer->TextureContainer[(int)texIndex] = texture;
+		s_SceneBuffer->TextureContainer[(int)texIndex] = texture;
 
 		BufferData::indicesIndex += 6;
 		BufferData::indicesOffset += 4;
@@ -360,10 +351,10 @@ namespace Karem {
 
 	void Renderer2D::Validate()
 	{
-		s_Data->m_Material->SetUniformData("uTexture", (void*)s_TextureBuffer->textureSlotContainer.data());
+		s_Data->m_Material->SetUniformData("uTexture", (void*)s_SceneBuffer->TextureSlotContainer.data());
 		s_Data->m_Material->ValidateMaterial();
 
-		for (const auto& texture : s_TextureBuffer->TextureContainer)
+		for (const auto& texture : s_SceneBuffer->TextureContainer)
 		{
 			texture->Bind();
 		}

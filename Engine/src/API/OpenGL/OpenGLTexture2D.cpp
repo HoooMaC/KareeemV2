@@ -6,6 +6,7 @@
 #include <glad/glad.h>
 
 namespace Karem {
+
 	OpenGLTexture2D::OpenGLTexture2D(uint32_t slot)
 		: m_FilePath(""), m_Slot(slot), m_Width(0), m_Height(0), m_BPP(0), m_RendererID(0)
 	{
@@ -61,7 +62,7 @@ namespace Karem {
 		}
 		else 
 		{
-			ENGINE_ERROR("Failed to load image : {}", m_FilePath);
+			ENGINE_ASSERT(false, "Failed to load image : {}", m_FilePath);
 		}
 		stbi_image_free(data);
 	}
