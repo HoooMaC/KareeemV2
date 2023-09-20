@@ -11,6 +11,7 @@
 #include "Renderer/BaseTexure.h"
 #include "Renderer/BufferLayout.h"
 #include "Renderer/RenderCommand.h"
+#include "Renderer/SubTexture.h"
 
 #include <glm/glm.hpp>
 
@@ -88,18 +89,12 @@ namespace Karem {
 
 		s_SceneBuffer->TextureContainer.resize(32);
 		s_SceneBuffer->TextureSlotContainer.resize(32);
-		s_SceneBuffer->TextureSlotContainer[0] = 0;
 
-		s_SceneBuffer->TextureContainer[0] = Karem::CreateTexture2D(0);
-		s_SceneBuffer->TextureSlotContainer[0] = 0;
+		s_SceneBuffer->TextureContainer[0] = Karem::CreateTexture2D();
 
-		// initializing texture
-		for (int i = 1; i < 32; i++)
-		{
-			std::string filepath = "res/texture/1 (" + std::to_string(i) + ").png";
-			s_SceneBuffer->TextureContainer[i] = Karem::CreateTexture2D(filepath, i);
+		for(int i = 0; i < 32; i++)
 			s_SceneBuffer->TextureSlotContainer[i] = i;
-		}
+
 	}
 
 	void Renderer2D::Shutdown()
@@ -207,6 +202,48 @@ namespace Karem {
 		s_SceneBuffer->indicesData.insert(s_SceneBuffer->indicesData.begin() + BufferData::indicesIndex, newQuadIndices.begin(), newQuadIndices.end());
 
 		s_SceneBuffer->TextureContainer[(int)texIndex] = texture;
+
+		BufferData::indicesIndex += 6;
+		BufferData::indicesOffset += 4;
+	}
+
+	void Renderer2D::SubmitSubTexturedQuad(const glm::vec3& pos, const glm::vec2& size, const std::shared_ptr<SubTexture2D>& subTexture, float texIndex, const glm::vec4& color)
+	{
+		if (BufferData::vertexIndex + 4 >= BufferData::maxVertex or BufferData::indicesIndex + 6 >= BufferData::maxIndexBuffer)
+		{
+			EndScene();
+		}
+
+		const std::shared_ptr<Texture2D>& reference = subTexture->GetTextureReference();
+		const glm::vec2* texCoord = subTexture->GetTexCoord();
+
+		float halfWidth = size.x / 2.0f;
+		float halfHeight = size.y / 2.0f;
+
+		std::vector<Vertex2D> newQuad =
+		{
+			Vertex2D{ glm::vec3(pos.x - halfWidth, pos.y - halfHeight, pos.z), color, *(texCoord + 0), texIndex }, // kiri bawah
+			Vertex2D{ glm::vec3(pos.x + halfWidth, pos.y - halfHeight, pos.z), color, *(texCoord + 1), texIndex }, // kanan bawah
+			Vertex2D{ glm::vec3(pos.x + halfWidth, pos.y + halfHeight, pos.z), color, *(texCoord + 2), texIndex }, // kanan atas
+			Vertex2D{ glm::vec3(pos.x - halfWidth, pos.y + halfHeight, pos.z), color, *(texCoord + 3), texIndex }  // kiri atas
+		};
+
+		s_SceneBuffer->vertexData.insert(s_SceneBuffer->vertexData.begin() + BufferData::vertexIndex, newQuad.begin(), newQuad.end());
+		BufferData::vertexIndex += 4;
+
+		uint32_t offset = BufferData::indicesOffset;
+		std::vector<uint32_t> newQuadIndices =
+		{
+			offset,
+			offset + 1,
+			offset + 2,
+			offset + 2,
+			offset + 3,
+			offset
+		};
+		s_SceneBuffer->indicesData.insert(s_SceneBuffer->indicesData.begin() + BufferData::indicesIndex, newQuadIndices.begin(), newQuadIndices.end());
+
+		s_SceneBuffer->TextureContainer[(int)texIndex] = reference;
 
 		BufferData::indicesIndex += 6;
 		BufferData::indicesOffset += 4;
@@ -356,6 +393,8 @@ namespace Karem {
 
 		for (const auto& texture : s_SceneBuffer->TextureContainer)
 		{
+			if (texture == nullptr)
+				continue;
 			texture->Bind();
 		}
 	}

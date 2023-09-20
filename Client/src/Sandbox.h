@@ -22,6 +22,7 @@ private:
 	//Karem::Layers m_Layers;
 	Karem::OrthographicCamera m_Camera;
 	std::shared_ptr<Karem::Texture2D> m_Texture;
+	std::shared_ptr<Karem::SubTexture2D> m_SpriteSheet;
 
 	float m_LastFrameTime = 0.0f;
 };

@@ -7,6 +7,13 @@
 
 namespace Karem {
 
+	struct TextureData
+	{
+		uint32_t Width;
+		uint32_t Height;
+		uint32_t Slot;
+	};
+
 	class Texture
 	{
 	public:

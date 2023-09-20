@@ -10,6 +10,7 @@ namespace Karem {
 
 	class OrthographicCamera;
 	class Texture2D;
+	class SubTexture2D;
 
 	class Renderer2D
 	{
@@ -23,6 +24,8 @@ namespace Karem {
 
 		static void SubmitQuad(const glm::vec3& pos, const glm::vec2& size, const glm::vec4& color, float texIndex = 0.0f);
 		static void SubmitQuad(const glm::vec3& pos, const glm::vec2& size, const std::shared_ptr<Texture2D>& texture, float texIndex = 1.0f, const glm::vec4& color = glm::vec4(1.0f));
+		static void SubmitSubTexturedQuad(const glm::vec3& pos, const glm::vec2& size, const std::shared_ptr<SubTexture2D>& subTexture, float texIndex = 1.0f, const glm::vec4& color = glm::vec4(1.0f));
+
 		static void SubmitRotatedQuad(const glm::vec3& pos, const glm::vec2& size, float rotation, const glm::vec4& color, float texIndex = 0.0f);
 		static void SubmitRotatedQuad(const glm::vec3& pos, const glm::vec2& size, float rotation, const std::shared_ptr<Texture2D>& texture, float texIndex = 1.0f, const glm::vec4& color = glm::vec4(1.0f));
 

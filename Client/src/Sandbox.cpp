@@ -28,7 +28,9 @@ void Sandbox::Init()
 	m_Camera = Karem::OrthographicCamera((float)appWidth / appHeight);
 
 	// this is overriding texture in index 3 in texture renderer
-	m_Texture = Karem::CreateTexture2D("res/texture/diamond_block.png", 3);
+	m_Texture = Karem::CreateTexture2D("res/texture/spritesheet/city_tilemap.png", 1);
+	m_SpriteSheet = Karem::CreateSubTexture(m_Texture, { 21,11 }, { 8,8 }, { 3,4 });
+
 }
 
 void Sandbox::Run()
@@ -43,34 +45,11 @@ void Sandbox::Run()
 		m_Camera.OnUpdate(timeStep);
 
 		Karem::RendererCommand::Clear();
-		Karem::RendererCommand::ClearColor("#D9D9D9");
+		Karem::RendererCommand::ClearColor("#026773");
 
 		Karem::Renderer2D::BeginScene(m_Camera);
 
-		constexpr glm::vec4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
-		constexpr int32_t countQuad = 10;
-
-		for (int y = 0; y < countQuad; y++)
-		{
-			for (int x = 0; x < countQuad; x++)
-			{
-				Karem::Renderer2D::SubmitQuad({ float(x), float(y), -0.1f}, glm::vec2(0.9f), color, float(x+y));
-			}
-		}
-
-		static float solidQuadRotation = 0.0f;
-		solidQuadRotation += 45.0f * timeStep;
-		static float texturedQuadRotation = 360.0f;
-		texturedQuadRotation -= 45.0f * timeStep;
-
-		Karem::Renderer2D::SubmitQuad({ -5.5f, 0.0f, 0.0f }, glm::vec2(10.0f), m_Texture, 3.0f/*, { 0.3f, 0.0f, 0.8f, 1.0f }*/);
-		Karem::Renderer2D::SubmitRotatedQuad({ -0.5f, -0.25f, 0.1f }, glm::vec2(0.75f), glm::radians(solidQuadRotation), { 0.2f, 0.0f, 0.9f, 1.0f});
-		//constexpr glm::vec4 color = { 0.3f, 0.1f, 0.8f, 1.0f };
-
-		Karem::Renderer2D::SubmitRotatedQuad({ 0.5f, 0.0f, 0.2f }, glm::vec2(0.75f), glm::radians(texturedQuadRotation), m_Texture, 3.0f);
-		Karem::Renderer2D::SubmitRotatedQuad({ 0.5f, 0.5f, 0.2f }, glm::vec2(0.75f), glm::radians(texturedQuadRotation), color, 1.0f);
-
-		//Karem::Renderer2D::SubmitTriangle({ 0.0f, 1.5f, 0.1f }, glm::vec2(0.5f), { 0.0f, 0.5f, 0.8f, 1.0f }, 0.0f);
+		Karem::Renderer2D::SubmitSubTexturedQuad({ 0.0f, 0.0f, 0.0f }, { 3.0f, 4.0f }, m_SpriteSheet, 1.0f);
 
 		Karem::Renderer2D::EndScene();
 
