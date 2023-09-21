@@ -1,6 +1,6 @@
 #include "Core/Kareeem.h"
 
-#include "BaseTexure.h"
+#include "BaseTexture.h"
 
 #include "Renderer/BaseRendererAPI.h"
 

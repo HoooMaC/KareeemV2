@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "Renderer/BaseTexure.h"
+#include "Renderer/BaseTexture.h"
 
 namespace Karem {
 

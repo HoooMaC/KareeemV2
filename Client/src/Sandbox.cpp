@@ -29,7 +29,7 @@ void Sandbox::Init()
 
 	// this is overriding texture in index 3 in texture renderer
 	m_Texture = Karem::CreateTexture2D("res/texture/spritesheet/city_tilemap.png", 1);
-	m_SpriteSheet = Karem::CreateSubTexture(m_Texture, { 21,11 }, { 8,8 }, { 3,4 });
+	m_SpriteSheet = Karem::CreateSubTexture(m_Texture, { 0,1 }, { 8,8 }, { 3,3 });
 
 }
 
@@ -49,7 +49,7 @@ void Sandbox::Run()
 
 		Karem::Renderer2D::BeginScene(m_Camera);
 
-		Karem::Renderer2D::SubmitSubTexturedQuad({ 0.0f, 0.0f, 0.0f }, { 3.0f, 4.0f }, m_SpriteSheet, 1.0f);
+		Karem::Renderer2D::SubmitSubTexturedQuad({ 0.0f, 0.0f, 0.0f }, { 3.0f, 3.0f }, m_SpriteSheet, 1.0f);
 
 		Karem::Renderer2D::EndScene();
 

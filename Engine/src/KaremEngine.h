@@ -22,7 +22,7 @@
 #include "Renderer/Renderer2D.h"
 #include "Renderer/BaseShader.h"
 #include "Renderer/BaseBuffer.h"
-#include "Renderer/BaseTexure.h"
+#include "Renderer/BaseTexture.h"
 #include "Renderer/SubTexture.h"
 #include "Renderer/BufferLayout.h"
 #include "Renderer/RenderCommand.h"

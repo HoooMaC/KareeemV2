@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Renderer/BaseTexure.h"
+#include "Renderer/BaseTexture.h"
 
 #include <glm/glm.hpp>
 
