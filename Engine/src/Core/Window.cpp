@@ -162,7 +162,6 @@ namespace Karem {
 	{
 		if(s_Initialized)
 		{
-			imgui::Shutdown();
 
 			glfwDestroyWindow(m_Window);
 			glfwTerminate();

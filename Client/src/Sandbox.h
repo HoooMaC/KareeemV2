@@ -2,28 +2,29 @@
 
 #include "KaremEngine.h"
 
+class SandboxLayer : public Karem::Layer
+{
+public:
+	SandboxLayer()
+		: Layer("Sandbox Layer") {}
+	void OnUpdate(Karem::TimeStep ts) override;
+	void OnAttach() override;
+private:
+	std::shared_ptr<Karem::Texture2D> m_Texture;
+	std::shared_ptr<Karem::SubTexture2D> m_SpriteSheet;
+};
+
 class Sandbox : public Karem::Application
 {
 public:
 	Sandbox();
-	~Sandbox();
+	~Sandbox() = default;
 
-	void Run() override;
-	void EventHandler(Karem::Event& event) override;
 protected:
 	void Init() override;
 	void Shutdown() override;
 
 private:
-	bool WindowCloseAction(Karem::WindowCloseEvent& event);
-	bool WindowResizeAction(Karem::WindowResizeEvent& event);
-	
-private:
-	//Karem::Layers m_Layers;
-	Karem::OrthographicCamera m_Camera;
-	std::shared_ptr<Karem::Texture2D> m_Texture;
-	std::shared_ptr<Karem::SubTexture2D> m_SpriteSheet;
-
-	float m_LastFrameTime = 0.0f;
+	std::shared_ptr<Karem::Layer> layer;
 };
 
