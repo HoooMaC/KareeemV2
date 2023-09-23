@@ -15,6 +15,9 @@ namespace Karem {
 		m_Width = 1;
 		m_Height = 1;
 		m_BPP = 4;
+		//glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
+		//ENGINE_DEBUG("White texture ID {}", m_RendererID);
+
 		glTexImage2D(GL_TEXTURE_2D, 0, format, m_Width, m_Height, 0, format, GL_UNSIGNED_BYTE, whitePixel);
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}

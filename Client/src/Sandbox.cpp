@@ -24,7 +24,7 @@ void SandboxLayer::OnAttach()
 
 void SandboxLayer::OnUpdate(Karem::TimeStep ts)
 {
-	Karem::Renderer2D::SubmitSubTexturedQuad({ 0.0f, 0.0f, 0.0f }, { 3.0f, 3.0f }, m_SpriteSheet, 1.0f);
+	Karem::Renderer2D::SubmitSubTexturedQuad({ -1.0f, -1.0f, 0.0f }, { 3.0f, 3.0f }, m_SpriteSheet, 1.0f);
 }
 
 

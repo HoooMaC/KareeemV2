@@ -7,6 +7,7 @@
 #include "Event/AppEvent.h"
 
 #include "Renderer/OrthographicCamera.h"
+#include "Renderer/FrameBuffer.h"
 
 #include "imgui_setup.h"
 
@@ -37,6 +38,7 @@ namespace Karem {
 		Window m_Window;
 		OrthographicCamera m_Camera;
 		Layers m_Layers;
+		std::shared_ptr<Karem::FrameBuffer> m_FrameBuffer;
 
 		float m_LastFrameTime = 0.0f;
 

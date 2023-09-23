@@ -10,13 +10,16 @@ namespace Karem {
 		OpenGLFrameBuffer(int32_t width, int32_t height);
 		~OpenGLFrameBuffer();
 
-		void Bind() const;
-		void UnBind() const;
+		void Bind() const override;
+		void UnBind() const override;
 
-		void Resize(int32_t width, int32_t height);
+		uint32_t GetTextureColorAttachmentID() const { return m_TextureColorAttachment; }
+
+		void Resize(int32_t width, int32_t height) override;
 	private:
 		uint32_t m_RendererID;
 		uint32_t m_TextureColorAttachment;
+		uint32_t m_DepthAttachment;
 
 		int32_t m_Width, m_Height;
 
