@@ -60,7 +60,6 @@ namespace Karem {
 		m_Zoom -= event.GetOffsetY() * 0.25;
 		m_Zoom = std::max(m_Zoom, 0.25f);
 		m_Zoom = std::min(m_Zoom, 10.0f);
-		//ENGINE_TRACE("{}", m_Zoom);
 		m_ProjectionMatrix = glm::ortho(-m_AspectRatio * m_Zoom, m_AspectRatio * m_Zoom, -m_Zoom, m_Zoom, -1.0f, 1.0f);
 		RecalculateMatrix();
 		return true;

@@ -50,11 +50,9 @@ namespace Karem {
 
 	class EventDispatcher
 	{
-
 		template<typename T>
 		using EventFN = std::function<bool(T&)>;
 		//bool(*func)(T&)
-
 	public:
 
 		EventDispatcher(Event& event)

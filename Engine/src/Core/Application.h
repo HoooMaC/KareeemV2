@@ -36,9 +36,7 @@ namespace Karem {
 
 	protected:
 		Window m_Window;
-		OrthographicCamera m_Camera;
 		Layers m_Layers;
-		std::shared_ptr<Karem::FrameBuffer> m_FrameBuffer;
 
 		float m_LastFrameTime = 0.0f;
 

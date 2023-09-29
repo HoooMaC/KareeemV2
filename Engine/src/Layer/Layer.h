@@ -16,7 +16,7 @@ namespace Karem {
 		virtual void OnAttach() {}
 		virtual void OnDetach() {}
 		virtual void OnUpdate(TimeStep ts) {}
-
+		virtual void OnImGUIRender() {}
 		virtual void EventHandler(Event& event) {}
 
 		inline bool GetStatus() const { return m_Status; }
