@@ -19,7 +19,8 @@ namespace Karem {
 		WindowProperty(
 			const std::string& title = "Default Window",
 			uint32_t width = 1280,
-			uint32_t height = 720
+			uint32_t height = 720,
+			bool fullScreen = false
 		)
 			: Title(title), Width(width), Height(height) {}
 	};
@@ -32,18 +33,21 @@ namespace Karem {
 		Window(const WindowProperty& property = WindowProperty());
 		~Window();
 
-		virtual void Init(const WindowProperty& property);
-		virtual void Shutdown();
+		void Init(const WindowProperty& property);
+		void Shutdown();
 
-		virtual void OnUpdate();
-		virtual void SetVSync(bool enable);
-		virtual void SetEventCallbacks(EventCallbackFn callback);
-		virtual void Resize(int width, int height);
+		void OnUpdate();
+		void SetVSync(bool enable);
+		void SetEventCallbacks(EventCallbackFn callback);
 
-		virtual bool IsVSync();
-		virtual uint32_t GetWidth() const;
-		virtual uint32_t GetHeight() const;
-		virtual void* GetNativeWindow() const;
+		void Resize(int width, int height);
+		void SetFullScreen();
+		bool IsFullScreen();
+
+		bool IsVSync();
+		uint32_t GetWidth() const;
+		uint32_t GetHeight() const;
+		void* GetNativeWindow() const;
 	private:
 		GLFWwindow* m_Window;
 

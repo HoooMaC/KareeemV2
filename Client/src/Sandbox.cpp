@@ -1,21 +1,15 @@
 #include "Sandbox.h"
 
-//#include "TriangleLayer.h"
+#include "GLFW/glfw3.h"
 
-//#include <glad/glad.h>
-
-// TEMP : THIS SHOULD NOT BE HERE (MAYBE)
 #include "imgui.h"
-//#include "imgui_setup.h"
-//#include "backends/imgui_impl_glfw.h"
-//#include "backends/imgui_impl_opengl3.h"
+#include "imgui_setup.h"
 
 static constexpr int32_t appWidth = 1280, appHeight = 720;
 
 Karem::Application* Karem::CreateApplication()
 {
 	return new Sandbox();
-
 }
 
 void SandboxLayer::OnAttach()
@@ -94,7 +88,7 @@ void SandboxLayer::OnImGUIRender()
 	ImGui::Begin("main");
 	ImVec2 imageSize = ImGui::GetContentRegionAvail();
 	{
-		auto [width, height] = m_FrameBuffer->GetFrameBufferSize();
+		const auto& [width, height] = m_FrameBuffer->GetFrameBufferSize();
 		if (imageSize.x != width or imageSize.y != height)
 		{
 			m_FrameBuffer->Resize(imageSize.x, imageSize.y);
@@ -103,11 +97,19 @@ void SandboxLayer::OnImGUIRender()
 
 	ImGui::Image(
 		(void*)m_FrameBuffer->GetTextureColorAttachmentID(),
-		{ imageSize.x, imageSize.y },
-		ImVec2(0, 1),  // Koordinat bawah kiri pada tekstur
-		ImVec2(1, 0)   // Koordinat atas kanan pada tekstur
+		{ (float)imageSize.x, (float)imageSize.y },
+		ImVec2(0, 1),
+		ImVec2(1, 0)
 	);
 	ImGui::End();
+
+	//ImGui::Begin("Window Resize Button");
+	//bool fullScreenStatus = m_ApplicationWindow->IsFullScreen();
+	//if (ImGui::Button("Resize"))
+	//	m_ApplicationWindow->Resize(1280, 720);
+	//if (ImGui::Button("Fullscreen"))
+	//	m_ApplicationWindow->SetFullScreen();
+	//ImGui::End();
 
 	imgui::EndFrame();
 }
@@ -123,17 +125,7 @@ Sandbox::Sandbox()
 	Init();
 
 	// this is temporary
-	layer = std::make_shared<SandboxLayer>();
+	layer = std::make_shared<SandboxLayer>(&m_Window);
 
 	m_Layers.PushLayer(layer);
-}
-
-void Sandbox::Init()
-{
-
-}
-
-void Sandbox::Shutdown()
-{
-
 }

@@ -4,7 +4,6 @@
 
 #include "Renderer/Renderer2D.h"
 #include "Renderer/RenderCommand.h"
-#include "Renderer/OrthographicCamera.h"
 
 #include "Platform/Windows/Platform.h"
 
@@ -66,10 +65,6 @@ namespace Karem {
         }
 
         //ENGINE_TRACE(event);
-    }
-
-    void Application::Shutdown()
-    {
     }
 
     bool Application::WindowCloseAction(WindowCloseEvent& event)

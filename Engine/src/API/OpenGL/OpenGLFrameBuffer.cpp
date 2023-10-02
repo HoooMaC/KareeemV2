@@ -31,6 +31,13 @@ namespace Karem {
 
 	void OpenGLFrameBuffer::Resize(int32_t width, int32_t height)
 	{
+		if (width <= 0 || height <= 0)
+		{
+			// Nilai tidak valid, kembalikan atau tangani kesalahan sesuai kebutuhan Anda
+			// Misalnya, Anda dapat membatalkan perubahan ukuran atau melempar exception.
+			return;
+		}
+
 		m_Width = width;
 		m_Height = height;
 

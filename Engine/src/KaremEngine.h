@@ -22,21 +22,15 @@
 #include "Renderer/Renderer2D.h"
 #include "Renderer/BaseShader.h"
 #include "Renderer/BaseBuffer.h"
-#include "Renderer/BaseTexture.h"
 #include "Renderer/SubTexture.h"
+#include "Renderer/FrameBuffer.h"
+#include "Renderer/BaseTexture.h"
 #include "Renderer/BufferLayout.h"
 #include "Renderer/RenderCommand.h"
 #include "Renderer/TextureFormat.h"
 #include "Renderer/BaseRendererAPI.h"
 #include "Renderer/GraphicsContext.h"
 #include "Renderer/OrthographicCamera.h"
-
-#include "API/OpenGL/OpenGLShader.h"
-#include "API/OpenGL/OpenGLIndexBuffer.h"
-#include "API/OpenGL/OpenGLRendererAPI.h"
-#include "API/OpenGL/OpenGLVertexArray.h"
-#include "API/OpenGL/OpenGLVertexBuffer.h"
-#include "API/OpenGL/OpenGLTexture2D.h"
 
 // THIS IS SPECIFIC TO WINDOW
 // #define KAREM_WINDOWS

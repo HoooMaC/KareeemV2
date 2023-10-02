@@ -6,11 +6,6 @@
 #include "Event/Event.h"
 #include "Event/AppEvent.h"
 
-#include "Renderer/OrthographicCamera.h"
-#include "Renderer/FrameBuffer.h"
-
-#include "imgui_setup.h"
-
 namespace Karem {
 	
 
@@ -19,16 +14,14 @@ namespace Karem {
 	public:
 		Application() = default;
 		Application(const WindowProperty& props);
-
 		virtual ~Application();
 
 		virtual void Run();
-
 		virtual void EventHandler(Event& event);
 
 	protected:
-		virtual void Init() = 0;
-		virtual void Shutdown();
+		virtual void Init() {}
+		virtual void Shutdown() {}
 
 	protected:
 		bool WindowCloseAction(WindowCloseEvent& event);
@@ -43,6 +36,5 @@ namespace Karem {
 		bool m_Running = true;
 	};
 
-	Application* CreateApplication();
-
+	extern Application* CreateApplication();
 }

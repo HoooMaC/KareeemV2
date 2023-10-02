@@ -15,6 +15,9 @@
 
 #include <GLFW/glfw3.h>
 
+// this is temporary
+#include <glad/glad.h>
+
 namespace Karem {
 
 	static bool s_Initialized = false;
@@ -41,6 +44,7 @@ namespace Karem {
 
 			ENGINE_ASSERT(succes, "Failed to Initialized GLFW");
 
+			//glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 			glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 			glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
 			glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -54,8 +58,6 @@ namespace Karem {
 		if (!s_Initialized)
 		{
 			m_Context->Init();
-
-			//imgui::InitializeImGUI(m_Window);
 
 			s_Initialized = true;
 		}
@@ -195,7 +197,33 @@ namespace Karem {
 	{
 		m_Data.Width = width;
 		m_Data.Height = height;
-		Platform::ResizeWindow(width, height);
+		Platform::ResizeWindow(m_Window, width, height);
+	}
+
+	void Window::SetFullScreen()
+	{
+		GLFWmonitor* monitor = glfwGetPrimaryMonitor(); // Menggunakan monitor utama
+		const GLFWvidmode* mode = glfwGetVideoMode(monitor); // Mendapatkan mode video monitor
+
+		glfwSetWindowMonitor(m_Window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+		glViewport(0, 0, mode->width, mode->height);
+	}
+
+	bool Window::IsFullScreen()
+	{
+		int currentWidth, currentHeight;
+		glfwGetWindowSize(m_Window, &currentWidth, &currentHeight);
+
+		GLFWmonitor* monitor = glfwGetPrimaryMonitor(); // Menggunakan monitor utama
+		const GLFWvidmode* mode = glfwGetVideoMode(monitor); // Mendapatkan mode video monitor
+
+		ENGINE_DEBUG("current size : {}\t{}", currentWidth, currentHeight);
+		ENGINE_DEBUG("monitor size : {}\t{}", mode->width, mode->height);
+
+		if (mode->width == currentWidth and mode->height == currentHeight)
+			return true;
+
+		return false;
 	}
 
 	bool Karem::Window::IsVSync()
