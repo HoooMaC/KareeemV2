@@ -25,7 +25,6 @@ namespace Karem {
 
 	protected:
 		bool WindowCloseAction(WindowCloseEvent& event);
-		bool WindowResizeAction(WindowResizeEvent& event);
 
 	protected:
 		Window m_Window;

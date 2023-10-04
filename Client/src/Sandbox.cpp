@@ -17,7 +17,7 @@ void SandboxLayer::OnAttach()
 	// this is overriding texture in index 3 in texture renderer
 	m_Texture = Karem::CreateTexture2D("res/texture/spritesheet/city_tilemap.png", 1);
 	m_SpriteSheet = Karem::CreateSubTexture(m_Texture, { 0,1 }, { 8,8 }, { 3,3 });
-	m_Camera = Karem::OrthographicCamera((float)appWidth / appHeight);
+	m_Camera = Karem::OrthographicCamera({ 16,9 }, 1);
 	m_FrameBuffer = Karem::CreateFrameBuffer(1280, 720);
 }
 
@@ -116,7 +116,19 @@ void SandboxLayer::OnImGUIRender()
 
 void SandboxLayer::EventHandler(Karem::Event& event)
 {
+	Karem::EventDispatcher dispatcher(event);
+	dispatcher.Dispatch<Karem::WindowResizeEvent>(std::bind(&SandboxLayer::WindowResizeAction, this, std::placeholders::_1));
+
 	m_Camera.OnEvent(event);
+}
+
+bool SandboxLayer::WindowResizeAction(Karem::WindowResizeEvent& event)
+{
+	// set camera zoom level
+	float zoom = (float)event.GetWidth() / (float)event.GetHeight();
+	ENGINE_DEBUG("{}", zoom);
+	m_Camera.SetZoom(zoom);
+	return true;
 }
 
 Sandbox::Sandbox()

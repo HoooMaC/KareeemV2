@@ -56,7 +56,6 @@ namespace Karem {
     {
         EventDispatcher dispatcher(event);
         dispatcher.Dispatch<WindowCloseEvent>(std::bind(&Application::WindowCloseAction, this, std::placeholders::_1));
-        dispatcher.Dispatch<WindowResizeEvent>(std::bind(&Application::WindowResizeAction, this, std::placeholders::_1));
 
         for (auto it = m_Layers.rbegin(); it != m_Layers.rend(); ++it)
         {
@@ -70,12 +69,6 @@ namespace Karem {
     bool Application::WindowCloseAction(WindowCloseEvent& event)
     {
         m_Running = false;
-        return true;
-    }
-
-    bool Application::WindowResizeAction(WindowResizeEvent& event)
-    {
-        m_Window.Resize(event.GetWidth(), event.GetHeight());
         return true;
     }
 }

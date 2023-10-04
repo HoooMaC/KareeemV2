@@ -18,6 +18,10 @@ public:
 	void OnImGUIRender() override;
 	void EventHandler(Karem::Event& event) override;
 private:
+	bool WindowResizeAction(Karem::WindowResizeEvent& event);
+
+
+private:
 	Karem::OrthographicCamera m_Camera;
 	Karem::Window* m_ApplicationWindow = nullptr;
 
