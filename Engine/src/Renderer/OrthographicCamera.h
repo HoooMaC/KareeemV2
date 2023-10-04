@@ -24,84 +24,48 @@ namespace Karem {
 
 			void RecalculateBound(float zoomPercentage)
 			{
-				// aspect Ratio x = 16 zoom percentage = 100
-				float Base = GetBaseX(AspectRatio);
-				float factor = Base / (AspectRatio.x * 100);
-				// expected factor = 1.2
-
-
+				float factor = GetBaseX(AspectRatio) / (AspectRatio.x * 100);
 				Right = (AspectRatio.x * factor * zoomPercentage) / 2;
-				// expected Right = 960
 				Left = -Right;
-				// expected Left = -960
-
 				Top = (AspectRatio.y * factor * zoomPercentage) / 2;
-				// expected top = 540
 				Bottom = -Top;
-				//expected top = -540
-
 			}
+
 			static float GetBaseX(const glm::vec2& aspectRatio)
 			{
 				if (aspectRatio.x == 16 and aspectRatio.y == 9)
-				{
 					return 1920;
-				}
 				else if (aspectRatio.x == 21 and aspectRatio.y == 9)
-				{
 					return 3440;
-				}
 				else if (aspectRatio.x == 16 and aspectRatio.y == 10)
-				{
 					return 1920;
-				}
 				else if (aspectRatio.x == 4 and aspectRatio.y == 5)
-				{
 					return 1920;
-				}
 				else if (aspectRatio.x == 4 and aspectRatio.y == 3)
-				{
 					return 1024;
-				}
 				else if (aspectRatio.x == 9 and aspectRatio.y == 16)
-				{
 					return 1080;
-				}
-				else
-				{
-					ENGINE_ASSERT(false, "Unsupported Aspect Ration");
-				}
+
+				ENGINE_ASSERT(false, "Unsupported Aspect Ration");
+				return 0;
 			}
+
 			static float GetBaseY(const glm::vec2& aspectRatio)
 			{
 				if (aspectRatio.x == 16 and aspectRatio.y == 9)
-				{
 					return 1080;
-				}
 				else if (aspectRatio.x == 21 and aspectRatio.y == 9)
-				{
 					return 1440;
-				}
 				else if (aspectRatio.x == 16 and aspectRatio.y == 10)
-				{
 					return 1200;
-				}
 				else if (aspectRatio.x == 4 and aspectRatio.y == 5)
-				{
 					return 1250;
-				}
 				else if (aspectRatio.x == 4 and aspectRatio.y == 3)
-				{
 					return 768;
-				}
 				else if (aspectRatio.x == 9 and aspectRatio.y == 16)
-				{
 					return 1920;
-				}
-				else
-				{
-					ENGINE_ASSERT(false, "Unsupported Aspect Ration");
-				}
+				ENGINE_ASSERT(false, "Unsupported Aspect Ration");
+				return 0;
 			}
 		};
 
@@ -127,8 +91,18 @@ namespace Karem {
 		float& GetRotation() { return m_Rotation; }
 		void SetRotation(float rotation) { m_Rotation = rotation; RecalculateProjectionViewMatrix(); }
 
-		float& GetZoom() { return m_Zoom; RecalculateProjectionMatrix(); }
-		void SetZoom(float zoom) { m_Zoom = zoom; m_Bounds.RecalculateBound(m_Zoom); RecalculateProjectionMatrix(); RecalculateProjectionViewMatrix(); }
+		float& GetZoom() 
+		{ 
+			return m_Zoom; 
+			RecalculateProjectionMatrix();
+		}
+		void SetZoom(float zoom) 
+		{ 
+			m_Zoom = zoom;
+			m_Bounds.RecalculateBound(m_Zoom);
+			RecalculateProjectionMatrix();
+			RecalculateProjectionViewMatrix();
+		}
 
 		const CameraAtrribute& GetBounds() const { return m_Bounds; }
 	public:

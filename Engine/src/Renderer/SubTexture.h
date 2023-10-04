@@ -27,8 +27,8 @@ namespace Karem {
 
 	inline std::shared_ptr<SubTexture2D> CreateSubTexture(const std::shared_ptr<Texture2D>& reference, const glm::vec2& coords, const glm::vec2& cellSize, const glm::vec2& spriteSize = glm::vec2(1.0f))
 	{
-		float textureReferenceWidth = reference->GetWidth();
-		float textureReferenceHeight = reference->GetHeight();
+			float textureReferenceWidth = (float)reference->GetWidth();
+		float textureReferenceHeight = (float)reference->GetHeight();
 
 		glm::vec2 min = { (coords.x * cellSize.x) / textureReferenceWidth, (coords.y * cellSize.y) / textureReferenceHeight };
 		glm::vec2 max = { ((coords.x + spriteSize.x) * cellSize.x) / textureReferenceWidth, ((coords.y + spriteSize.y) * cellSize.y) / textureReferenceHeight };
