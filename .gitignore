@@ -8,3 +8,4 @@ bin-int
 
 
 Client/res/texture/**.png
+/Client/imgui.ini
