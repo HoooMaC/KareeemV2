@@ -58,20 +58,14 @@ namespace Karem {
 	bool OrthographicCamera::MouseScrolledEventAction(MouseScrolledEvent& event)
 	{
 		float eventScrollData = event.GetOffsetY();;
-		m_Zoom -= eventScrollData;
-		//m_Zoom = std::max(m_Zoom, 100.0f);
-		//m_Zoom = std::min(m_Zoom, 1.0f);
+		m_Zoom = std::clamp(m_Zoom - eventScrollData, 1.0f, 100.0f);
 
-		if (m_Zoom > 100)
-			m_Zoom = 100;
-		else if (m_Zoom < 1)
-			m_Zoom = 1;
-
+#if LOG_ZOOM
 		auto [Right, Left, Top, Bottom, AspectRatio] = GetBounds();
-
 		ENGINE_DEBUG("{}", m_Zoom);
 		ENGINE_TRACE("left {:.3f}\tright  {:.3f}", Left, Right);
 		ENGINE_TRACE("Top  {:.3f}\tBottom {:.3f}", Top, Bottom);
+#endif
 
 		m_Bounds.RecalculateBound(m_Zoom);
 		RecalculateProjectionMatrix();

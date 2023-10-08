@@ -50,7 +50,13 @@ void SandboxLayer::OnImGUIRender()
 {
 	imgui::BeginFrame();
 
+
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+
 	//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 	const ImGuiViewport* viewport = ImGui::GetMainViewport();
 	static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
 	const ImGuiWindowClass* window_class = NULL;
@@ -59,54 +65,41 @@ void SandboxLayer::OnImGUIRender()
 	ImGui::SetNextWindowSize(viewport->WorkSize);
 	ImGui::SetNextWindowViewport(viewport->ID);
 
+	char label[32];
+	imgui::ImFormatString(label, IM_ARRAYSIZE(label), "DockSpaceViewport_%08X", viewport->ID);
+
 	ImGuiWindowFlags host_window_flags = 0;
 	host_window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDocking;
 	host_window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 	if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
 		host_window_flags |= ImGuiWindowFlags_NoBackground;
 
-	char label[32];
-	imgui::ImFormatString(label, IM_ARRAYSIZE(label), "DockSpaceViewport_%08X", viewport->ID);
-
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-
 	ImGui::Begin(label, NULL, host_window_flags);
-	ImGui::PopStyleVar(3);
-
 	ImGuiID dockspace_id = ImGui::GetID("DockSpace");
 	ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags, window_class);
 	ImGui::End();
+
 	//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 	ImGui::Begin("main");
-	ImVec2 imageSize = ImGui::GetContentRegionAvail();
+	ImVec2 currentPannelSize = ImGui::GetContentRegionAvail();
 	{
-		const auto& [width, height] = m_FrameBuffer->GetFrameBufferSize();
-		if (imageSize.x != width or imageSize.y != height)
-		{
-			m_FrameBuffer->Resize(imageSize.x, imageSize.y);
-		}
+		const auto& [fbWidth, fbHeight] = m_FrameBuffer->GetFrameBufferSize();
+		if (currentPannelSize.x != fbWidth or currentPannelSize.y != fbHeight)
+			m_FrameBuffer->Resize((int32_t)currentPannelSize.x, (int32_t)currentPannelSize.y);
 	}
 
 	ImGui::Image(
 		(void*)m_FrameBuffer->GetTextureColorAttachmentID(),
-		{ (float)imageSize.x, (float)imageSize.y },
+		{ (float)currentPannelSize.x, (float)currentPannelSize.y },
 		ImVec2(0, 1),
 		ImVec2(1, 0)
 	);
 	ImGui::End();
+
 	//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-	//ImGui::Begin("Window Resize Button");
-	//bool fullScreenStatus = m_ApplicationWindow->IsFullScreen();
-	//if (ImGui::Button("Resize"))
-	//	m_ApplicationWindow->Resize(1280, 720);
-	//if (ImGui::Button("Fullscreen"))
-	//	m_ApplicationWindow->SetFullScreen();
-	//ImGui::End();
-
+	ImGui::PopStyleVar(3);
 	imgui::EndFrame();
 }
 

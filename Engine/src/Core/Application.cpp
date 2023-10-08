@@ -46,7 +46,6 @@ namespace Karem {
                     layer->OnImGUIRender();
                 }
             }
-
             m_Window.OnUpdate();
         }
 
