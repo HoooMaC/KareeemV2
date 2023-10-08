@@ -60,7 +60,7 @@ namespace Karem {
 		float eventScrollData = event.GetOffsetY();;
 		m_Zoom = std::clamp(m_Zoom - eventScrollData, 1.0f, 100.0f);
 
-#if LOG_ZOOM
+#if 1
 		auto [Right, Left, Top, Bottom, AspectRatio] = GetBounds();
 		ENGINE_DEBUG("{}", m_Zoom);
 		ENGINE_TRACE("left {:.3f}\tright  {:.3f}", Left, Right);

@@ -75,7 +75,7 @@ namespace Karem {
 			: m_AspectRatio(aspectRatio), m_Zoom(zoomPercentage)
 		{
 			m_Bounds = CameraAtrribute(aspectRatio, m_Zoom);
-			m_ProjectionMatrix = glm::ortho(m_Bounds.Left, m_Bounds.Right, m_Bounds.Bottom, m_Bounds.Top);
+			m_ProjectionMatrix = glm::ortho(m_Bounds.Left, m_Bounds.Right, m_Bounds.Bottom, m_Bounds.Top, -10.0f, 10.0f);
 			m_ViewMatrix = glm::mat4(1.0f);
 
 			m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
@@ -112,7 +112,7 @@ namespace Karem {
 	private:
 		void RecalculateProjectionMatrix()
 		{
-			m_ProjectionMatrix = glm::ortho(m_Bounds.Left, m_Bounds.Right, m_Bounds.Bottom, m_Bounds.Top);
+			m_ProjectionMatrix = glm::ortho(m_Bounds.Left, m_Bounds.Right, m_Bounds.Bottom, m_Bounds.Top, -10.0f, 10.0f);
 		}
 
 		void RecalculateProjectionViewMatrix()

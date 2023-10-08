@@ -11,14 +11,14 @@ namespace Karem {
 
 	struct Vertex2D
 	{
-		glm::vec3 Position;
+		glm::vec4 Position;
 		glm::vec4 Color;
 		glm::vec2 TexCoord;
 		float TexIndex;
 		Vertex2D()
-			: Position(glm::vec3(0.0f)), Color(glm::vec4(0.0f)), TexCoord(glm::vec2(0.0f)), TexIndex(0.0f) {}
+			: Position(glm::vec4(0.0f)), Color(glm::vec4(0.0f)), TexCoord(glm::vec2(0.0f)), TexIndex(0.0f) {}
 
-		Vertex2D(const glm::vec3& position, const glm::vec4& color, const glm::vec2& texCoord, float texIndex)
+		Vertex2D(const glm::vec4& position, const glm::vec4& color, const glm::vec2& texCoord, float texIndex)
 			: Position(position), Color(color), TexCoord(texCoord), TexIndex(texIndex) {}
 	};
 

@@ -31,7 +31,12 @@ void SandboxLayer::OnUpdate(Karem::TimeStep ts)
 	Karem::RendererCommand::ClearColor("#026773");
 
 	Karem::Renderer2D::BeginScene(m_Camera);
-	Karem::Renderer2D::SubmitSubTexturedQuad({ -1.0f, -1.0f, 0.0f }, { 3.0f, 3.0f }, m_SpriteSheet, 1.0f);
+	Karem::Renderer2D::SubmitSubTexturedQuad({ -1.0f, -1.0f, 0.0f, 1.0f }, { 3.0f, 3.0f }, m_SpriteSheet, 1.0f);
+
+	glm::mat4 transform = glm::translate(glm::mat4(1.0f), { -6.0f, 0.0, 0.0f }) * glm::scale(glm::mat4(1.0f), { 10.0f, 10.0f, 1.0f });
+
+	Karem::Renderer2D::SubmitQuad(transform, {0.3f, 0.0f, 0.9f, 1.0f });
+	Karem::Renderer2D::SubmitQuad(glm::translate(glm::mat4(1.0f), {0.0f, -5.0, 0.2f}) * glm::scale(glm::mat4(1.0f), { 3.0f, 3.0f, 1.0f }), m_SpriteSheet, 1.0f);
 
 	for (float i = 0; i < 10; i += 1.0f)
 	{
@@ -39,9 +44,10 @@ void SandboxLayer::OnUpdate(Karem::TimeStep ts)
 		{
 			float red = i / 10.0f, green = j / 10.0f;
 			const glm::vec4 color = { red, green, 0.5f, 1.0f };
-			Karem::Renderer2D::SubmitQuad({ i, j, -0.1f }, { 3.0f, 3.0f }, color);
+			Karem::Renderer2D::SubmitQuad({ i, j, -0.1f, 1.0f }, { 3.0f, 3.0f }, color);
 		}
 	}
+
 	Karem::Renderer2D::EndScene();
 	m_FrameBuffer->UnBind();
 }
