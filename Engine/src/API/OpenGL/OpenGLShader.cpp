@@ -8,7 +8,7 @@
 
 namespace Karem {
 
-	OpenGLShader::OpenGLShader(const std::string& vertexShaderFilePath, const std::string& fragmentShaderFilePath)
+	OpenGLShader::OpenGLShader(std::string_view vertexShaderFilePath, std::string_view fragmentShaderFilePath)
 	{
 		std::string vertexShader = ReadFile(vertexShaderFilePath);
 		std::string fragmentShader = ReadFile(fragmentShaderFilePath);
@@ -47,10 +47,10 @@ namespace Karem {
 		glDeleteShader(fragmentShader);
 	}
 
-	uint32_t OpenGLShader::CompileShader(const std::string& source, uint32_t type)
+	uint32_t OpenGLShader::CompileShader(std::string_view source, uint32_t type)
 	{
 		uint32_t shaderId = glCreateShader(type);
-		const char* shaderSource = source.c_str();
+		const char* shaderSource = source.data();
 		glShaderSource(shaderId, 1, &shaderSource, nullptr);
 		glCompileShader(shaderId);
 
@@ -159,13 +159,13 @@ namespace Karem {
 		return uniformList;
 	}
 
-	std::string OpenGLShader::ReadFile(const std::string& fileSource)
+	std::string OpenGLShader::ReadFile(std::string_view fileSource)
 	{
-		std::ifstream input(fileSource);
+		const char* fileName = fileSource.data();
+		std::ifstream input(fileName);
 
 		if (!input.is_open())
 		{
-			// TODO : make some Assertion here
 			ENGINE_ASSERT(false, "FILE IS NOT FOUND");
 			return "";
 		}

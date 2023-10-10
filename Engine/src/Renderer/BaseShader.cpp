@@ -8,7 +8,7 @@
 
 namespace Karem {
 
-	std::shared_ptr<Shader> CreateShader(const std::string& vertexShader, const std::string& fragmentShader)
+	std::shared_ptr<Shader> CreateShader(std::string_view vertexShader, std::string_view fragmentShader)
 	{
 		switch (RendererAPI::GetAPI())
 		{

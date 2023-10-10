@@ -25,7 +25,7 @@ namespace Karem {
 		static void SetShader(const std::shared_ptr<Shader>& shader);
 		static void SetVertexArray(const std::shared_ptr<VertexArray>& vertexArray);
 
-		static void UpdateUniform(const std::string& name, void* data);
+		static void UpdateUniform(std::string_view name, void* data);
 
 		inline static API GetAPI() { return RendererAPI::GetAPI(); }
 	};

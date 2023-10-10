@@ -20,7 +20,7 @@ namespace Karem {
 		glClearColor(color.r, color.g, color.b, color.a);
 	}
 
-	void OpenGLRendererAPI::ClearColor(const std::string& hexColor)
+	void OpenGLRendererAPI::ClearColor(std::string_view hexColor)
 	{
 		glm::vec4 color = HexToVec4(hexColor);
 		glClearColor(color.r, color.g, color.b, color.a);

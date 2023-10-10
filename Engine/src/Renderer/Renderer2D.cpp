@@ -1,209 +1,474 @@
 #include "Core/Kareeem.h"
 #include "Renderer2D.h"
 
-#include "Core/CoreFunction.h"
-
-#include "Renderer/OrthographicCamera.h"
-
 #include "Renderer/Material.h"
-#include "Renderer/BaseShader.h"
-#include "Renderer/BaseBuffer.h"
-#include "Renderer/BufferLayout.h"
-#include "Renderer/RenderCommand.h"
 
-#include <glm/glm.hpp>
+#include "Renderer/RenderCommand.h"
 
 namespace Karem {
 
-    struct Vertex
-    {
-        glm::vec3 Position;
-        glm::vec4 Color;
-        glm::vec2 TexCoord;
-        float TexIndex;
-        Vertex()
-            : Position(glm::vec3(0.0f)), Color(glm::vec4(0.0f)), TexCoord(glm::vec2(0.0f)), TexIndex(0.0f) {}
+	RendererData* Renderer2D::s_Buffer = new RendererData;
+	Renderer2DMeshes* Renderer2D::s_Meshes = new Renderer2DMeshes;
 
-        Vertex(const glm::vec3& position, const glm::vec4& color, const glm::vec2& texCoord, float texIndex)
-            : Position(position), Color(color), TexCoord(texCoord), TexIndex(texIndex) {}
-    };
+	void Renderer2D::Initialize()
+	{
 
-    struct BufferData
-    {
-        static constexpr uint64_t maxVertex = 12;
-        static constexpr uint64_t maxIndexBuffer = maxVertex * 6;
+		s_Meshes = new Renderer2DMeshes;
+		s_Buffer = new RendererData;
 
-        std::vector<Vertex> vertexData;
-        std::vector<uint32_t> indicesData;
-        static uint32_t vertexIndex;
-        static uint32_t indicesIndex;
-        static uint32_t indicesOffset;
-    };
 
-    struct Renderer2DData
-    {
-        std::shared_ptr<Shader> m_Shader;
-        std::shared_ptr<VertexArray> m_VertexArray;
-        std::shared_ptr<Material> m_Material;
+		s_Meshes->m_Shader = CreateShader("res/shader/vertex.shader.glsl", "res/shader/fragment.shader.glsl");
+		s_Meshes->m_VertexArray = CreateVertexArray();
 
-        // this is temporary
-        std::shared_ptr<VertexBuffer> vertexBuffer;
-        std::shared_ptr<IndexBuffer> indexBuffer;
-    };
+		s_Meshes->vertexBuffer = CreateVertexBuffer(RendererData::maxVertex * sizeof(Vertex2D));
+		s_Meshes->indexBuffer = CreateIndexBuffer(RendererData::maxIndexBuffer);
 
-    uint32_t BufferData::vertexIndex = 0;
-    uint32_t BufferData::indicesIndex = 0;
-    uint32_t BufferData::indicesOffset = 0;
+		// We need a vertex and index buffer
+		BufferLayout layout = s_Meshes->m_Shader->GetShaderAttributes();
 
-    static Renderer2DData* s_Data;
-    static BufferData* s_SceneBuffer;
+		s_Meshes->m_Shader->Bind();
+		s_Meshes->m_VertexArray->ApplyShaderLayout(layout);
 
-    void Renderer2D::Initialize()
-    {
-        s_Data = new Renderer2DData;
-        s_SceneBuffer = new BufferData;
+		s_Meshes->m_Material = CreateMaterial();
+		
+		UniformCache uniforms = s_Meshes->m_Shader->GetShaderUniforms();
+		s_Meshes->m_Material->SetUniformCache(uniforms);
 
-        s_Data->m_Shader = CreateShader("res\\shader\\position_color_vertex.glsl", "res\\shader\\position_color_fragment.glsl");
-        s_Data->m_VertexArray = CreateVertexArray();
+		s_Buffer->TextureContainer.resize(32);
+		s_Buffer->TextureSlotContainer.resize(32);
 
-        s_Data->vertexBuffer = CreateVertexBuffer(BufferData::maxVertex * sizeof(Vertex));
-        s_Data->indexBuffer = CreateIndexBuffer(BufferData::maxIndexBuffer);
+		s_Buffer->TextureContainer[0] = Karem::CreateTexture2D();
 
-        // We need a vertex and index buffer
-        BufferLayout layout = s_Data->m_Shader->GetShaderAttributes();
+		for (int i = 0; i < 32; i++)
+			s_Buffer->TextureSlotContainer[i] = i;
 
-        s_Data->m_Shader->Bind();
-        s_Data->m_VertexArray->ApplyShaderLayout(layout);
+	}
 
-        s_Data->m_Material = CreateMaterial();
-        UniformCache uniforms = s_Data->m_Shader->GetShaderUniforms();
-        s_Data->m_Material->SetUniformCache(uniforms);
-    }
+	void Renderer2D::Shutdown()
+	{
+		delete s_Buffer;
+		delete s_Meshes;
+	}
 
-    void Renderer2D::Shutdown()
-    {
-        delete s_Data;
-        delete s_SceneBuffer;
-    }
+	void Renderer2D::BeginScene(const OrthographicCamera& camera)
+	{
+		// testing
+		void* ProjectionViewData = (void*)&camera.GetViewProjectionMatrix();
+		ENGINE_ASSERT(ProjectionViewData, "The data is NULL");
+		s_Meshes->m_Material->SetUniformData("uProjectionView", ProjectionViewData);
 
-    void Renderer2D::BeginScene(const OrthographicCamera& camera)
-    {
-        // testing
-        void* ProjectionViewData = (void*)&camera.GetViewProjectionMatrix();
-        ENGINE_ASSERT(ProjectionViewData, "The data is NULL");
+		s_Buffer->vertexData.resize(RendererData::maxVertex);
+		s_Buffer->indicesData.resize(RendererData::maxIndexBuffer);
+	}
 
-        s_SceneBuffer->vertexData.resize(BufferData::maxVertex);
-        s_SceneBuffer->indicesData.resize(BufferData::maxIndexBuffer);
+	void Renderer2D::EndScene()
+	{
+		s_Meshes->m_VertexArray->UpdateBufferData(
+			s_Buffer->vertexData.data(),
+			s_Buffer->indicesData.data(),
+			RendererData::vertexIndex * sizeof(Vertex2D),
+			RendererData::indicesIndex
+		);
 
-        s_Data->m_Material->SetUniformData("uProjectionView", ProjectionViewData);
-    }
+		Validate();
 
-    void Renderer2D::EndScene()
-    {
-        s_Data->m_VertexArray->UpdateBufferData(
-            s_SceneBuffer->vertexData.data(),
-            s_SceneBuffer->indicesData.data(),
-            BufferData::vertexIndex * sizeof(Vertex),
-            BufferData::indicesIndex
-        );
+		RendererCommand::Draw(s_Buffer->indicesIndex);
 
-        Validate();
+		Flush();
+	}
 
-        RendererCommand::Draw(s_SceneBuffer->indicesIndex);
+	void Renderer2D::SubmitQuad(const glm::vec4& pos, const glm::vec2& size, const glm::vec4& color, float texIndex)
+	{
+		if (RendererData::vertexIndex + 4 >= RendererData::maxVertex or RendererData::indicesIndex + 6 >= RendererData::maxIndexBuffer)
+		{
+			EndScene();
+		}
 
-        Flush();
-    }
+		float halfWidth = size.x / 2.0f;
+		float halfHeight = size.y / 2.0f;
 
-    void Renderer2D::SubmitQuad(const glm::vec3& pos, const glm::vec2& size, const glm::vec4& color, float texIndex)
-    {
-        if (BufferData::vertexIndex + 4 >= BufferData::maxVertex or BufferData::indicesIndex + 6 >= BufferData::maxIndexBuffer)
-        {
-            EndScene();
-        }
+		std::vector<Vertex2D> newQuad =
+		{
+			Vertex2D{ glm::vec4(pos.x - halfWidth, pos.y - halfHeight, pos.z, 1.0f), color, glm::vec2(0.0f, 0.0f), texIndex }, // kiri bawah
+			Vertex2D{ glm::vec4(pos.x + halfWidth, pos.y - halfHeight, pos.z, 1.0f), color, glm::vec2(1.0f, 0.0f), texIndex }, // kanan bawah
+			Vertex2D{ glm::vec4(pos.x + halfWidth, pos.y + halfHeight, pos.z, 1.0f), color, glm::vec2(1.0f, 1.0f), texIndex }, // kanan atas
+			Vertex2D{ glm::vec4(pos.x - halfWidth, pos.y + halfHeight, pos.z, 1.0f), color, glm::vec2(0.0f, 1.0f), texIndex }  // kiri atas
+		};
 
-        float halfWidth = size.x / 2.0f;
-        float halfHeight = size.y / 2.0f;
+		s_Buffer->vertexData.insert(s_Buffer->vertexData.begin() + RendererData::vertexIndex, newQuad.begin(), newQuad.end());
+		RendererData::vertexIndex += 4;
 
-        std::vector<Vertex> newQuad =
-        {
-            Vertex{ glm::vec3(pos.x - halfWidth, pos.y - halfHeight, pos.z), color, glm::vec2(0.0f, 0.0f), texIndex }, // kiri bawah
-            Vertex{ glm::vec3(pos.x + halfWidth, pos.y - halfHeight, pos.z), color, glm::vec2(1.0f, 0.0f), texIndex }, // kanan bawah
-            Vertex{ glm::vec3(pos.x + halfWidth, pos.y + halfHeight, pos.z), color, glm::vec2(1.0f, 1.0f), texIndex }, // kanan atas
-            Vertex{ glm::vec3(pos.x - halfWidth, pos.y + halfHeight, pos.z), color, glm::vec2(0.0f, 1.0f), texIndex }  // kiri atas
-        };
+		uint32_t offset = RendererData::indicesOffset;
+		std::vector<uint32_t> newQuadIndices =
+		{
+			offset,
+			offset + 1,
+			offset + 2,
+			offset + 2,
+			offset + 3,
+			offset
+		};
+		s_Buffer->indicesData.insert(s_Buffer->indicesData.begin() + RendererData::indicesIndex, newQuadIndices.begin(), newQuadIndices.end());
 
-        s_SceneBuffer->vertexData.insert(s_SceneBuffer->vertexData.begin() + BufferData::vertexIndex, newQuad.begin(), newQuad.end());
-        BufferData::vertexIndex += 4;
+		RendererData::indicesIndex += 6;
+		RendererData::indicesOffset += 4;
+	}
 
-        uint32_t offset = BufferData::indicesOffset;
-        std::vector<uint32_t> newQuadIndices =
-        {
-            offset,
-            offset + 1,
-            offset + 2,
-            offset + 2,
-            offset + 3,
-            offset
-        };
-        s_SceneBuffer->indicesData.insert(s_SceneBuffer->indicesData.begin() + BufferData::indicesIndex, newQuadIndices.begin(), newQuadIndices.end());
+	void Renderer2D::SubmitQuad(const glm::vec4& pos, const glm::vec2& size, const std::shared_ptr<Texture2D>& texture, float texIndex, const glm::vec4& color)
+	{
+		if (RendererData::vertexIndex + 4 >= RendererData::maxVertex or RendererData::indicesIndex + 6 >= RendererData::maxIndexBuffer)
+		{
+			EndScene();
+		}
 
-        BufferData::indicesIndex += 6;
-        BufferData::indicesOffset += 4;
-    }
 
-    void Renderer2D::SubmitTriangle(const glm::vec3& pos, const glm::vec2& size, const glm::vec4& color, float texIndex)
-    {
-        if (BufferData::vertexIndex + 3 >= BufferData::maxVertex || BufferData::indicesIndex + 3 >= BufferData::maxIndexBuffer)
-        {
-            ENGINE_WARN("Buffer Data is full");
-            return;
-        }
+		float halfWidth = size.x / 2.0f;
+		float halfHeight = size.y / 2.0f;
 
-        float halfWidth = size.x / 2.0f;
-        float halfHeight = size.y / 2.0f;
+		std::vector<Vertex2D> newQuad =
+		{
+			Vertex2D{ glm::vec4(pos.x - halfWidth, pos.y - halfHeight, pos.z, 1.0f), color, glm::vec2(0.0f, 0.0f), texIndex }, // kiri bawah
+			Vertex2D{ glm::vec4(pos.x + halfWidth, pos.y - halfHeight, pos.z, 1.0f), color, glm::vec2(1.0f, 0.0f), texIndex }, // kanan bawah
+			Vertex2D{ glm::vec4(pos.x + halfWidth, pos.y + halfHeight, pos.z, 1.0f), color, glm::vec2(1.0f, 1.0f), texIndex }, // kanan atas
+			Vertex2D{ glm::vec4(pos.x - halfWidth, pos.y + halfHeight, pos.z, 1.0f), color, glm::vec2(0.0f, 1.0f), texIndex }  // kiri atas
+		};
 
-        std::vector<Vertex> newTriangle =
-        {
-            Vertex{ glm::vec3(pos.x - halfWidth, pos.y - halfHeight, pos.z), color, glm::vec2(0.0f, 0.0f), texIndex }, // kiri bawah
-            Vertex{ glm::vec3(pos.x + halfWidth, pos.y - halfHeight, pos.z), color, glm::vec2(1.0f, 0.0f), texIndex }, // kanan bawah
-            Vertex{ glm::vec3(pos.x, pos.y + halfHeight, pos.z), color, glm::vec2(0.5f, 1.0f), texIndex } // atas (tengah)
-        };
+		s_Buffer->vertexData.insert(s_Buffer->vertexData.begin() + RendererData::vertexIndex, newQuad.begin(), newQuad.end());
+		RendererData::vertexIndex += 4;
 
-        s_SceneBuffer->vertexData.insert(s_SceneBuffer->vertexData.begin() + BufferData::vertexIndex, newTriangle.begin(), newTriangle.end());
-        BufferData::vertexIndex += 3;
+		uint32_t offset = RendererData::indicesOffset;
+		std::vector<uint32_t> newQuadIndices =
+		{
+			offset,
+			offset + 1,
+			offset + 2,
+			offset + 2,
+			offset + 3,
+			offset
+		};
+		s_Buffer->indicesData.insert(s_Buffer->indicesData.begin() + RendererData::indicesIndex, newQuadIndices.begin(), newQuadIndices.end());
 
-        uint32_t offset = BufferData::indicesOffset;
-        std::vector<uint32_t> newTriangleIndices =
-        {
-            offset,
-            offset + 1,
-            offset + 2
-        };
-        s_SceneBuffer->indicesData.insert(s_SceneBuffer->indicesData.begin() + BufferData::indicesIndex, newTriangleIndices.begin(), newTriangleIndices.end());
+		s_Buffer->TextureContainer[(int)texIndex] = texture;
 
-        BufferData::indicesIndex += 3;
-        BufferData::indicesOffset += 3;
-    }
+		RendererData::indicesIndex += 6;
+		RendererData::indicesOffset += 4;
+	}
 
-    void Renderer2D::Validate()
-    {
-        s_Data->m_Material->ValidateMaterial();
-    }
+	void Renderer2D::SubmitQuad(const glm::mat4& transform, const glm::vec4& color, float texIndex)
+	{
+		if (RendererData::vertexIndex + 4 >= RendererData::maxVertex or RendererData::indicesIndex + 6 >= RendererData::maxIndexBuffer)
+		{
+			EndScene();
+		}
 
-    void Renderer2D::Bind()
-    {
-        s_Data->m_VertexArray->Bind();
-        s_Data->m_Shader->Bind();
-    }
+		std::vector<Vertex2D> newQuad =
+		{
+			Vertex2D{ transform * glm::vec4(-0.5f, -0.5f, 0.0f, 1.0f), color, glm::vec2(0.0f, 0.0f), texIndex }, // kiri bawah
+			Vertex2D{ transform * glm::vec4( 0.5f, -0.5f, 0.0f, 1.0f), color, glm::vec2(1.0f, 0.0f), texIndex }, // kanan bawah
+			Vertex2D{ transform * glm::vec4( 0.5f,  0.5f, 0.0f, 1.0f), color, glm::vec2(1.0f, 1.0f), texIndex }, // kanan atas
+			Vertex2D{ transform * glm::vec4(-0.5f,  0.5f, 0.0f, 1.0f), color, glm::vec2(0.0f, 1.0f), texIndex }  // kiri atas
+		};
 
-    void Renderer2D::Flush()
-    {
-        BufferData::vertexIndex = 0;
-        BufferData::indicesIndex = 0;
-        BufferData::indicesOffset = 0;
+		s_Buffer->vertexData.insert(s_Buffer->vertexData.begin() + RendererData::vertexIndex, newQuad.begin(), newQuad.end());
+		RendererData::vertexIndex += 4;
 
-        s_SceneBuffer->indicesData.clear();
-        s_SceneBuffer->vertexData.clear();
-    }
+		uint32_t offset = RendererData::indicesOffset;
+		std::vector<uint32_t> newQuadIndices =
+		{
+			offset,
+			offset + 1,
+			offset + 2,
+			offset + 2,
+			offset + 3,
+			offset
+		};
+		s_Buffer->indicesData.insert(s_Buffer->indicesData.begin() + RendererData::indicesIndex, newQuadIndices.begin(), newQuadIndices.end());
+
+		RendererData::indicesIndex += 6;
+		RendererData::indicesOffset += 4;
+	}
+
+	void Renderer2D::SubmitQuad(const glm::mat4& transform, const std::shared_ptr<Texture2D>& texture, float texIndex, const glm::vec4& color)
+	{
+		if (RendererData::vertexIndex + 4 >= RendererData::maxVertex or RendererData::indicesIndex + 6 >= RendererData::maxIndexBuffer)
+		{
+			EndScene();
+		}
+
+		std::vector<Vertex2D> newQuad =
+		{
+			Vertex2D{ transform * glm::vec4( -0.5f, -0.5f, 0.0f, 1.0f ), color, glm::vec2(0.0f, 0.0f), texIndex }, // kiri bawah
+			Vertex2D{ transform * glm::vec4(  0.5f, -0.5f, 0.0f, 1.0f ), color, glm::vec2(1.0f, 0.0f), texIndex }, // kanan bawah
+			Vertex2D{ transform * glm::vec4(  0.5f,  0.5f, 0.0f, 1.0f ), color, glm::vec2(1.0f, 1.0f), texIndex }, // kanan atas
+			Vertex2D{ transform * glm::vec4( -0.5f,  0.5f, 0.0f, 1.0f ), color, glm::vec2(0.0f, 1.0f), texIndex }  // kiri atas
+		};
+
+		s_Buffer->vertexData.insert(s_Buffer->vertexData.begin() + RendererData::vertexIndex, newQuad.begin(), newQuad.end());
+		RendererData::vertexIndex += 4;
+
+		uint32_t offset = RendererData::indicesOffset;
+		std::vector<uint32_t> newQuadIndices =
+		{
+			offset,
+			offset + 1,
+			offset + 2,
+			offset + 2,
+			offset + 3,
+			offset
+		};
+		s_Buffer->indicesData.insert(s_Buffer->indicesData.begin() + RendererData::indicesIndex, newQuadIndices.begin(), newQuadIndices.end());
+
+		s_Buffer->TextureContainer[(int)texIndex] = texture;
+
+		RendererData::indicesIndex += 6;
+		RendererData::indicesOffset += 4;
+	}
+
+	void Renderer2D::SubmitQuad(const glm::mat4& transform, const std::shared_ptr<SubTexture2D>& subTexture, float texIndex, const glm::vec4& color)
+	{
+		if (RendererData::vertexIndex + 4 >= RendererData::maxVertex or RendererData::indicesIndex + 6 >= RendererData::maxIndexBuffer)
+		{
+			EndScene();
+		}
+
+		const std::shared_ptr<Texture2D>& reference = subTexture->GetTextureReference();
+		const glm::vec2* texCoord = subTexture->GetTexCoord();
+
+		std::vector<Vertex2D> newQuad =
+		{
+			Vertex2D{ transform * glm::vec4(-0.5f, -0.5f, 0.0f, 1.0f), color, *(texCoord + 0), texIndex }, // kiri bawah
+			Vertex2D{ transform * glm::vec4(0.5f, -0.5f, 0.0f, 1.0f),  color, *(texCoord + 1), texIndex }, // kanan bawah
+			Vertex2D{ transform * glm::vec4(0.5f,  0.5f, 0.0f, 1.0f),  color, *(texCoord + 2), texIndex }, // kanan atas
+			Vertex2D{ transform * glm::vec4(-0.5f,  0.5f, 0.0f, 1.0f), color, *(texCoord + 3), texIndex }  // kiri atas
+		};
+
+		s_Buffer->vertexData.insert(s_Buffer->vertexData.begin() + RendererData::vertexIndex, newQuad.begin(), newQuad.end());
+		RendererData::vertexIndex += 4;
+
+		uint32_t offset = RendererData::indicesOffset;
+		std::vector<uint32_t> newQuadIndices =
+		{
+			offset,
+			offset + 1,
+			offset + 2,
+			offset + 2,
+			offset + 3,
+			offset
+		};
+		s_Buffer->indicesData.insert(s_Buffer->indicesData.begin() + RendererData::indicesIndex, newQuadIndices.begin(), newQuadIndices.end());
+
+		s_Buffer->TextureContainer[(int)texIndex] = reference;
+
+		RendererData::indicesIndex += 6;
+		RendererData::indicesOffset += 4;
+	}
+
+	void Renderer2D::SubmitSubTexturedQuad(const glm::vec4& pos, const glm::vec2& size, const std::shared_ptr<SubTexture2D>& subTexture, float texIndex, const glm::vec4& color)
+	{
+		if (RendererData::vertexIndex + 4 >= RendererData::maxVertex or RendererData::indicesIndex + 6 >= RendererData::maxIndexBuffer)
+		{
+			EndScene();
+		}
+
+		const std::shared_ptr<Texture2D>& reference = subTexture->GetTextureReference();
+		const glm::vec2* texCoord = subTexture->GetTexCoord();
+
+		float halfWidth = size.x / 2.0f;
+		float halfHeight = size.y / 2.0f;
+
+		std::vector<Vertex2D> newQuad =
+		{
+			Vertex2D{ glm::vec4(pos.x - halfWidth, pos.y - halfHeight, pos.z, 1.0f), color, *(texCoord + 0), texIndex }, // kiri bawah
+			Vertex2D{ glm::vec4(pos.x + halfWidth, pos.y - halfHeight, pos.z, 1.0f), color, *(texCoord + 1), texIndex }, // kanan bawah
+			Vertex2D{ glm::vec4(pos.x + halfWidth, pos.y + halfHeight, pos.z, 1.0f), color, *(texCoord + 2), texIndex }, // kanan atas
+			Vertex2D{ glm::vec4(pos.x - halfWidth, pos.y + halfHeight, pos.z, 1.0f), color, *(texCoord + 3), texIndex }  // kiri atas
+		};
+
+		s_Buffer->vertexData.insert(s_Buffer->vertexData.begin() + RendererData::vertexIndex, newQuad.begin(), newQuad.end());
+		RendererData::vertexIndex += 4;
+
+		uint32_t offset = RendererData::indicesOffset;
+		std::vector<uint32_t> newQuadIndices =
+		{
+			offset,
+			offset + 1,
+			offset + 2,
+			offset + 2,
+			offset + 3,
+			offset
+		};
+		s_Buffer->indicesData.insert(s_Buffer->indicesData.begin() + RendererData::indicesIndex, newQuadIndices.begin(), newQuadIndices.end());
+
+		s_Buffer->TextureContainer[(int)texIndex] = reference;
+
+		RendererData::indicesIndex += 6;
+		RendererData::indicesOffset += 4;
+	}
+
+	void Renderer2D::SubmitRotatedQuad(const glm::vec4& pos, const glm::vec2& size, float rotation, const glm::vec4& color, float texIndex)
+	{
+		if (RendererData::vertexIndex + 4 >= RendererData::maxVertex || RendererData::indicesIndex + 6 >= RendererData::maxIndexBuffer)
+		{
+			ENGINE_WARN("Buffer Data is full");
+			return;
+		}
+
+		float halfWidth = size.x / 2.0f;
+		float halfHeight = size.y / 2.0f;
+
+		glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), rotation, glm::vec3(0.0f, 0.0f, 1.0f));
+
+		// Hitung sudut-sudut setelah rotasi
+		glm::vec4 bottomLeft(-halfWidth, -halfHeight, 0.0f, 1.0f);
+		glm::vec4 bottomRight(halfWidth, -halfHeight, 0.0f, 1.0f);
+		glm::vec4 topRight(halfWidth, halfHeight, 0.0f, 1.0f);
+		glm::vec4 topLeft(-halfWidth, halfHeight, 0.0f, 1.0f);
+
+		bottomLeft = glm::vec4(rotationMatrix * bottomLeft);
+		bottomRight = glm::vec4(rotationMatrix * bottomRight);
+		topRight = glm::vec4(rotationMatrix * topRight);
+		topLeft = glm::vec4(rotationMatrix * topLeft);
+
+		std::vector<Vertex2D> newQuad =
+		{
+			Vertex2D{ bottomLeft + pos, color, glm::vec2(0.0f, 0.0f), texIndex }, // kiri bawah
+			Vertex2D{ bottomRight + pos, color, glm::vec2(1.0f, 0.0f), texIndex }, // kanan bawah
+			Vertex2D{ topRight + pos, color, glm::vec2(1.0f, 1.0f), texIndex }, // kanan atas
+			Vertex2D{ topLeft + pos, color, glm::vec2(0.0f, 1.0f), texIndex }  // kiri atas
+		};
+
+		s_Buffer->vertexData.insert(s_Buffer->vertexData.begin() + RendererData::vertexIndex, newQuad.begin(), newQuad.end());
+		RendererData::vertexIndex += 4;
+
+		uint32_t offset = RendererData::indicesOffset;
+		std::vector<uint32_t> newQuadIndices =
+		{
+			offset,
+			offset + 1,
+			offset + 2,
+			offset + 2,
+			offset + 3,
+			offset
+		};
+		s_Buffer->indicesData.insert(s_Buffer->indicesData.begin() + RendererData::indicesIndex, newQuadIndices.begin(), newQuadIndices.end());
+
+		RendererData::indicesIndex += 6;
+		RendererData::indicesOffset += 4;
+	}
+
+	void Renderer2D::SubmitRotatedQuad(const glm::vec4& pos, const glm::vec2& size, float rotation, const std::shared_ptr<Texture2D>& texture, float texIndex, const glm::vec4& color)
+	{
+		if (RendererData::vertexIndex + 4 >= RendererData::maxVertex || RendererData::indicesIndex + 6 >= RendererData::maxIndexBuffer)
+		{
+			EndScene();
+		}
+
+		float halfWidth = size.x / 2.0f;
+		float halfHeight = size.y / 2.0f;
+
+		glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), rotation, glm::vec3(0.0f, 0.0f, 1.0f));
+
+		// Hitung sudut-sudut setelah rotasi
+		glm::vec4 bottomLeft(-halfWidth, -halfHeight, 0.0f, 1.0f);
+		glm::vec4 bottomRight(halfWidth, -halfHeight, 0.0f, 1.0f);
+		glm::vec4 topRight(halfWidth, halfHeight, 0.0f, 1.0f);
+		glm::vec4 topLeft(-halfWidth, halfHeight, 0.0f, 1.0f);
+
+		bottomLeft = glm::vec4(rotationMatrix * bottomLeft);
+		bottomRight = glm::vec4(rotationMatrix * bottomRight);
+		topRight = glm::vec4(rotationMatrix * topRight);
+		topLeft = glm::vec4(rotationMatrix * topLeft);
+
+		std::vector<Vertex2D> newQuad =
+		{
+			Vertex2D{ bottomLeft + pos, color, glm::vec2(0.0f, 0.0f), texIndex }, // kiri bawah
+			Vertex2D{ bottomRight + pos, color, glm::vec2(1.0f, 0.0f), texIndex }, // kanan bawah
+			Vertex2D{ topRight + pos, color, glm::vec2(1.0f, 1.0f), texIndex }, // kanan atas
+			Vertex2D{ topLeft + pos, color, glm::vec2(0.0f, 1.0f), texIndex }  // kiri atas
+		};
+
+		s_Buffer->vertexData.insert(s_Buffer->vertexData.begin() + RendererData::vertexIndex, newQuad.begin(), newQuad.end());
+		RendererData::vertexIndex += 4;
+
+		uint32_t offset = RendererData::indicesOffset;
+		std::vector<uint32_t> newQuadIndices =
+		{
+			offset,
+			offset + 1,
+			offset + 2,
+			offset + 2,
+			offset + 3,
+			offset
+		};
+		s_Buffer->indicesData.insert(s_Buffer->indicesData.begin() + RendererData::indicesIndex, newQuadIndices.begin(), newQuadIndices.end());
+
+		s_Buffer->TextureContainer[(int)texIndex] = texture;
+
+		RendererData::indicesIndex += 6;
+		RendererData::indicesOffset += 4;
+	}
+
+	void Renderer2D::SubmitTriangle(const glm::vec4& pos, const glm::vec2& size, const glm::vec4& color, float texIndex)
+	{
+		if (RendererData::vertexIndex + 3 >= RendererData::maxVertex || RendererData::indicesIndex + 3 >= RendererData::maxIndexBuffer)
+		{
+			ENGINE_WARN("Buffer Data is full");
+			return;
+		}
+
+		float halfWidth = size.x / 2.0f;
+		float halfHeight = size.y / 2.0f;
+
+		std::vector<Vertex2D> newTriangle =
+		{
+			Vertex2D{ glm::vec4(pos.x - halfWidth, pos.y - halfHeight, pos.z, 1.0f), color, glm::vec2(0.0f, 0.0f), texIndex }, // kiri bawah
+			Vertex2D{ glm::vec4(pos.x + halfWidth, pos.y - halfHeight, pos.z, 1.0f), color, glm::vec2(1.0f, 0.0f), texIndex }, // kanan bawah
+			Vertex2D{ glm::vec4(pos.x, pos.y + halfHeight, pos.z, 1.0f), color, glm::vec2(0.5f, 1.0f), texIndex } // atas (tengah)
+		};
+
+		s_Buffer->vertexData.insert(s_Buffer->vertexData.begin() + RendererData::vertexIndex, newTriangle.begin(), newTriangle.end());
+		RendererData::vertexIndex += 3;
+
+		uint32_t offset = RendererData::indicesOffset;
+		std::vector<uint32_t> newTriangleIndices =
+		{
+			offset,
+			offset + 1,
+			offset + 2
+		};
+		s_Buffer->indicesData.insert(s_Buffer->indicesData.begin() + RendererData::indicesIndex, newTriangleIndices.begin(), newTriangleIndices.end());
+
+		RendererData::indicesIndex += 3;
+		RendererData::indicesOffset += 3;
+	}
+
+	void Renderer2D::Validate()
+	{
+		s_Meshes->m_Material->SetUniformData("uTexture", (void*)s_Buffer->TextureSlotContainer.data());
+		s_Meshes->m_Material->ValidateMaterial();
+
+		for (const auto& texture : s_Buffer->TextureContainer)
+		{
+			if (texture == nullptr)
+				continue;
+			texture->Bind();
+		}
+	}
+
+	void Renderer2D::Flush()
+	{
+		RendererData::vertexIndex = 0;
+		RendererData::indicesIndex = 0;
+		RendererData::indicesOffset = 0;
+
+		s_Buffer->indicesData.clear();
+		s_Buffer->vertexData.clear();
+	}
+
+	void Renderer2D::Bind()
+	{
+		s_Meshes->m_VertexArray->Bind();
+		s_Meshes->m_Shader->Bind();
+	}
 
 }

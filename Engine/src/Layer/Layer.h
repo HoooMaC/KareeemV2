@@ -10,13 +10,13 @@ namespace Karem {
 	class Layer
 	{
 	public:
-		Layer(const std::string& name);
+		Layer(std::string_view name);
 		virtual ~Layer() = default;
 
 		virtual void OnAttach() {}
 		virtual void OnDetach() {}
-		virtual void OnUpdate(TimeStep ts) {}
-
+		virtual void Update(TimeStep ts) {}
+		virtual void RenderImGUI() {}
 		virtual void EventHandler(Event& event) {}
 
 		inline bool GetStatus() const { return m_Status; }

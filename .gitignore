@@ -5,6 +5,5 @@ bin-int
 **.vcxproj
 **.vcxproj.user
 **.vcxproj.filters
-
-Client/imgui.ini
 /Client/res/texture/**.png
+/Client/imgui.ini

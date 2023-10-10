@@ -7,49 +7,49 @@
 
 namespace Karem {
 
-	void OrthographicCamera::OnUpdate(TimeStep ts)
+	void OrthographicCamera::Update(TimeStep ts)
 	{
 		if (Karem::Input::IsKeyPressed(KAREM_KEY_R))
 		{
 			m_Rotation = 0;
 			m_Position = glm::vec3(0.0f);
-			RecalculateMatrix();
+			RecalculateProjectionViewMatrix();
 		}
 		else if (Karem::Input::IsKeyPressed(KAREM_KEY_E))
 		{
 			m_Rotation += 180.0f * ts;
-			RecalculateMatrix();
+			RecalculateProjectionViewMatrix();
 		}
 		else if (Karem::Input::IsKeyPressed(KAREM_KEY_Q))
 		{
 			m_Rotation -= 180.0f * ts;
-			RecalculateMatrix();
+			RecalculateProjectionViewMatrix();
 		}
 
 		if (Karem::Input::IsKeyPressed(KAREM_KEY_D))
 		{
 			m_Position.x += 10.0f * ts;
-			RecalculateMatrix();
+			RecalculateProjectionViewMatrix();
 		}
 		else if (Karem::Input::IsKeyPressed(KAREM_KEY_A))
 		{
 			m_Position.x -= 10.0f * ts;
-			RecalculateMatrix();
+			RecalculateProjectionViewMatrix();
 		}
 
 		if (Karem::Input::IsKeyPressed(KAREM_KEY_W))
 		{
 			m_Position.y += 10.0f * ts;
-			RecalculateMatrix();
+			RecalculateProjectionViewMatrix();
 		}
 		else if (Karem::Input::IsKeyPressed(KAREM_KEY_S))
 		{
 			m_Position.y -= 10.0f * ts;
-			RecalculateMatrix();
+			RecalculateProjectionViewMatrix();
 		}
 	}
 
-	void OrthographicCamera::OnEvent(Event& e)
+	void OrthographicCamera::EventHandler(Event& e)
 	{
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<MouseScrolledEvent>(std::bind(&OrthographicCamera::MouseScrolledEventAction, this, std::placeholders::_1));
@@ -57,12 +57,19 @@ namespace Karem {
 
 	bool OrthographicCamera::MouseScrolledEventAction(MouseScrolledEvent& event)
 	{
-		m_Zoom -= event.GetOffsetY() * 0.25;
-		m_Zoom = std::max(m_Zoom, 0.25f);
-		m_Zoom = std::min(m_Zoom, 10.0f);
-		//ENGINE_TRACE("{}", m_Zoom);
-		m_ProjectionMatrix = glm::ortho(-m_AspectRatio * m_Zoom, m_AspectRatio * m_Zoom, -m_Zoom, m_Zoom, -1.0f, 1.0f);
-		RecalculateMatrix();
+		float eventScrollData = event.GetOffsetY();;
+		m_Zoom = std::clamp(m_Zoom - eventScrollData, 1.0f, 100.0f);
+
+#if 1
+		auto [Right, Left, Top, Bottom, AspectRatio] = GetBounds();
+		ENGINE_DEBUG("{}", m_Zoom);
+		ENGINE_TRACE("left {:.3f}\tright  {:.3f}", Left, Right);
+		ENGINE_TRACE("Top  {:.3f}\tBottom {:.3f}", Top, Bottom);
+#endif
+
+		m_Bounds.RecalculateBound(m_Zoom);
+		RecalculateProjectionMatrix();
+		RecalculateProjectionViewMatrix();
 		return true;
 	}
 

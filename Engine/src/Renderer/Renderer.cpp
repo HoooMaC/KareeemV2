@@ -49,7 +49,7 @@ namespace Karem {
 		//s_Data.m_RendererVertexArray->Bind();
 	}
 
-	void Renderer::UpdateUniform(const std::string& name, void* data)
+	void Renderer::UpdateUniform(std::string_view name, void* data)
 	{
 		//s_Data.m_RendererShader->Bind();
 		//s_Data.m_RendererShader->UpdateUniform(name, data);

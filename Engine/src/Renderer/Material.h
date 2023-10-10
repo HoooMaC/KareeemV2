@@ -19,7 +19,7 @@ namespace Karem {
 			m_UniformList = uniforms;
 		}
 
-		void SetUniformData(const std::string& name, void* data)
+		void SetUniformData(std::string_view name, void* data)
 		{
 			m_UniformList.SetUniformData(name, data);
 		}
