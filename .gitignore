@@ -7,3 +7,4 @@ bin-int
 **.vcxproj.filters
 
 Client/imgui.ini
+/Client/res/texture/**.png
