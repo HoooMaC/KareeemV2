@@ -7,7 +7,7 @@
 
 namespace Karem {
 
-	void OrthographicCamera::OnUpdate(TimeStep ts)
+	void OrthographicCamera::Update(TimeStep ts)
 	{
 		if (Karem::Input::IsKeyPressed(KAREM_KEY_R))
 		{
@@ -49,7 +49,7 @@ namespace Karem {
 		}
 	}
 
-	void OrthographicCamera::OnEvent(Event& e)
+	void OrthographicCamera::EventHandler(Event& e)
 	{
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<MouseScrolledEvent>(std::bind(&OrthographicCamera::MouseScrolledEventAction, this, std::placeholders::_1));

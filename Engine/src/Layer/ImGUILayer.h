@@ -11,8 +11,8 @@ namespace Karem {
 
 		void OnAttach();
 		void OnDetach();
-		void OnUpdate();
-		void OnImGUIRender();
+		void Update();
+		void RenderImGUI();
 
 		void EventHandler(Event& event);
 	};

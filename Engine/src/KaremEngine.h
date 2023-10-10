@@ -18,6 +18,10 @@
 #include "Layer/Layers.h"
 #include "Layer/ImGUILayer.h"
 
+#include "Scene/Scene.h"
+#include "Scene/Components.h"
+//#include "Scene/Entity.h"
+
 #include "Renderer/Renderer.h"
 #include "Renderer/Renderer2D.h"
 #include "Renderer/BaseShader.h"

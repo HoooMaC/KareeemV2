@@ -42,11 +42,11 @@ namespace Karem {
             {
                 if (layer->GetStatus())
                 {
-                    layer->OnUpdate(timeStep);
-                    layer->OnImGUIRender();
+                    layer->Update(timeStep);
+                    layer->RenderImGUI();
                 }
             }
-            m_Window.OnUpdate();
+            m_Window.Update();
         }
 
     }

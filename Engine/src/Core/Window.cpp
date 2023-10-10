@@ -172,7 +172,7 @@ namespace Karem {
 		}
 	}
 
-	void Window::OnUpdate()
+	void Window::Update()
 	{
 		glfwPollEvents();
 		glfwSwapBuffers(m_Window);

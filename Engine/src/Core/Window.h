@@ -36,7 +36,7 @@ namespace Karem {
 		void Init(const WindowProperty& property);
 		void Shutdown();
 
-		void OnUpdate();
+		void Update();
 		void SetVSync(bool enable);
 		void SetEventCallbacks(EventCallbackFn callback);
 

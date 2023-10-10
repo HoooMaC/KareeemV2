@@ -94,7 +94,8 @@ project "Engine"
 	files
 	{
 		"%{prj.name}/src/**.h",
-		"%{prj.name}/src/**.cpp"
+		"%{prj.name}/src/**.cpp",
+		"%{prj.name}/src/external/include/entt/entt.hpp",
 	}
 
 	libdirs

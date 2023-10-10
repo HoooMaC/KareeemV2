@@ -106,8 +106,8 @@ namespace Karem {
 
 		const CameraAtrribute& GetBounds() const { return m_Bounds; }
 	public:
-		void OnUpdate(TimeStep ts);
-		void OnEvent(Event& e);
+		void Update(TimeStep ts);
+		void EventHandler(Event& e);
 
 	private:
 		void RecalculateProjectionMatrix()

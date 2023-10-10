@@ -1,6 +1,6 @@
 #include "SandboxLayer.h"
 
-#include "GLFW/glfw3.h"
+//#include "GLFW/glfw3.h"
 
 #include "imgui.h"
 #include "imgui_setup.h"
@@ -20,10 +20,9 @@ void SandboxLayer::OnDetach()
 {
 }
 
-void SandboxLayer::OnUpdate(Karem::TimeStep ts)
+void SandboxLayer::Update(Karem::TimeStep ts)
 {
-
-	m_Camera.OnUpdate(ts);
+	m_Camera.Update(ts);
 
 	m_FrameBuffer->Bind();
 
@@ -31,28 +30,29 @@ void SandboxLayer::OnUpdate(Karem::TimeStep ts)
 	Karem::RendererCommand::ClearColor("#026773");
 
 	Karem::Renderer2D::BeginScene(m_Camera);
-	Karem::Renderer2D::SubmitSubTexturedQuad({ -1.0f, -1.0f, 0.0f, 1.0f }, { 3.0f, 3.0f }, m_SpriteSheet, 1.0f);
 
-	glm::mat4 transform = glm::translate(glm::mat4(1.0f), { -6.0f, 0.0, 0.0f }) * glm::scale(glm::mat4(1.0f), { 10.0f, 10.0f, 1.0f });
-
-	Karem::Renderer2D::SubmitQuad(transform, {0.3f, 0.0f, 0.9f, 1.0f });
-	Karem::Renderer2D::SubmitQuad(glm::translate(glm::mat4(1.0f), {0.0f, -5.0, 0.2f}) * glm::scale(glm::mat4(1.0f), { 3.0f, 3.0f, 1.0f }), m_SpriteSheet, 1.0f);
-
-	for (float i = 0; i < 10; i += 1.0f)
-	{
-		for (float j = 0; j < 10; j += 1.0f)
-		{
-			float red = i / 10.0f, green = j / 10.0f;
-			const glm::vec4 color = { red, green, 0.5f, 1.0f };
-			Karem::Renderer2D::SubmitQuad({ i, j, -0.1f, 1.0f }, { 3.0f, 3.0f }, color);
-		}
-	}
+	//glm::mat4 transform = glm::translate(glm::mat4(1.0f), { -6.0f, 0.0, 0.0f }) * glm::scale(glm::mat4(1.0f), { 10.0f, 10.0f, 1.0f });
+	//Karem::Renderer2D::SubmitSubTexturedQuad({ -1.0f, -1.0f, 0.0f, 1.0f }, { 3.0f, 3.0f }, m_SpriteSheet, 1.0f);
+	//Karem::Renderer2D::SubmitQuad(transform, {0.3f, 0.0f, 0.9f, 1.0f });
+	//Karem::Renderer2D::SubmitQuad(glm::translate(glm::mat4(1.0f), {0.0f, -5.0, 0.2f}) * glm::scale(glm::mat4(1.0f), { 3.0f, 3.0f, 1.0f }), m_SpriteSheet, 1.0f);
+	//for (float i = 0; i < 10; i += 1.0f)
+	//{
+	//	for (float j = 0; j < 10; j += 1.0f)
+	//	{
+	//		float red = i / 10.0f, green = j / 10.0f;
+	//		const glm::vec4 color = { red, green, 0.5f, 1.0f };
+	//		Karem::Renderer2D::SubmitQuad({ i, j, -0.1f, 1.0f }, { 3.0f, 3.0f }, color);
+	//	}
+	//}
+	
+	m_Scene.Update(ts);
 
 	Karem::Renderer2D::EndScene();
+
 	m_FrameBuffer->UnBind();
 }
 
-void SandboxLayer::OnImGUIRender()
+void SandboxLayer::RenderImGUI()
 {
 	imgui::BeginFrame();
 
@@ -114,7 +114,7 @@ void SandboxLayer::EventHandler(Karem::Event& event)
 	Karem::EventDispatcher dispatcher(event);
 	dispatcher.Dispatch<Karem::WindowResizeEvent>(std::bind(&SandboxLayer::WindowResizeAction, this, std::placeholders::_1));
 
-	m_Camera.OnEvent(event);
+	m_Camera.EventHandler(event);
 }
 
 bool SandboxLayer::WindowResizeAction(Karem::WindowResizeEvent& event)
