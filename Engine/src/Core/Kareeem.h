@@ -10,6 +10,7 @@
 #include <sstream>
 #include <memory>
 #include <cmath>
+#include <string_view>
 
 //STL LIB
 #include <initializer_list>

@@ -26,7 +26,7 @@ namespace Karem {
 		{
 			s_RendererAPI->ClearColor(color);
 		}
-		inline static void ClearColor(const std::string& hexColor)
+		inline static void ClearColor(std::string_view hexColor)
 		{
 			s_RendererAPI->ClearColor(hexColor);
 		}

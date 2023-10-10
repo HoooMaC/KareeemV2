@@ -17,7 +17,7 @@ namespace Karem {
 		uint32_t Width, Height;
 
 		WindowProperty(
-			const std::string& title = "Default Window",
+			std::string_view title = "Default Window",
 			uint32_t width = 1280,
 			uint32_t height = 720,
 			bool fullScreen = false

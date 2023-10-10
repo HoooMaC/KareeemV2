@@ -4,7 +4,7 @@
 
 namespace Karem {
 
-	Layer::Layer(const std::string& name)
+	Layer::Layer(std::string_view name)
 		: m_DebugName(name) {}
 
 }

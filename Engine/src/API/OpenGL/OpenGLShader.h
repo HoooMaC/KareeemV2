@@ -1,6 +1,7 @@
 #pragma once
 
 #include <unordered_map>
+#include <string_view>
 
 #include "Renderer/BaseShader.h"
 #include "Renderer/Uniform.h"
@@ -11,7 +12,7 @@ namespace Karem{
 	class OpenGLShader : public Shader
 	{
 	public:
-		OpenGLShader(const std::string& vertexShader, const std::string& fragmentShader);
+		OpenGLShader(std::string_view vertexShader, std::string_view fragmentShader);
 		~OpenGLShader();
 
 
@@ -23,9 +24,9 @@ namespace Karem{
 	private:
 		void Clear();
 
-		std::string ReadFile(const std::string& fileSource);
+		std::string ReadFile(std::string_view fileSource);
 		void CreateShader(uint32_t vertexShader, uint32_t fragmentShader);
-		uint32_t CompileShader(const std::string& source, uint32_t shaderType);
+		uint32_t CompileShader(std::string_view source, uint32_t shaderType);
 
 	private:
 		uint32_t m_RendererID;

@@ -10,7 +10,7 @@ namespace Karem {
 	class Layer
 	{
 	public:
-		Layer(const std::string& name);
+		Layer(std::string_view name);
 		virtual ~Layer() = default;
 
 		virtual void OnAttach() {}

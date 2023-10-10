@@ -12,6 +12,6 @@
 
 namespace Karem {
 
-	glm::vec4 HexToVec4(const std::string& hexColor);
+	glm::vec4 HexToVec4(std::string_view hexColor);
 
 }

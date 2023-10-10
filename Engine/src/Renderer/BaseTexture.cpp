@@ -18,7 +18,7 @@ namespace Karem {
 		return nullptr;
 	}
 
-	std::shared_ptr<Texture2D> Karem::CreateTexture2D(const std::string& filePath, uint32_t slot, uint32_t filter)
+	std::shared_ptr<Texture2D> Karem::CreateTexture2D(std::string_view filePath, uint32_t slot, uint32_t filter)
 	{
 		switch (RendererAPI::GetAPI())
 		{

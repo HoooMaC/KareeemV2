@@ -2,7 +2,7 @@
 
 #include "OpenGLTexture2D.h"
 
-#include "stb_image.h"
+#include <stb_image/stb_image.h>
 #include <glad/glad.h>
 
 namespace Karem {
@@ -22,7 +22,7 @@ namespace Karem {
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 
-	OpenGLTexture2D::OpenGLTexture2D(const std::string& filePath, uint32_t slot, uint32_t filter)
+	OpenGLTexture2D::OpenGLTexture2D(std::string_view filePath, uint32_t slot, uint32_t filter)
 		: m_FilePath(filePath), m_Slot(slot), m_Width(0), m_Height(0), m_BPP(0), m_RendererID(0)
 	{
 		CreateTexture(filter);

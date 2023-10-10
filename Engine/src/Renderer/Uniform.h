@@ -32,13 +32,16 @@ namespace Karem {
 			m_UnifomList = uniformList;
 		}
 
-		inline void SetUniformData(const std::string& name, void* data)
+		inline void SetUniformData(std::string_view name, void* data)
 		{
-			auto uniformIterator = m_UnifomList.find(name);
+			// Ubah std::string_view menjadi std::string
+			std::string uniformName(name);
+
+			auto uniformIterator = m_UnifomList.find(uniformName);
 			if (uniformIterator == m_UnifomList.end()) {
-				uniformIterator = m_UnifomList.find(name + "[0]");
+				uniformIterator = m_UnifomList.find(uniformName + "[0]");
 				if (uniformIterator == m_UnifomList.end()) {
-					ENGINE_WARN("Uniform {} not found.", name);
+					ENGINE_WARN("Uniform {} not found.", uniformName);
 					return;
 				}
 			}

@@ -58,7 +58,7 @@ namespace Karem {
 		uint32_t Offset;
 
 		BufferElement() = default;
-		BufferElement(ShaderDataType type, const std::string& name, bool normalized =  false)
+		BufferElement(ShaderDataType type, std::string_view name, bool normalized =  false)
 			: Name(name), Size(ShaderDataTypeSize(type)), Type(type), Normalized(normalized), Offset(0) 
 		{
 		}
