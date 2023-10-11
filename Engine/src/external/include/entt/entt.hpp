@@ -1,3 +1,4 @@
+#pragma once
 // IWYU pragma: begin_exports
 // #include "config/config.h"
 #ifndef ENTT_CONFIG_CONFIG_H

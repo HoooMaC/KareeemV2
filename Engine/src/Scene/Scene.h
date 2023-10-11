@@ -7,19 +7,18 @@
 
 namespace Karem {
 
+	class Entity;
+
 	class Scene {
+		friend class Entity;
 	public:
 		Scene();
 
-		entt::entity CreateEntity(const std::string& entityName = "Undefined");
-
-		// this is temporary
-		entt::registry& GetRegistry() { return m_Registry; }
+		Entity CreateEntity(const std::string& entityName = "Undefined");
 
 		void Update(TimeStep ts);
 		void EventHandler(Event& e);
 	private:
 		entt::registry m_Registry;
-		entt::entity m_SquareEntity;
 	};
 }
