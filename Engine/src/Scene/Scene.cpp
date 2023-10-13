@@ -14,6 +14,9 @@ namespace Karem{
 
 	Scene::Scene()
 	{
+		Entity camera = CreateEntity("Camera");
+		camera.AddComponent<CameraComponent>();
+
 		for (int i = 0; i < 10; i++)
 		{
 			Entity SquareEntity = CreateEntity("Square Entity");
@@ -22,7 +25,6 @@ namespace Karem{
 			auto& SquareTransform = SquareEntity.GetComponent<TransformComponent>().Transform;
 			SquareTransform = glm::translate(glm::mat4(1.0f), { (float)i - 5, 0.0f, 0.0f }) * glm::scale(glm::mat4(1.0f), { 10.0, 10.0f, 0.0f });
 		}
-
 	}
 
 	Entity Scene::CreateEntity(const std::string& entityName)
@@ -35,11 +37,34 @@ namespace Karem{
 
 	void Scene::Update(TimeStep ts)
 	{
-		auto group = m_Registry.group<TransformComponent>(entt::get<ColorComponent>);
-		for (const auto entity : group)
+		CameraHandler* mainCamera = nullptr;
+
+		auto view = m_Registry.view<CameraComponent>();
+		for (const auto entity : view)
 		{
-			auto [transform, color] = group.get(entity);
-			Renderer2D::SubmitQuad(transform.Transform, color.Color);
+			auto [component] = view.get(entity);
+			mainCamera = &component.Camera;
+			break;
+		}
+
+		if (mainCamera)
+		{
+			Renderer2D::BeginScene(mainCamera->GetCamera(CameraHandler::CameraType::Orthographic));
+			auto group = m_Registry.group<TransformComponent>(entt::get<ColorComponent>);
+			for (const auto entity : group)
+			{
+				auto [transform, color] = group.get(entity);
+				bool isHave = m_Registry.all_of<SubTextureComponent>(entity);
+				if(!isHave)
+					Renderer2D::SubmitQuad(transform.Transform, color.Color);
+				else
+				{
+					auto [subtexture] = m_Registry.get<SubTextureComponent>(entity);
+
+					Renderer2D::SubmitQuad(transform.Transform, subtexture, 1.0f, color.Color);
+				}
+			}
+			Renderer2D::EndScene();
 		}
 	}
 

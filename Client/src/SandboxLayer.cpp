@@ -12,7 +12,6 @@ void SandboxLayer::OnAttach()
 	// this is overriding texture in index 3 in texture renderer
 	m_Texture = Karem::CreateTexture2D("res/texture/spritesheet/city_tilemap.png", 1);
 	m_SpriteSheet = Karem::CreateSubTexture(m_Texture, { 0,1 }, { 8,8 }, { 3,3 });
-	m_Camera = Karem::OrthographicCamera({ 16,9 }, 1);
 	m_FrameBuffer = Karem::CreateFrameBuffer(1280, 720);
 }
 
@@ -22,14 +21,14 @@ void SandboxLayer::OnDetach()
 
 void SandboxLayer::Update(Karem::TimeStep ts)
 {
-	m_Camera.Update(ts);
+	//m_Camera.Update(ts);
 
 	m_FrameBuffer->Bind();
 
 	Karem::RendererCommand::Clear();
 	Karem::RendererCommand::ClearColor("#026773");
 
-	Karem::Renderer2D::BeginScene(m_Camera);
+	//Karem::Renderer2D::BeginScene(m_Camera);
 
 	//glm::mat4 transform = glm::translate(glm::mat4(1.0f), { -6.0f, 0.0, 0.0f }) * glm::scale(glm::mat4(1.0f), { 10.0f, 10.0f, 1.0f });
 	//Karem::Renderer2D::SubmitSubTexturedQuad({ -1.0f, -1.0f, 0.0f, 1.0f }, { 3.0f, 3.0f }, m_SpriteSheet, 1.0f);
@@ -47,7 +46,7 @@ void SandboxLayer::Update(Karem::TimeStep ts)
 	
 	m_Scene.Update(ts);
 
-	Karem::Renderer2D::EndScene();
+	//Karem::Renderer2D::EndScene();
 
 	m_FrameBuffer->UnBind();
 }
@@ -113,8 +112,8 @@ void SandboxLayer::EventHandler(Karem::Event& event)
 {
 	Karem::EventDispatcher dispatcher(event);
 	dispatcher.Dispatch<Karem::WindowResizeEvent>(std::bind(&SandboxLayer::WindowResizeAction, this, std::placeholders::_1));
-
-	m_Camera.EventHandler(event);
+	m_Scene.EventHandler(event);
+	//m_Camera.EventHandler(event);
 }
 
 bool SandboxLayer::WindowResizeAction(Karem::WindowResizeEvent& event)
@@ -122,6 +121,6 @@ bool SandboxLayer::WindowResizeAction(Karem::WindowResizeEvent& event)
 	// set camera zoom level
 	float zoom = (float)event.GetWidth() / (float)event.GetHeight();
 	//ENGINE_DEBUG("{}", zoom);
-	m_Camera.SetZoom(zoom);
+	//m_Camera.SetZoom(zoom);
 	return true;
 }

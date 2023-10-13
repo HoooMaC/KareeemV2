@@ -22,7 +22,7 @@ private:
 
 
 private:
-	Karem::OrthographicCamera m_Camera;
+	//Karem::OrthographicCamera m_Camera;
 	Karem::Window* m_ApplicationWindow = nullptr;
 	Karem::Scene m_Scene;
 

@@ -90,12 +90,14 @@ namespace Karem {
 
 		float& GetRotation() { return m_Rotation; }
 		void SetRotation(float rotation) { m_Rotation = rotation; RecalculateProjectionViewMatrix(); }
+		const CameraAtrribute& GetBounds() const { return m_Bounds; }
 
 		float& GetZoom() 
 		{ 
 			return m_Zoom; 
 			RecalculateProjectionMatrix();
 		}
+
 		void SetZoom(float zoom) 
 		{ 
 			m_Zoom = zoom;
@@ -104,7 +106,7 @@ namespace Karem {
 			RecalculateProjectionViewMatrix();
 		}
 
-		const CameraAtrribute& GetBounds() const { return m_Bounds; }
+
 	public:
 		void Update(TimeStep ts);
 		void EventHandler(Event& e);
@@ -125,6 +127,7 @@ namespace Karem {
 		}
 	private:
 		bool MouseScrolledEventAction(MouseScrolledEvent& event);
+
 	private:
 		glm::vec2 m_AspectRatio = { 16, 9 };
 		float m_Zoom = 10.0f;
