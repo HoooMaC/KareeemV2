@@ -39,6 +39,12 @@ namespace Karem {
 			m_SceneReference->m_Registry.remove<T>(m_EntityId);
 		}
 
+		template<typename ...Args>
+		bool IsHasComponent()
+		{
+			return m_SceneReference->m_Registry.all_of<Args...>(m_EntityId);
+		}
+
 	private:
 		entt::entity m_EntityId{ entt::null };
 		Scene* m_SceneReference = nullptr;
