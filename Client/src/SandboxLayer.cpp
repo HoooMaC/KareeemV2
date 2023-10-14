@@ -11,7 +11,7 @@ void SandboxLayer::OnAttach()
 {
 	// this is overriding texture in index 3 in texture renderer
 	m_Texture = Karem::CreateTexture2D("res/texture/spritesheet/city_tilemap.png", 1);
-	//m_SpriteSheet = Karem::CreateSubTexture(m_Texture, { 0,1 }, { 8,8 }, { 3,3 });
+	//m_SpriteSheet = Karem::SubTexture2D(m_Texture, { 0,1 }, { 8,8 }, { 3,3 });
 	m_FrameBuffer = Karem::CreateFrameBuffer(1280, 720);
 }
 
@@ -29,26 +29,25 @@ void SandboxLayer::Update(Karem::TimeStep ts)
 	Karem::RendererCommand::Clear();
 	Karem::RendererCommand::ClearColor("#026773");
 
-	//Karem::Renderer2D::BeginScene(m_Camera);
-
-	//glm::mat4 transform = glm::translate(glm::mat4(1.0f), { -6.0f, 0.0, 0.0f }) * glm::scale(glm::mat4(1.0f), { 10.0f, 10.0f, 1.0f });
-	//Karem::Renderer2D::SubmitSubTexturedQuad({ -1.0f, -1.0f, 0.0f, 1.0f }, { 3.0f, 3.0f }, m_SpriteSheet, 1.0f);
-	//Karem::Renderer2D::SubmitQuad(transform, {0.3f, 0.0f, 0.9f, 1.0f });
-	//Karem::Renderer2D::SubmitQuad(glm::translate(glm::mat4(1.0f), {0.0f, -5.0, 0.2f}) * glm::scale(glm::mat4(1.0f), { 3.0f, 3.0f, 1.0f }), m_SpriteSheet, 1.0f);
-	//for (float i = 0; i < 10; i += 1.0f)
-	//{
-	//	for (float j = 0; j < 10; j += 1.0f)
-	//	{
-	//		float red = i / 10.0f, green = j / 10.0f;
-	//		const glm::vec4 color = { red, green, 0.5f, 1.0f };
-	//		Karem::Renderer2D::SubmitQuad({ i, j, -0.1f, 1.0f }, { 3.0f, 3.0f }, color);
-	//	}
-	//}
+#if OLD_RENDERER
+	Karem::Renderer2D::BeginScene(m_Camera);
+	glm::mat4 transform = glm::translate(glm::mat4(1.0f), { -6.0f, 0.0, 0.0f }) * glm::scale(glm::mat4(1.0f), { 10.0f, 10.0f, 1.0f });
+	Karem::Renderer2D::SubmitSubTexturedQuad({ -1.0f, -1.0f, 0.0f, 1.0f }, { 3.0f, 3.0f }, m_SpriteSheet, 1.0f);
+	Karem::Renderer2D::SubmitQuad(transform, {0.3f, 0.0f, 0.9f, 1.0f });
+	Karem::Renderer2D::SubmitQuad(glm::translate(glm::mat4(1.0f), {0.0f, -5.0, 0.2f}) * glm::scale(glm::mat4(1.0f), { 3.0f, 3.0f, 1.0f }), m_SpriteSheet, 1.0f);
+	for (float i = 0; i < 10; i += 1.0f)
+	{
+		for (float j = 0; j < 10; j += 1.0f)
+		{
+			float red = i / 10.0f, green = j / 10.0f;
+			const glm::vec4 color = { red, green, 0.5f, 1.0f };
+			Karem::Renderer2D::SubmitQuad({ i, j, -0.1f, 1.0f }, { 3.0f, 3.0f }, color);
+		}
+	}
+	Karem::Renderer2D::EndScene();
+#endif
 	
 	m_Scene.Update(ts);
-
-	//Karem::Renderer2D::EndScene();
-
 	m_FrameBuffer->UnBind();
 }
 

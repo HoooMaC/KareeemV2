@@ -49,9 +49,9 @@ namespace Karem {
 		SubTexture2D SubTexture;
 
 		SubTextureComponent() = default;
-		SubTextureComponent(const SubTextureComponent&) = default;
-		SubTextureComponent(const std::shared_ptr<Texture2D>& reference, const glm::vec2& min, const glm::vec2& max)
-			: SubTexture(reference, min, max) {}
+		SubTextureComponent(const SubTextureComponent&) = default; 
+		SubTextureComponent(const SubTexture2D& subTexture)
+			: SubTexture(subTexture) {}
 	};
 
 	struct CameraComponent

@@ -46,7 +46,7 @@ namespace Karem {
 		s_Buffer->TextureContainer.resize(32);
 		s_Buffer->TextureSlotContainer.resize(32);
 
-		s_Buffer->TextureContainer[0] = Karem::CreateTexture2D();
+		s_Buffer->TextureContainer[0] = Karem::CreateTexture2D(0);
 
 		for (int i = 0; i < 32; i++)
 			s_Buffer->TextureSlotContainer[i] = i;
@@ -103,16 +103,12 @@ namespace Karem {
 		RendererData::vertexIndex += 4;
 
 		uint32_t offset = RendererData::indicesOffset;
-		std::vector<uint32_t> newQuadIndices =
-		{
-			offset,
-			offset + 1,
-			offset + 2,
-			offset + 2,
-			offset + 3,
-			offset
-		};
-		s_Buffer->indicesData.insert(s_Buffer->indicesData.begin() + RendererData::indicesIndex, newQuadIndices.begin(), newQuadIndices.end());
+		s_Buffer->indicesData[RendererData::indicesIndex + 0] = offset + 0;
+		s_Buffer->indicesData[RendererData::indicesIndex + 1] = offset + 1;
+		s_Buffer->indicesData[RendererData::indicesIndex + 2] = offset + 2;
+		s_Buffer->indicesData[RendererData::indicesIndex + 3] = offset + 2;
+		s_Buffer->indicesData[RendererData::indicesIndex + 4] = offset + 3;
+		s_Buffer->indicesData[RendererData::indicesIndex + 5] = offset + 0;
 
 		RendererData::indicesIndex += 6;
 		RendererData::indicesOffset += 4;
@@ -136,19 +132,15 @@ namespace Karem {
 		RendererData::vertexIndex += 4;
 
 		uint32_t offset = RendererData::indicesOffset;
-		std::vector<uint32_t> newQuadIndices =
-		{
-			offset,
-			offset + 1,
-			offset + 2,
-			offset + 2,
-			offset + 3,
-			offset
-		};
-		s_Buffer->indicesData.insert(s_Buffer->indicesData.begin() + RendererData::indicesIndex, newQuadIndices.begin(), newQuadIndices.end());
+		s_Buffer->indicesData[RendererData::indicesIndex + 0] = offset + 0;
+		s_Buffer->indicesData[RendererData::indicesIndex + 1] = offset + 1;
+		s_Buffer->indicesData[RendererData::indicesIndex + 2] = offset + 2;
+		s_Buffer->indicesData[RendererData::indicesIndex + 3] = offset + 2;
+		s_Buffer->indicesData[RendererData::indicesIndex + 4] = offset + 3;
+		s_Buffer->indicesData[RendererData::indicesIndex + 5] = offset + 0;
 
 		s_Buffer->TextureContainer[(int)texIndex] = texture;
-
+		//s_Buffer->TextureSlotContainer[(int)texIndex] = texture->GetSlot();
 		RendererData::indicesIndex += 6;
 		RendererData::indicesOffset += 4;
 	}
@@ -167,16 +159,12 @@ namespace Karem {
 		RendererData::vertexIndex += 4;
 
 		uint32_t offset = RendererData::indicesOffset;
-		std::vector<uint32_t> newQuadIndices =
-		{
-			offset,
-			offset + 1,
-			offset + 2,
-			offset + 2,
-			offset + 3,
-			offset
-		};
-		s_Buffer->indicesData.insert(s_Buffer->indicesData.begin() + RendererData::indicesIndex, newQuadIndices.begin(), newQuadIndices.end());
+		s_Buffer->indicesData[RendererData::indicesIndex + 0] = offset + 0;
+		s_Buffer->indicesData[RendererData::indicesIndex + 1] = offset + 1;
+		s_Buffer->indicesData[RendererData::indicesIndex + 2] = offset + 2;
+		s_Buffer->indicesData[RendererData::indicesIndex + 3] = offset + 2;
+		s_Buffer->indicesData[RendererData::indicesIndex + 4] = offset + 3;
+		s_Buffer->indicesData[RendererData::indicesIndex + 5] = offset + 0;
 
 		RendererData::indicesIndex += 6;
 		RendererData::indicesOffset += 4;
@@ -189,23 +177,19 @@ namespace Karem {
 			EndScene();
 		}
 
-		s_Buffer->vertexData[RendererData::vertexIndex + 0] = Vertex2D{ transform * glm::vec4( -0.5f, -0.5f, 0.0f, 1.0f ), color, glm::vec2(0.0f, 0.0f), texIndex };
-		s_Buffer->vertexData[RendererData::vertexIndex + 1] = Vertex2D{ transform * glm::vec4(  0.5f, -0.5f, 0.0f, 1.0f ), color, glm::vec2(1.0f, 0.0f), texIndex }; 
-		s_Buffer->vertexData[RendererData::vertexIndex + 2] = Vertex2D{ transform * glm::vec4(  0.5f,  0.5f, 0.0f, 1.0f ), color, glm::vec2(1.0f, 1.0f), texIndex };
-		s_Buffer->vertexData[RendererData::vertexIndex + 3] = Vertex2D{ transform * glm::vec4( -0.5f,  0.5f, 0.0f, 1.0f ), color, glm::vec2(0.0f, 1.0f), texIndex };
+		s_Buffer->vertexData[RendererData::vertexIndex + 0] = Vertex2D{ transform * glm::vec4(-0.5f, -0.5f, 0.0f, 1.0f), color, glm::vec2(0.0f, 0.0f), texIndex };
+		s_Buffer->vertexData[RendererData::vertexIndex + 1] = Vertex2D{ transform * glm::vec4(0.5f, -0.5f, 0.0f, 1.0f),  color, glm::vec2(1.0f, 0.0f), texIndex };
+		s_Buffer->vertexData[RendererData::vertexIndex + 2] = Vertex2D{ transform * glm::vec4(0.5f,  0.5f, 0.0f, 1.0f),  color, glm::vec2(1.0f, 1.0f), texIndex };
+		s_Buffer->vertexData[RendererData::vertexIndex + 3] = Vertex2D{ transform * glm::vec4(-0.5f,  0.5f, 0.0f, 1.0f), color, glm::vec2(0.0f, 1.0f), texIndex };
 		RendererData::vertexIndex += 4;
 
 		uint32_t offset = RendererData::indicesOffset;
-		std::vector<uint32_t> newQuadIndices =
-		{
-			offset,
-			offset + 1,
-			offset + 2,
-			offset + 2,
-			offset + 3,
-			offset
-		};
-		s_Buffer->indicesData.insert(s_Buffer->indicesData.begin() + RendererData::indicesIndex, newQuadIndices.begin(), newQuadIndices.end());
+		s_Buffer->indicesData[RendererData::indicesIndex + 0] = offset + 0;
+		s_Buffer->indicesData[RendererData::indicesIndex + 1] = offset + 1;
+		s_Buffer->indicesData[RendererData::indicesIndex + 2] = offset + 2;
+		s_Buffer->indicesData[RendererData::indicesIndex + 3] = offset + 2;
+		s_Buffer->indicesData[RendererData::indicesIndex + 4] = offset + 3;
+		s_Buffer->indicesData[RendererData::indicesIndex + 5] = offset + 0;
 
 		s_Buffer->TextureContainer[(int)texIndex] = texture;
 
@@ -230,16 +214,12 @@ namespace Karem {
 		RendererData::vertexIndex += 4;
 
 		uint32_t offset = RendererData::indicesOffset;
-		std::vector<uint32_t> newQuadIndices =
-		{
-			offset,
-			offset + 1,
-			offset + 2,
-			offset + 2,
-			offset + 3,
-			offset
-		};
-		s_Buffer->indicesData.insert(s_Buffer->indicesData.begin() + RendererData::indicesIndex, newQuadIndices.begin(), newQuadIndices.end());
+		s_Buffer->indicesData[RendererData::indicesIndex + 0] = offset + 0;
+		s_Buffer->indicesData[RendererData::indicesIndex + 1] = offset + 1;
+		s_Buffer->indicesData[RendererData::indicesIndex + 2] = offset + 2;
+		s_Buffer->indicesData[RendererData::indicesIndex + 3] = offset + 2;
+		s_Buffer->indicesData[RendererData::indicesIndex + 4] = offset + 3;
+		s_Buffer->indicesData[RendererData::indicesIndex + 5] = offset + 0;
 
 		s_Buffer->TextureContainer[(int)texIndex] = reference;
 
@@ -267,16 +247,12 @@ namespace Karem {
 		RendererData::vertexIndex += 4;
 
 		uint32_t offset = RendererData::indicesOffset;
-		std::vector<uint32_t> newQuadIndices =
-		{
-			offset,
-			offset + 1,
-			offset + 2,
-			offset + 2,
-			offset + 3,
-			offset
-		};
-		s_Buffer->indicesData.insert(s_Buffer->indicesData.begin() + RendererData::indicesIndex, newQuadIndices.begin(), newQuadIndices.end());
+		s_Buffer->indicesData[RendererData::indicesIndex + 0] = offset + 0;
+		s_Buffer->indicesData[RendererData::indicesIndex + 1] = offset + 1;
+		s_Buffer->indicesData[RendererData::indicesIndex + 2] = offset + 2;
+		s_Buffer->indicesData[RendererData::indicesIndex + 3] = offset + 2;
+		s_Buffer->indicesData[RendererData::indicesIndex + 4] = offset + 3;
+		s_Buffer->indicesData[RendererData::indicesIndex + 5] = offset + 0;
 
 		s_Buffer->TextureContainer[(int)texIndex] = reference;
 
@@ -315,16 +291,12 @@ namespace Karem {
 		RendererData::vertexIndex += 4;
 
 		uint32_t offset = RendererData::indicesOffset;
-		std::vector<uint32_t> newQuadIndices =
-		{
-			offset,
-			offset + 1,
-			offset + 2,
-			offset + 2,
-			offset + 3,
-			offset
-		};
-		s_Buffer->indicesData.insert(s_Buffer->indicesData.begin() + RendererData::indicesIndex, newQuadIndices.begin(), newQuadIndices.end());
+		s_Buffer->indicesData[RendererData::indicesIndex + 0] = offset + 0;
+		s_Buffer->indicesData[RendererData::indicesIndex + 1] = offset + 1;
+		s_Buffer->indicesData[RendererData::indicesIndex + 2] = offset + 2;
+		s_Buffer->indicesData[RendererData::indicesIndex + 3] = offset + 2;
+		s_Buffer->indicesData[RendererData::indicesIndex + 4] = offset + 3;
+		s_Buffer->indicesData[RendererData::indicesIndex + 5] = offset + 0;
 
 		RendererData::indicesIndex += 6;
 		RendererData::indicesOffset += 4;
@@ -360,16 +332,12 @@ namespace Karem {
 		RendererData::vertexIndex += 4;
 
 		uint32_t offset = RendererData::indicesOffset;
-		std::vector<uint32_t> newQuadIndices =
-		{
-			offset,
-			offset + 1,
-			offset + 2,
-			offset + 2,
-			offset + 3,
-			offset
-		};
-		s_Buffer->indicesData.insert(s_Buffer->indicesData.begin() + RendererData::indicesIndex, newQuadIndices.begin(), newQuadIndices.end());
+		s_Buffer->indicesData[RendererData::indicesIndex + 0] = offset + 0;
+		s_Buffer->indicesData[RendererData::indicesIndex + 1] = offset + 1;
+		s_Buffer->indicesData[RendererData::indicesIndex + 2] = offset + 2;
+		s_Buffer->indicesData[RendererData::indicesIndex + 3] = offset + 2;
+		s_Buffer->indicesData[RendererData::indicesIndex + 4] = offset + 3;
+		s_Buffer->indicesData[RendererData::indicesIndex + 5] = offset + 0;
 
 		s_Buffer->TextureContainer[(int)texIndex] = texture;
 
@@ -394,13 +362,9 @@ namespace Karem {
 		RendererData::vertexIndex += 3;
 
 		uint32_t offset = RendererData::indicesOffset;
-		std::vector<uint32_t> newTriangleIndices =
-		{
-			offset,
-			offset + 1,
-			offset + 2
-		};
-		s_Buffer->indicesData.insert(s_Buffer->indicesData.begin() + RendererData::indicesIndex, newTriangleIndices.begin(), newTriangleIndices.end());
+		s_Buffer->indicesData[RendererData::indicesIndex + 0] = offset + 0;
+		s_Buffer->indicesData[RendererData::indicesIndex + 1] = offset + 1;
+		s_Buffer->indicesData[RendererData::indicesIndex + 2] = offset + 2;
 
 		RendererData::indicesIndex += 3;
 		RendererData::indicesOffset += 3;
