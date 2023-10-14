@@ -21,6 +21,7 @@ void SandboxLayer::OnDetach()
 
 void SandboxLayer::Update(Karem::TimeStep ts)
 {
+	ENGINE_DEBUG("{}", ts);
 	//m_Camera.Update(ts);
 
 	m_FrameBuffer->Bind();
