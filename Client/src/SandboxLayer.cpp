@@ -11,7 +11,7 @@ void SandboxLayer::OnAttach()
 {
 	// this is overriding texture in index 3 in texture renderer
 	m_Texture = Karem::CreateTexture2D("res/texture/spritesheet/city_tilemap.png", 1);
-	m_SpriteSheet = Karem::CreateSubTexture(m_Texture, { 0,1 }, { 8,8 }, { 3,3 });
+	//m_SpriteSheet = Karem::CreateSubTexture(m_Texture, { 0,1 }, { 8,8 }, { 3,3 });
 	m_FrameBuffer = Karem::CreateFrameBuffer(1280, 720);
 }
 

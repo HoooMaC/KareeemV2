@@ -16,7 +16,8 @@ namespace Karem {
 	public:
 		CameraHandler() = default;
 		CameraHandler(const OrthographicCamera& camera)
-			: m_OrthographicCamera(camera) {}
+			: m_OrthographicCamera(camera) { m_CurrentCammeraType = CameraType::Orthographic; }
+
 		void SetOrthographicCamera(const OrthographicCamera& camera) { m_OrthographicCamera = camera; }
 		//void SetPerspectiveCamera(const PerspectiveCamera& camera) { m_PerspectiveCamera = camera; }
 

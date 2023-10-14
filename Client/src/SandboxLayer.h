@@ -27,6 +27,6 @@ private:
 	Karem::Scene m_Scene;
 
 	std::shared_ptr<Karem::Texture2D> m_Texture;
-	std::shared_ptr<Karem::SubTexture2D> m_SpriteSheet;
+	//std::shared_ptr<Karem::SubTexture2D> m_SpriteSheet;
 	std::shared_ptr<Karem::FrameBuffer> m_FrameBuffer;
 };

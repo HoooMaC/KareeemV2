@@ -14,8 +14,8 @@ namespace Karem{
 
 	Scene::Scene()
 	{
-		Entity camera = CreateEntity("Camera");
-		camera.AddComponent<CameraComponent>();
+		Entity cameraEntity = CreateEntity("Camera");
+		cameraEntity.AddComponent<CameraComponent>(OrthographicCamera({ 16,9 }, 1));
 
 		for (int i = 0; i < 10; i++)
 		{
@@ -56,10 +56,12 @@ namespace Karem{
 				auto [transform, color] = group.get(entity);
 				bool isHave = m_Registry.all_of<SubTextureComponent>(entity);
 				if(!isHave)
+				{
 					Renderer2D::SubmitQuad(transform.Transform, color.Color);
+				}
 				else
 				{
-					auto [subtexture] = m_Registry.get<SubTextureComponent>(entity);
+					auto& [subtexture] = m_Registry.get<SubTextureComponent>(entity);
 
 					Renderer2D::SubmitQuad(transform.Transform, subtexture, 1.0f, color.Color);
 				}

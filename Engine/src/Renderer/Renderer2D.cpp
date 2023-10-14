@@ -10,6 +10,15 @@ namespace Karem {
 	RendererData* Renderer2D::s_Buffer = new RendererData;
 	Renderer2DMeshes* Renderer2D::s_Meshes = new Renderer2DMeshes;
 
+	// this is temporary
+	const std::vector<glm::vec4> defaultQuadPosition =
+	{
+		{ -0.5f, -0.5f, 0.0f, 1.0f },
+		{ 0.5f, -0.5f, 0.0f, 1.0f },
+		{ 0.5f, 0.5f, 0.0f, 1.0f },
+		{ -0.5f, 0.5f, 0.0f, 1.0f }
+	};
+
 	void Renderer2D::Initialize()
 	{
 
@@ -87,15 +96,10 @@ namespace Karem {
 		float halfWidth = size.x / 2.0f;
 		float halfHeight = size.y / 2.0f;
 
-		std::vector<Vertex2D> newQuad =
-		{
-			Vertex2D{ glm::vec4(pos.x - halfWidth, pos.y - halfHeight, pos.z, 1.0f), color, glm::vec2(0.0f, 0.0f), texIndex }, // kiri bawah
-			Vertex2D{ glm::vec4(pos.x + halfWidth, pos.y - halfHeight, pos.z, 1.0f), color, glm::vec2(1.0f, 0.0f), texIndex }, // kanan bawah
-			Vertex2D{ glm::vec4(pos.x + halfWidth, pos.y + halfHeight, pos.z, 1.0f), color, glm::vec2(1.0f, 1.0f), texIndex }, // kanan atas
-			Vertex2D{ glm::vec4(pos.x - halfWidth, pos.y + halfHeight, pos.z, 1.0f), color, glm::vec2(0.0f, 1.0f), texIndex }  // kiri atas
-		};
-
-		s_Buffer->vertexData.insert(s_Buffer->vertexData.begin() + RendererData::vertexIndex, newQuad.begin(), newQuad.end());
+		s_Buffer->vertexData[RendererData::vertexIndex + 0] = Vertex2D{ glm::vec4(pos.x - halfWidth, pos.y - halfHeight, pos.z, 1.0f), color, glm::vec2(0.0f, 0.0f), texIndex };
+		s_Buffer->vertexData[RendererData::vertexIndex + 1] = Vertex2D{ glm::vec4(pos.x + halfWidth, pos.y - halfHeight, pos.z, 1.0f), color, glm::vec2(1.0f, 0.0f), texIndex };
+		s_Buffer->vertexData[RendererData::vertexIndex + 2] = Vertex2D{ glm::vec4(pos.x + halfWidth, pos.y + halfHeight, pos.z, 1.0f), color, glm::vec2(1.0f, 1.0f), texIndex };
+		s_Buffer->vertexData[RendererData::vertexIndex + 3] = Vertex2D{ glm::vec4(pos.x - halfWidth, pos.y + halfHeight, pos.z, 1.0f), color, glm::vec2(0.0f, 1.0f), texIndex };
 		RendererData::vertexIndex += 4;
 
 		uint32_t offset = RendererData::indicesOffset;
@@ -125,15 +129,10 @@ namespace Karem {
 		float halfWidth = size.x / 2.0f;
 		float halfHeight = size.y / 2.0f;
 
-		std::vector<Vertex2D> newQuad =
-		{
-			Vertex2D{ glm::vec4(pos.x - halfWidth, pos.y - halfHeight, pos.z, 1.0f), color, glm::vec2(0.0f, 0.0f), texIndex }, // kiri bawah
-			Vertex2D{ glm::vec4(pos.x + halfWidth, pos.y - halfHeight, pos.z, 1.0f), color, glm::vec2(1.0f, 0.0f), texIndex }, // kanan bawah
-			Vertex2D{ glm::vec4(pos.x + halfWidth, pos.y + halfHeight, pos.z, 1.0f), color, glm::vec2(1.0f, 1.0f), texIndex }, // kanan atas
-			Vertex2D{ glm::vec4(pos.x - halfWidth, pos.y + halfHeight, pos.z, 1.0f), color, glm::vec2(0.0f, 1.0f), texIndex }  // kiri atas
-		};
-
-		s_Buffer->vertexData.insert(s_Buffer->vertexData.begin() + RendererData::vertexIndex, newQuad.begin(), newQuad.end());
+		s_Buffer->vertexData[RendererData::vertexIndex + 0] = Vertex2D{ glm::vec4(pos.x - halfWidth, pos.y - halfHeight, pos.z, 1.0f), color, glm::vec2(0.0f, 0.0f), texIndex };
+		s_Buffer->vertexData[RendererData::vertexIndex + 1] = Vertex2D{ glm::vec4(pos.x + halfWidth, pos.y - halfHeight, pos.z, 1.0f), color, glm::vec2(1.0f, 0.0f), texIndex };
+		s_Buffer->vertexData[RendererData::vertexIndex + 2] = Vertex2D{ glm::vec4(pos.x + halfWidth, pos.y + halfHeight, pos.z, 1.0f), color, glm::vec2(1.0f, 1.0f), texIndex };
+		s_Buffer->vertexData[RendererData::vertexIndex + 3] = Vertex2D{ glm::vec4(pos.x - halfWidth, pos.y + halfHeight, pos.z, 1.0f), color, glm::vec2(0.0f, 1.0f), texIndex };
 		RendererData::vertexIndex += 4;
 
 		uint32_t offset = RendererData::indicesOffset;
@@ -161,15 +160,10 @@ namespace Karem {
 			EndScene();
 		}
 
-		std::vector<Vertex2D> newQuad =
-		{
-			Vertex2D{ transform * glm::vec4(-0.5f, -0.5f, 0.0f, 1.0f), color, glm::vec2(0.0f, 0.0f), texIndex }, // kiri bawah
-			Vertex2D{ transform * glm::vec4( 0.5f, -0.5f, 0.0f, 1.0f), color, glm::vec2(1.0f, 0.0f), texIndex }, // kanan bawah
-			Vertex2D{ transform * glm::vec4( 0.5f,  0.5f, 0.0f, 1.0f), color, glm::vec2(1.0f, 1.0f), texIndex }, // kanan atas
-			Vertex2D{ transform * glm::vec4(-0.5f,  0.5f, 0.0f, 1.0f), color, glm::vec2(0.0f, 1.0f), texIndex }  // kiri atas
-		};
-
-		s_Buffer->vertexData.insert(s_Buffer->vertexData.begin() + RendererData::vertexIndex, newQuad.begin(), newQuad.end());
+		s_Buffer->vertexData[RendererData::vertexIndex + 0] = Vertex2D{ transform * defaultQuadPosition[0], color, glm::vec2(0.0f, 0.0f), texIndex };
+		s_Buffer->vertexData[RendererData::vertexIndex + 1] = Vertex2D{ transform * defaultQuadPosition[1], color, glm::vec2(1.0f, 0.0f), texIndex };
+		s_Buffer->vertexData[RendererData::vertexIndex + 2] = Vertex2D{ transform * defaultQuadPosition[2], color, glm::vec2(1.0f, 1.0f), texIndex };
+		s_Buffer->vertexData[RendererData::vertexIndex + 3] = Vertex2D{ transform * defaultQuadPosition[3], color, glm::vec2(0.0f, 1.0f), texIndex };
 		RendererData::vertexIndex += 4;
 
 		uint32_t offset = RendererData::indicesOffset;
@@ -195,15 +189,10 @@ namespace Karem {
 			EndScene();
 		}
 
-		std::vector<Vertex2D> newQuad =
-		{
-			Vertex2D{ transform * glm::vec4( -0.5f, -0.5f, 0.0f, 1.0f ), color, glm::vec2(0.0f, 0.0f), texIndex }, // kiri bawah
-			Vertex2D{ transform * glm::vec4(  0.5f, -0.5f, 0.0f, 1.0f ), color, glm::vec2(1.0f, 0.0f), texIndex }, // kanan bawah
-			Vertex2D{ transform * glm::vec4(  0.5f,  0.5f, 0.0f, 1.0f ), color, glm::vec2(1.0f, 1.0f), texIndex }, // kanan atas
-			Vertex2D{ transform * glm::vec4( -0.5f,  0.5f, 0.0f, 1.0f ), color, glm::vec2(0.0f, 1.0f), texIndex }  // kiri atas
-		};
-
-		s_Buffer->vertexData.insert(s_Buffer->vertexData.begin() + RendererData::vertexIndex, newQuad.begin(), newQuad.end());
+		s_Buffer->vertexData[RendererData::vertexIndex + 0] = Vertex2D{ transform * glm::vec4( -0.5f, -0.5f, 0.0f, 1.0f ), color, glm::vec2(0.0f, 0.0f), texIndex };
+		s_Buffer->vertexData[RendererData::vertexIndex + 1] = Vertex2D{ transform * glm::vec4(  0.5f, -0.5f, 0.0f, 1.0f ), color, glm::vec2(1.0f, 0.0f), texIndex }; 
+		s_Buffer->vertexData[RendererData::vertexIndex + 2] = Vertex2D{ transform * glm::vec4(  0.5f,  0.5f, 0.0f, 1.0f ), color, glm::vec2(1.0f, 1.0f), texIndex };
+		s_Buffer->vertexData[RendererData::vertexIndex + 3] = Vertex2D{ transform * glm::vec4( -0.5f,  0.5f, 0.0f, 1.0f ), color, glm::vec2(0.0f, 1.0f), texIndex };
 		RendererData::vertexIndex += 4;
 
 		uint32_t offset = RendererData::indicesOffset;
@@ -224,25 +213,20 @@ namespace Karem {
 		RendererData::indicesOffset += 4;
 	}
 
-	void Renderer2D::SubmitQuad(const glm::mat4& transform, const std::shared_ptr<SubTexture2D>& subTexture, float texIndex, const glm::vec4& color)
+	void Renderer2D::SubmitQuad(const glm::mat4& transform, const SubTexture2D& subTexture, float texIndex, const glm::vec4& color)
 	{
 		if (RendererData::vertexIndex + 4 >= RendererData::maxVertex or RendererData::indicesIndex + 6 >= RendererData::maxIndexBuffer)
 		{
 			EndScene();
 		}
 
-		const std::shared_ptr<Texture2D>& reference = subTexture->GetTextureReference();
-		const glm::vec2* texCoord = subTexture->GetTexCoord();
+		const std::shared_ptr<Texture2D>& reference = subTexture.GetTextureReference();
+		const glm::vec2* texCoord = subTexture.GetTexCoord();
 
-		std::vector<Vertex2D> newQuad =
-		{
-			Vertex2D{ transform * glm::vec4(-0.5f, -0.5f, 0.0f, 1.0f), color, *(texCoord + 0), texIndex }, // kiri bawah
-			Vertex2D{ transform * glm::vec4(0.5f, -0.5f, 0.0f, 1.0f),  color, *(texCoord + 1), texIndex }, // kanan bawah
-			Vertex2D{ transform * glm::vec4(0.5f,  0.5f, 0.0f, 1.0f),  color, *(texCoord + 2), texIndex }, // kanan atas
-			Vertex2D{ transform * glm::vec4(-0.5f,  0.5f, 0.0f, 1.0f), color, *(texCoord + 3), texIndex }  // kiri atas
-		};
-
-		s_Buffer->vertexData.insert(s_Buffer->vertexData.begin() + RendererData::vertexIndex, newQuad.begin(), newQuad.end());
+		s_Buffer->vertexData[RendererData::vertexIndex + 0] = Vertex2D{ transform * defaultQuadPosition[0], color, *(texCoord + 0), texIndex }; // kiri bawah;
+		s_Buffer->vertexData[RendererData::vertexIndex + 1] = Vertex2D{ transform * defaultQuadPosition[1], color, *(texCoord + 0), texIndex }; // kiri bawah;
+		s_Buffer->vertexData[RendererData::vertexIndex + 2] = Vertex2D{ transform * defaultQuadPosition[2], color, *(texCoord + 0), texIndex }; // kiri bawah;
+		s_Buffer->vertexData[RendererData::vertexIndex + 3] = Vertex2D{ transform * defaultQuadPosition[3], color, *(texCoord + 0), texIndex }; // kiri bawah;
 		RendererData::vertexIndex += 4;
 
 		uint32_t offset = RendererData::indicesOffset;
@@ -263,28 +247,23 @@ namespace Karem {
 		RendererData::indicesOffset += 4;
 	}
 
-	void Renderer2D::SubmitSubTexturedQuad(const glm::vec4& pos, const glm::vec2& size, const std::shared_ptr<SubTexture2D>& subTexture, float texIndex, const glm::vec4& color)
+	void Renderer2D::SubmitSubTexturedQuad(const glm::vec4& pos, const glm::vec2& size, const SubTexture2D& subTexture, float texIndex, const glm::vec4& color)
 	{
 		if (RendererData::vertexIndex + 4 >= RendererData::maxVertex or RendererData::indicesIndex + 6 >= RendererData::maxIndexBuffer)
 		{
 			EndScene();
 		}
 
-		const std::shared_ptr<Texture2D>& reference = subTexture->GetTextureReference();
-		const glm::vec2* texCoord = subTexture->GetTexCoord();
+		const std::shared_ptr<Texture2D>& reference = subTexture.GetTextureReference();
+		const glm::vec2* texCoord = subTexture.GetTexCoord();
 
 		float halfWidth = size.x / 2.0f;
 		float halfHeight = size.y / 2.0f;
 
-		std::vector<Vertex2D> newQuad =
-		{
-			Vertex2D{ glm::vec4(pos.x - halfWidth, pos.y - halfHeight, pos.z, 1.0f), color, *(texCoord + 0), texIndex }, // kiri bawah
-			Vertex2D{ glm::vec4(pos.x + halfWidth, pos.y - halfHeight, pos.z, 1.0f), color, *(texCoord + 1), texIndex }, // kanan bawah
-			Vertex2D{ glm::vec4(pos.x + halfWidth, pos.y + halfHeight, pos.z, 1.0f), color, *(texCoord + 2), texIndex }, // kanan atas
-			Vertex2D{ glm::vec4(pos.x - halfWidth, pos.y + halfHeight, pos.z, 1.0f), color, *(texCoord + 3), texIndex }  // kiri atas
-		};
-
-		s_Buffer->vertexData.insert(s_Buffer->vertexData.begin() + RendererData::vertexIndex, newQuad.begin(), newQuad.end());
+		s_Buffer->vertexData[RendererData::vertexIndex + 0] = Vertex2D{ glm::vec4(pos.x - halfWidth, pos.y - halfHeight, pos.z, 1.0f), color, *(texCoord + 0), texIndex };
+		s_Buffer->vertexData[RendererData::vertexIndex + 1] = Vertex2D{ glm::vec4(pos.x + halfWidth, pos.y - halfHeight, pos.z, 1.0f), color, *(texCoord + 1), texIndex };
+		s_Buffer->vertexData[RendererData::vertexIndex + 2] = Vertex2D{ glm::vec4(pos.x + halfWidth, pos.y + halfHeight, pos.z, 1.0f), color, *(texCoord + 2), texIndex };
+		s_Buffer->vertexData[RendererData::vertexIndex + 3] = Vertex2D{ glm::vec4(pos.x - halfWidth, pos.y + halfHeight, pos.z, 1.0f), color, *(texCoord + 3), texIndex };
 		RendererData::vertexIndex += 4;
 
 		uint32_t offset = RendererData::indicesOffset;
@@ -329,15 +308,10 @@ namespace Karem {
 		topRight = glm::vec4(rotationMatrix * topRight);
 		topLeft = glm::vec4(rotationMatrix * topLeft);
 
-		std::vector<Vertex2D> newQuad =
-		{
-			Vertex2D{ bottomLeft + pos, color, glm::vec2(0.0f, 0.0f), texIndex }, // kiri bawah
-			Vertex2D{ bottomRight + pos, color, glm::vec2(1.0f, 0.0f), texIndex }, // kanan bawah
-			Vertex2D{ topRight + pos, color, glm::vec2(1.0f, 1.0f), texIndex }, // kanan atas
-			Vertex2D{ topLeft + pos, color, glm::vec2(0.0f, 1.0f), texIndex }  // kiri atas
-		};
-
-		s_Buffer->vertexData.insert(s_Buffer->vertexData.begin() + RendererData::vertexIndex, newQuad.begin(), newQuad.end());
+		s_Buffer->vertexData[RendererData::vertexIndex + 0] = Vertex2D{ bottomLeft + pos,  color, glm::vec2(0.0f, 0.0f), texIndex };
+		s_Buffer->vertexData[RendererData::vertexIndex + 1] = Vertex2D{ bottomRight + pos, color, glm::vec2(1.0f, 0.0f), texIndex };
+		s_Buffer->vertexData[RendererData::vertexIndex + 2] = Vertex2D{ topRight + pos,    color, glm::vec2(1.0f, 1.0f), texIndex };
+		s_Buffer->vertexData[RendererData::vertexIndex + 3] = Vertex2D{ topLeft + pos,     color, glm::vec2(0.0f, 1.0f), texIndex };
 		RendererData::vertexIndex += 4;
 
 		uint32_t offset = RendererData::indicesOffset;
@@ -379,15 +353,10 @@ namespace Karem {
 		topRight = glm::vec4(rotationMatrix * topRight);
 		topLeft = glm::vec4(rotationMatrix * topLeft);
 
-		std::vector<Vertex2D> newQuad =
-		{
-			Vertex2D{ bottomLeft + pos, color, glm::vec2(0.0f, 0.0f), texIndex }, // kiri bawah
-			Vertex2D{ bottomRight + pos, color, glm::vec2(1.0f, 0.0f), texIndex }, // kanan bawah
-			Vertex2D{ topRight + pos, color, glm::vec2(1.0f, 1.0f), texIndex }, // kanan atas
-			Vertex2D{ topLeft + pos, color, glm::vec2(0.0f, 1.0f), texIndex }  // kiri atas
-		};
-
-		s_Buffer->vertexData.insert(s_Buffer->vertexData.begin() + RendererData::vertexIndex, newQuad.begin(), newQuad.end());
+		s_Buffer->vertexData[RendererData::vertexIndex + 0] = Vertex2D{ bottomLeft + pos,  color, glm::vec2(0.0f, 0.0f), texIndex };
+		s_Buffer->vertexData[RendererData::vertexIndex + 1] = Vertex2D{ bottomRight + pos, color, glm::vec2(1.0f, 0.0f), texIndex };
+		s_Buffer->vertexData[RendererData::vertexIndex + 2] = Vertex2D{ topRight + pos,    color, glm::vec2(1.0f, 1.0f), texIndex };
+		s_Buffer->vertexData[RendererData::vertexIndex + 3] = Vertex2D{ topLeft + pos,     color, glm::vec2(0.0f, 1.0f), texIndex };
 		RendererData::vertexIndex += 4;
 
 		uint32_t offset = RendererData::indicesOffset;
@@ -419,14 +388,9 @@ namespace Karem {
 		float halfWidth = size.x / 2.0f;
 		float halfHeight = size.y / 2.0f;
 
-		std::vector<Vertex2D> newTriangle =
-		{
-			Vertex2D{ glm::vec4(pos.x - halfWidth, pos.y - halfHeight, pos.z, 1.0f), color, glm::vec2(0.0f, 0.0f), texIndex }, // kiri bawah
-			Vertex2D{ glm::vec4(pos.x + halfWidth, pos.y - halfHeight, pos.z, 1.0f), color, glm::vec2(1.0f, 0.0f), texIndex }, // kanan bawah
-			Vertex2D{ glm::vec4(pos.x, pos.y + halfHeight, pos.z, 1.0f), color, glm::vec2(0.5f, 1.0f), texIndex } // atas (tengah)
-		};
-
-		s_Buffer->vertexData.insert(s_Buffer->vertexData.begin() + RendererData::vertexIndex, newTriangle.begin(), newTriangle.end());
+		s_Buffer->vertexData[RendererData::vertexIndex + 0] = Vertex2D{ glm::vec4(pos.x - halfWidth, pos.y - halfHeight, pos.z, 1.0f), color, glm::vec2(0.0f, 0.0f), texIndex };
+		s_Buffer->vertexData[RendererData::vertexIndex + 1] = Vertex2D{ glm::vec4(pos.x + halfWidth, pos.y - halfHeight, pos.z, 1.0f), color, glm::vec2(1.0f, 0.0f), texIndex };
+		s_Buffer->vertexData[RendererData::vertexIndex + 2] = Vertex2D{ glm::vec4(pos.x, pos.y + halfHeight, pos.z, 1.0f),             color, glm::vec2(0.5f, 1.0f), texIndex };
 		RendererData::vertexIndex += 3;
 
 		uint32_t offset = RendererData::indicesOffset;

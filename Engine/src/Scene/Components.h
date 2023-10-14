@@ -50,7 +50,7 @@ namespace Karem {
 
 		SubTextureComponent() = default;
 		SubTextureComponent(const SubTextureComponent&) = default;
-		SubTextureComponent(Texture2D* reference, const glm::vec2& min, const glm::vec2& max)
+		SubTextureComponent(const std::shared_ptr<Texture2D>& reference, const glm::vec2& min, const glm::vec2& max)
 			: SubTexture(reference, min, max) {}
 	};
 
@@ -60,6 +60,8 @@ namespace Karem {
 
 		CameraComponent() = default;
 		CameraComponent(const CameraComponent&) = default;
+		CameraComponent(const OrthographicCamera& camera)
+			: Camera(camera) {}
 	};
 
 }
