@@ -9,7 +9,7 @@
 
 namespace Karem {
 
-	class Renderer2D;
+	class Renderer;
 
 	class RendererCommand
 	{

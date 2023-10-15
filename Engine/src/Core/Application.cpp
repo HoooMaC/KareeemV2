@@ -2,7 +2,7 @@
 
 #include "Application.h"
 
-#include "Renderer/Renderer2D.h"
+#include "Renderer/Renderer.h"
 #include "Renderer/RenderCommand.h"
 
 #include "Platform/Windows/Platform.h"
@@ -19,12 +19,12 @@ namespace Karem {
         GLFWwindow* window = Karem::GraphicsContext::GetContextCurrent();
         imgui::InitializeImGUI(window);
 
-        Renderer2D::Initialize();
+        Renderer::Initialize();
     }
 
     Application::~Application()
     {
-        Renderer2D::Shutdown();
+        Renderer::Shutdown();
 
         imgui::Shutdown();
         Shutdown();

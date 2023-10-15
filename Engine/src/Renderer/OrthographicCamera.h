@@ -5,32 +5,52 @@
 
 #include "Event/Event.h"
 #include "Event/MouseEvent.h"
+#include "Event/AppEvent.h"
 
 namespace Karem {
 
 	class OrthographicCamera 
 	{
-		struct CameraAtrribute
+		struct OrthographicCameraAtrribute
 		{
 			float Right, Left;
 			float Top, Bottom;
+			float NearClip, FarClip;
 			glm::vec2 AspectRatio;
-			CameraAtrribute() = default;
-			CameraAtrribute(const glm::vec2& aspectRatio, float zoomPercentage)
+			OrthographicCameraAtrribute() = default;
+			OrthographicCameraAtrribute(const glm::vec2& aspectRatio, float zoomPercentage, float aspectRatioStatus)
 				: AspectRatio(aspectRatio)
 			{
-				RecalculateBound(zoomPercentage);
+				RecalculateBound(zoomPercentage, aspectRatioStatus);
 			}
 
-			void RecalculateBound(float zoomPercentage)
+			void RecalculateBound(float zoomPercentage, bool cameraAspectRatioStatus)
 			{
-				float factor = GetBaseX(AspectRatio) / (AspectRatio.x * 100);
-				Right = (AspectRatio.x * factor * zoomPercentage) / 2;
-				Left = -Right;
-				Top = (AspectRatio.y * factor * zoomPercentage) / 2;
-				Bottom = -Top;
+				if (cameraAspectRatioStatus)
+				{
+					float factor = GetBaseX(AspectRatio) / (AspectRatio.x * 100);
+					float distanceToObject = std::max(std::abs(Right), std::abs(Left));
+					Right = (AspectRatio.x * factor * zoomPercentage) / 2;
+					Left = -Right;
+					Top = (AspectRatio.y * factor * zoomPercentage) / 2;
+					Bottom = -Top;
+					// this is temporary : TODO : thinking about the value of Near and Far Clip
+					NearClip = -1;
+					FarClip = 1;
+				}
+				else
+				{
+					float aspectRatio = AspectRatio.x / AspectRatio.y;
+					Right = (aspectRatio * zoomPercentage) / 2;
+					Left = -Right;
+					Top = zoomPercentage / 2;
+					Bottom = -Top;
+					// this is temporary : TODO : thinking about the value of Near and Far Clip
+					NearClip = -1;
+					FarClip = 1;
+				}
 			}
-
+		private:
 			static float GetBaseX(const glm::vec2& aspectRatio)
 			{
 				if (aspectRatio.x == 16 and aspectRatio.y == 9)
@@ -46,7 +66,7 @@ namespace Karem {
 				else if (aspectRatio.x == 9 and aspectRatio.y == 16)
 					return 1080;
 
-				ENGINE_ASSERT(false, "Unsupported Aspect Ration");
+				ENGINE_ASSERT(false, "Unsupported Aspect Ratio");
 				return 0;
 			}
 
@@ -64,7 +84,7 @@ namespace Karem {
 					return 768;
 				else if (aspectRatio.x == 9 and aspectRatio.y == 16)
 					return 1920;
-				ENGINE_ASSERT(false, "Unsupported Aspect Ration");
+				ENGINE_ASSERT(false, "Unsupported Aspect Ratio");
 				return 0;
 			}
 		};
@@ -74,7 +94,7 @@ namespace Karem {
 		OrthographicCamera(const glm::vec2& aspectRatio, float zoomPercentage) 
 			: m_AspectRatio(aspectRatio), m_Zoom(zoomPercentage)
 		{
-			m_Bounds = CameraAtrribute(aspectRatio, m_Zoom);
+			m_Bounds = OrthographicCameraAtrribute(aspectRatio, m_Zoom, isFixedAspectRatio);
 			m_ProjectionMatrix = glm::ortho(m_Bounds.Left, m_Bounds.Right, m_Bounds.Bottom, m_Bounds.Top);
 			m_ViewMatrix = glm::mat4(1.0f);
 
@@ -90,7 +110,18 @@ namespace Karem {
 
 		float& GetRotation() { return m_Rotation; }
 		void SetRotation(float rotation) { m_Rotation = rotation; RecalculateProjectionViewMatrix(); }
-		const CameraAtrribute& GetBounds() const { return m_Bounds; }
+		const OrthographicCameraAtrribute& GetBounds() const { return m_Bounds; }
+
+		void SetAspectRatioStatus(bool status) { isFixedAspectRatio = status; }
+		void SetAspectRatio(const glm::vec2 aspectRatio)
+		{
+			if (isFixedAspectRatio)
+			{
+				ENGINE_WARN("The current aspect ratio is fixed cannot be change");
+				return;
+			}
+			m_Bounds.AspectRatio = aspectRatio;
+		}
 
 		float& GetZoom() 
 		{ 
@@ -101,7 +132,7 @@ namespace Karem {
 		void SetZoom(float zoom) 
 		{ 
 			m_Zoom = zoom;
-			m_Bounds.RecalculateBound(m_Zoom);
+			m_Bounds.RecalculateBound(m_Zoom, isFixedAspectRatio);
 			RecalculateProjectionMatrix();
 			RecalculateProjectionViewMatrix();
 		}
@@ -114,7 +145,7 @@ namespace Karem {
 	private:
 		void RecalculateProjectionMatrix()
 		{
-			m_ProjectionMatrix = glm::ortho(m_Bounds.Left, m_Bounds.Right, m_Bounds.Bottom, m_Bounds.Top);
+			m_ProjectionMatrix = glm::ortho(m_Bounds.Left, m_Bounds.Right, m_Bounds.Bottom, m_Bounds.Top, m_Bounds.NearClip, m_Bounds.FarClip);
 		}
 
 		void RecalculateProjectionViewMatrix()
@@ -127,11 +158,12 @@ namespace Karem {
 		}
 	private:
 		bool MouseScrolledEventAction(MouseScrolledEvent& event);
-
+		bool WindowResizeEventAction(WindowResizeEvent& event);
 	private:
 		glm::vec2 m_AspectRatio = { 16, 9 };
 		float m_Zoom = 10.0f;
-		CameraAtrribute m_Bounds;
+		bool isFixedAspectRatio = false;
+		OrthographicCameraAtrribute m_Bounds;
 
 		glm::mat4 m_ProjectionMatrix;
 		glm::mat4 m_ViewMatrix;

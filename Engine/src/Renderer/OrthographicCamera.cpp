@@ -4,6 +4,7 @@
 #include "Event/KeyCode.h"
 #include "Event/Input.h"
 
+#define CAMERA_DEBUG 0
 
 namespace Karem {
 
@@ -53,21 +54,46 @@ namespace Karem {
 	{
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<MouseScrolledEvent>(std::bind(&OrthographicCamera::MouseScrolledEventAction, this, std::placeholders::_1));
+		dispatcher.Dispatch<WindowResizeEvent>(std::bind(&OrthographicCamera::WindowResizeEventAction, this, std::placeholders::_1));
 	}
 
 	bool OrthographicCamera::MouseScrolledEventAction(MouseScrolledEvent& event)
 	{
 		float eventScrollData = event.GetOffsetY();;
 		m_Zoom = std::clamp(m_Zoom - eventScrollData, 1.0f, 100.0f);
-
-#if 1
-		auto [Right, Left, Top, Bottom, AspectRatio] = GetBounds();
+#if CAMERA_DEBUG
+		auto [Right, Left, Top, Bottom, Near, Far, AspectRatio] = GetBounds();
 		ENGINE_DEBUG("{}", m_Zoom);
 		ENGINE_TRACE("left {:.3f}\tright  {:.3f}", Left, Right);
 		ENGINE_TRACE("Top  {:.3f}\tBottom {:.3f}", Top, Bottom);
+		ENGINE_TRACE("Near {:.3f}\tFar    {:.3f}", Near, Far);
+		ENGINE_TRACE("ASPRX{:.3f}\tASPRY  {:.3f}", AspectRatio.x, AspectRatio.y);
+		const char* status = isFixedAspectRatio ? "True" : "False";
+		ENGINE_TRACE("Stat {}", status);
 #endif
 
-		m_Bounds.RecalculateBound(m_Zoom);
+		m_Bounds.RecalculateBound(m_Zoom, isFixedAspectRatio);
+		RecalculateProjectionMatrix();
+		RecalculateProjectionViewMatrix();
+		return true;
+	}
+
+	bool OrthographicCamera::WindowResizeEventAction(WindowResizeEvent& event)
+	{
+		SetAspectRatio({ event.GetWidth(), event.GetHeight() });
+
+#if CAMERA_DEBUG
+		auto [Right, Left, Top, Bottom, Near, Far, AspectRatio] = GetBounds();
+		ENGINE_DEBUG("{}", m_Zoom);
+		ENGINE_TRACE("left {:.3f}\tright  {:.3f}", Left, Right);
+		ENGINE_TRACE("Top  {:.3f}\tBottom {:.3f}", Top, Bottom);
+		ENGINE_TRACE("Near {:.3f}\tFar    {:.3f}", Near, Far);
+		ENGINE_TRACE("ASPRX{:.3f}\tASPRY  {:.3f}", AspectRatio.x, AspectRatio.y);
+		const char* status = isFixedAspectRatio ? "True" : "False";
+		ENGINE_TRACE("Stat {}", status);
+#endif
+
+		m_Bounds.RecalculateBound(m_Zoom, isFixedAspectRatio);
 		RecalculateProjectionMatrix();
 		RecalculateProjectionViewMatrix();
 		return true;

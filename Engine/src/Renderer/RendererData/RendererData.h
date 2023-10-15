@@ -9,16 +9,16 @@ namespace Karem {
 	class Material;
 	class Shader;
 
-	struct Vertex2D
+	struct Vertex
 	{
 		glm::vec4 Position;
 		glm::vec4 Color;
 		glm::vec2 TexCoord;
 		float TexIndex;
-		Vertex2D()
+		Vertex()
 			: Position(glm::vec4(0.0f)), Color(glm::vec4(0.0f)), TexCoord(glm::vec2(0.0f)), TexIndex(0.0f) {}
 
-		Vertex2D(const glm::vec4& position, const glm::vec4& color, const glm::vec2& texCoord, float texIndex)
+		Vertex(const glm::vec4& position, const glm::vec4& color, const glm::vec2& texCoord, float texIndex)
 			: Position(position), Color(color), TexCoord(texCoord), TexIndex(texIndex) {}
 	};
 
@@ -28,7 +28,7 @@ namespace Karem {
 		static constexpr uint64_t maxIndexBuffer = maxVertex * 6;
 
 		// this is need to change with array, but not std::array
-		std::vector<Vertex2D> vertexData; // size =  max vertex
+		std::vector<Vertex> vertexData; // size =  max vertex
 		std::vector<uint32_t> indicesData; // size = max Index Buffer
 
 		std::vector<std::shared_ptr<Texture2D>>TextureContainer; // size = 32
@@ -40,7 +40,7 @@ namespace Karem {
 	};
 
 
-	struct Renderer2DMeshes
+	struct RendererMeshes
 	{
 		std::shared_ptr<Shader> m_Shader;
 		std::shared_ptr<VertexArray> m_VertexArray;

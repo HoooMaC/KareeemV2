@@ -44,16 +44,6 @@ namespace Karem {
 		operator glm::vec4() { return Color; }
 	};
 	
-	struct SubTextureComponent
-	{
-		SubTexture2D SubTexture;
-
-		SubTextureComponent() = default;
-		SubTextureComponent(const SubTextureComponent&) = default; 
-		SubTextureComponent(const SubTexture2D& subTexture)
-			: SubTexture(subTexture) {}
-	};
-
 	struct CameraComponent
 	{
 		Karem::CameraHandler Camera;

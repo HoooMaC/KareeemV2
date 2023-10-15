@@ -23,7 +23,6 @@
 //#include "Scene/Entity.h"
 
 #include "Renderer/Renderer.h"
-#include "Renderer/Renderer2D.h"
 #include "Renderer/BaseShader.h"
 #include "Renderer/BaseBuffer.h"
 #include "Renderer/SubTexture.h"
