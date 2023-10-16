@@ -3,8 +3,8 @@
 #include "Scene/Scene.h"
 #include "Scene/Entity.h"
 
-#include "imgui.h"
-#include "imgui_setup.h"
+#include <imgui.h>
+#include <imgui_setup.h>
 
 static constexpr int32_t appWidth = 1280, appHeight = 720;
 
@@ -20,7 +20,7 @@ void SandboxLayer::OnAttach()
 	//cameraEntity.AddComponent<Karem::CameraComponent>(Karem::PerspectiveCamera(1280/720, glm::radians(45.0f), 0.001, 1000.0f));
 
 	auto camera = cameraEntity.AddComponent<Karem::CameraComponent>(Karem::OrthographicCamera({16,9},1)).Camera;
-	camera.SetPerspectiveCamera(Karem::PerspectiveCamera(1280 / 720, glm::radians(45.0f), 0.001, 1000.0f));
+	camera.SetPerspectiveCamera(Karem::PerspectiveCamera(1.77f, 45.0f, 0.01, 100.0f));
 	camera.SetCurrrentCamera(Karem::CameraType::Orthographic);
 
 	Karem::Entity SquareEntity = m_ActiveScene.CreateEntity("Square Entity");
@@ -75,6 +75,81 @@ void SandboxLayer::Update(Karem::TimeStep ts)
 	m_FrameBuffer->UnBind();
 }
 
+static void ShowExampleMenuFile()
+{
+	ImGui::MenuItem("(demo menu)", NULL, false, false);
+	if (ImGui::MenuItem("New")) {}
+	if (ImGui::MenuItem("Open", "Ctrl+O")) {}
+	if (ImGui::BeginMenu("Open Recent"))
+	{
+		ImGui::MenuItem("fish_hat.c");
+		ImGui::MenuItem("fish_hat.inl");
+		ImGui::MenuItem("fish_hat.h");
+		if (ImGui::BeginMenu("More.."))
+		{
+			ImGui::MenuItem("Hello");
+			ImGui::MenuItem("Sailor");
+			if (ImGui::BeginMenu("Recurse.."))
+			{
+				ShowExampleMenuFile();
+				ImGui::EndMenu();
+			}
+			ImGui::EndMenu();
+		}
+		ImGui::EndMenu();
+	}
+	if (ImGui::MenuItem("Save", "Ctrl+S")) {}
+	if (ImGui::MenuItem("Save As..")) {}
+
+	ImGui::Separator();
+	if (ImGui::BeginMenu("Options"))
+	{
+		static bool enabled = true;
+		ImGui::MenuItem("Enabled", "", &enabled);
+		ImGui::BeginChild("child", ImVec2(0, 60), true);
+		for (int i = 0; i < 10; i++)
+			ImGui::Text("Scrolling Text %d", i);
+		ImGui::EndChild();
+		static float f = 0.5f;
+		static int n = 0;
+		ImGui::SliderFloat("Value", &f, 0.0f, 1.0f);
+		ImGui::InputFloat("Input", &f, 0.1f);
+		ImGui::Combo("Combo", &n, "Yes\0No\0Maybe\0\0");
+		ImGui::EndMenu();
+	}
+
+	if (ImGui::BeginMenu("Colors"))
+	{
+		float sz = ImGui::GetTextLineHeight();
+		for (int i = 0; i < ImGuiCol_COUNT; i++)
+		{
+			const char* name = ImGui::GetStyleColorName((ImGuiCol)i);
+			ImVec2 p = ImGui::GetCursorScreenPos();
+			ImGui::GetWindowDrawList()->AddRectFilled(p, ImVec2(p.x + sz, p.y + sz), ImGui::GetColorU32((ImGuiCol)i));
+			ImGui::Dummy(ImVec2(sz, sz));
+			ImGui::SameLine();
+			ImGui::MenuItem(name);
+		}
+		ImGui::EndMenu();
+	}
+
+	// Here we demonstrate appending again to the "Options" menu (which we already created above)
+	// Of course in this demo it is a little bit silly that this function calls BeginMenu("Options") twice.
+	// In a real code-base using it would make senses to use this feature from very different code locations.
+	if (ImGui::BeginMenu("Options")) // <-- Append!
+	{
+		static bool b = true;
+		ImGui::Checkbox("SomeOption", &b);
+		ImGui::EndMenu();
+	}
+
+	if (ImGui::BeginMenu("Disabled", false)) // Disabled
+	{
+		IM_ASSERT(0);
+	}
+	if (ImGui::MenuItem("Checked", NULL, true)) {}
+}
+
 void SandboxLayer::RenderImGUI()
 {
 	imgui::BeginFrame();
@@ -99,21 +174,65 @@ void SandboxLayer::RenderImGUI()
 
 	ImGuiWindowFlags host_window_flags = 0;
 	host_window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDocking;
-	host_window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+	host_window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus | ImGuiWindowFlags_MenuBar;
 	if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
 		host_window_flags |= ImGuiWindowFlags_NoBackground;
 
 	ImGui::Begin(label, NULL, host_window_flags);
+	if (ImGui::BeginMenuBar())
+	{
+		if (ImGui::BeginMenu("Menu"))
+		{
+			ShowExampleMenuFile();
+			ImGui::Separator();
+			if (ImGui::MenuItem("Quit", "Alt+F4"))
+				SandboxLayer::CloseWindow();
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("Examples"))
+		{
+			ImGui::MenuItem("Main menu bar");
+			ImGui::MenuItem("Console");
+			ImGui::MenuItem("Log");
+			ImGui::MenuItem("Simple layout");
+			ImGui::MenuItem("Property editor");
+			ImGui::MenuItem("Long text display");
+			ImGui::MenuItem("Auto-resizing window");
+			ImGui::MenuItem("Constrained-resizing window");
+			ImGui::MenuItem("Simple overlay");
+			ImGui::MenuItem("Fullscreen window");
+			ImGui::MenuItem("Manipulating window titles");
+			ImGui::MenuItem("Custom rendering");
+			ImGui::MenuItem("Dockspace");
+			ImGui::MenuItem("Documents");
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("Tools"))
+		{
+			ImGui::MenuItem("Metrics/Debugger");
+			ImGui::MenuItem("Debug Log");
+			ImGui::MenuItem("Stack Tool");
+			ImGui::MenuItem("Style Editor");
+			ImGui::MenuItem("About Dear ImGui");
+			ImGui::EndMenu();
+		}
+		ImGui::EndMenuBar();
+	}
+
 	ImGuiID dockspace_id = ImGui::GetID("DockSpace");
 	ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags, window_class);
 	ImGui::End();
 
 	//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+
+
 	ImGui::Begin("main");
 	ImVec2 currentPannelSize = ImGui::GetContentRegionAvail();
 	{
 		const auto& [fbWidth, fbHeight] = m_FrameBuffer->GetFrameBufferSize();
+
+		// TO DO : CHANGE THIS ACCORDING TO THE CAMERA
 		if (currentPannelSize.x != fbWidth or currentPannelSize.y != fbHeight)
 			m_FrameBuffer->Resize((int32_t)currentPannelSize.x, (int32_t)currentPannelSize.y);
 	}

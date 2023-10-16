@@ -17,9 +17,12 @@ public:
 
 	void RenderImGUI() override;
 	void EventHandler(Karem::Event& event) override;
+
+	// TO DO : this is shold close the window. For now this do nothing
+	void CloseWindow() {}
+
 private:
 	bool WindowResizeAction(Karem::WindowResizeEvent& event);
-
 
 private:
 	//Karem::OrthographicCamera m_Camera;

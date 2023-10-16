@@ -77,27 +77,51 @@ namespace Karem{
 
 	void Scene::RenderImGUI()
 	{
-		auto view = m_Registry.view<CameraComponent>();
-		for (const auto entity : view)
+		ImGui::Begin("Current Properties");
 		{
-			auto [component] = view.get(entity);
-			ImGui::Begin("SetCamera");
-			if (ImGui::Button("ChangeCamera"))
+			auto view = m_Registry.view<CameraComponent>();
+			for (const auto entity : view)
 			{
-				auto& Camera = component.Camera;
-				switch (Camera.GetCurrentCameraType())
+				auto [component] = view.get(entity);
+
+				if (ImGui::Button("ChangeCamera"))
 				{
+					auto& Camera = component.Camera;
+					switch (Camera.GetCurrentCameraType())
+					{
 					case CameraType::Orthographic:
 						Camera.SetCurrrentCamera(CameraType::Perspective);
 						break;
 					case CameraType::Perspective:
 						Camera.SetCurrrentCamera(CameraType::Orthographic);
 						break;
+					}
+				}
+			}
+		}
+
+		ImGui::Text("Entities");
+		ImGui::Separator();
+		{
+			auto view = m_Registry.view<TagComponent, TransformComponent, ColorComponent>();
+			for (auto entity : view)
+			{
+				auto [tag, transform, color] = view.get(entity);
+
+				char tagBuffer[256];
+				strcpy_s(tagBuffer, tag.Tag.c_str());
+				if (ImGui::InputText("##InputText", tagBuffer, IM_ARRAYSIZE(tagBuffer))) {
+					tag.Tag = tagBuffer;
 				}
 
+				ImGui::DragFloat3("Transform", glm::value_ptr(transform.Transform[3]), 0.1f, -10.0f, 20.0f, "%.2f");
+
+				ImGui::ColorEdit4("Color", glm::value_ptr(color.Color));
 			}
-			ImGui::End();
 		}
+		ImGui::End();
+		static bool show = true;
+		ImGui::ShowDemoWindow(&show);
 	}
 
 
