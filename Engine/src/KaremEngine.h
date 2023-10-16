@@ -33,6 +33,7 @@
 #include "Renderer/TextureFormat.h"
 #include "Renderer/BaseRendererAPI.h"
 #include "Renderer/GraphicsContext.h"
+#include "Renderer/PerspectiveCamera.h"
 #include "Renderer/OrthographicCamera.h"
 
 // THIS IS SPECIFIC TO WINDOW

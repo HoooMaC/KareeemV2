@@ -18,6 +18,7 @@ namespace Karem {
 
 		void Update(TimeStep ts);
 		void EventHandler(Event& e);
+		void RenderImGUI();
 	private:
 		entt::registry m_Registry;
 	};

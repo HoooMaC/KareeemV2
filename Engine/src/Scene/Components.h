@@ -52,6 +52,8 @@ namespace Karem {
 		CameraComponent(const CameraComponent&) = default;
 		CameraComponent(const OrthographicCamera& camera)
 			: Camera(camera) {}
+		CameraComponent(const PerspectiveCamera& camera)
+			: Camera(camera) {}
 	};
 
 }

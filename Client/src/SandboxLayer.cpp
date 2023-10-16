@@ -1,6 +1,7 @@
 #include "SandboxLayer.h"
 
-//#include "GLFW/glfw3.h"
+#include "Scene/Scene.h"
+#include "Scene/Entity.h"
 
 #include "imgui.h"
 #include "imgui_setup.h"
@@ -11,8 +12,20 @@ void SandboxLayer::OnAttach()
 {
 	// this is overriding texture in index 3 in texture renderer
 	m_Texture = Karem::CreateTexture2D("res/texture/spritesheet/city_tilemap.png", 1);
-	//m_SpriteSheet = Karem::SubTexture2D(m_Texture, { 0,1 }, { 8,8 }, { 3,3 });
+	m_SpriteSheet = Karem::SubTexture2D(m_Texture, { 0,4 }, { 8,8 }, { 5,4 });
 	m_FrameBuffer = Karem::CreateFrameBuffer(1280, 720);
+	m_Camera = Karem::OrthographicCamera({ 16,9 }, 1.0f);
+
+	Karem::Entity cameraEntity = m_ActiveScene.CreateEntity("Camera");
+	//cameraEntity.AddComponent<Karem::CameraComponent>(Karem::PerspectiveCamera(1280/720, glm::radians(45.0f), 0.001, 1000.0f));
+
+	auto camera = cameraEntity.AddComponent<Karem::CameraComponent>(Karem::OrthographicCamera({16,9},1)).Camera;
+	camera.SetPerspectiveCamera(Karem::PerspectiveCamera(1280 / 720, glm::radians(45.0f), 0.001, 1000.0f));
+	camera.SetCurrrentCamera(Karem::CameraType::Orthographic);
+
+	Karem::Entity SquareEntity = m_ActiveScene.CreateEntity("Square Entity");
+	glm::vec4 color = { 0.4f, 0.0f, 1.0f, 1.0f };
+	SquareEntity.AddComponent<Karem::ColorComponent>(color);
 }
 
 void SandboxLayer::OnDetach()
@@ -21,13 +34,24 @@ void SandboxLayer::OnDetach()
 
 void SandboxLayer::Update(Karem::TimeStep ts)
 {
-	ENGINE_DEBUG("{}", ts);
+	//ENGINE_DEBUG("{}", ts);
 	//m_Camera.Update(ts);
 
 	m_FrameBuffer->Bind();
 
+	// testing the renderer for texture
 	Karem::RendererCommand::Clear();
 	Karem::RendererCommand::ClearColor("#026773");
+
+	static glm::vec4 quadPos = glm::vec4(1.0f);
+	static glm::vec2 quadSize = glm::vec2(1.0f);
+	static glm::vec4 quadColor = { 0.1f,0.1f,0.5f,1.0f };
+	static glm::mat4 quatTransform = glm::mat4(1.0f) * glm::scale(glm::mat4(1.0f), { 5,4,1 });
+
+	//Karem::Renderer::BeginScene(m_Camera);
+	//Karem::Renderer::SubmitQuad(quatTransform, m_SpriteSheet, 1.0f);
+	//Karem::Renderer::EndScene();
+
 
 #if OLD_RENDERER
 	Karem::Renderer2D::BeginScene(m_Camera);
@@ -47,7 +71,7 @@ void SandboxLayer::Update(Karem::TimeStep ts)
 	Karem::Renderer2D::EndScene();
 #endif
 	
-	m_Scene.Update(ts);
+	m_ActiveScene.Update(ts);
 	m_FrameBuffer->UnBind();
 }
 
@@ -105,6 +129,9 @@ void SandboxLayer::RenderImGUI()
 	//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 	ImGui::PopStyleVar(3);
+
+	m_ActiveScene.RenderImGUI();
+
 	imgui::EndFrame();
 }
 
@@ -112,7 +139,7 @@ void SandboxLayer::EventHandler(Karem::Event& event)
 {
 	Karem::EventDispatcher dispatcher(event);
 	dispatcher.Dispatch<Karem::WindowResizeEvent>(std::bind(&SandboxLayer::WindowResizeAction, this, std::placeholders::_1));
-	m_Scene.EventHandler(event);
+	m_ActiveScene.EventHandler(event);
 	//m_Camera.EventHandler(event);
 }
 

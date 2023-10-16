@@ -24,9 +24,10 @@ private:
 private:
 	//Karem::OrthographicCamera m_Camera;
 	Karem::Window* m_ApplicationWindow = nullptr;
-	Karem::Scene m_Scene;
+	Karem::Scene m_ActiveScene;
+	Karem::OrthographicCamera m_Camera;
 
 	std::shared_ptr<Karem::Texture2D> m_Texture;
-	//std::shared_ptr<Karem::SubTexture2D> m_SpriteSheet;
 	std::shared_ptr<Karem::FrameBuffer> m_FrameBuffer;
+	Karem::SubTexture2D m_SpriteSheet;
 };

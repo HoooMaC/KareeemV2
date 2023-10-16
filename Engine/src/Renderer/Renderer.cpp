@@ -59,12 +59,9 @@ namespace Karem {
 		delete s_Meshes;
 	}
 
-	void Renderer::BeginScene(const OrthographicCamera& camera)
+	void Renderer::BeginScene(const glm::mat4& viewProjection)
 	{
-		// testing
-		void* ProjectionViewData = (void*)&camera.GetViewProjectionMatrix();
-		ENGINE_ASSERT(ProjectionViewData, "The data is NULL");
-		s_Meshes->m_Material->SetUniformData("uProjectionView", ProjectionViewData);
+		s_Meshes->m_Material->SetUniformData("uProjectionView", (void*)glm::value_ptr(viewProjection));
 
 		s_Buffer->vertexData.resize(RendererData::maxVertex);
 		s_Buffer->indicesData.resize(RendererData::maxIndexBuffer);

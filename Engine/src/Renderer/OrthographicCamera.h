@@ -110,9 +110,10 @@ namespace Karem {
 
 		float& GetRotation() { return m_Rotation; }
 		void SetRotation(float rotation) { m_Rotation = rotation; RecalculateProjectionViewMatrix(); }
-		const OrthographicCameraAtrribute& GetBounds() const { return m_Bounds; }
 
 		void SetAspectRatioStatus(bool status) { isFixedAspectRatio = status; }
+		glm::vec2 GetAspectRatio() { return m_Bounds.AspectRatio; }
+
 		void SetAspectRatio(const glm::vec2 aspectRatio)
 		{
 			if (isFixedAspectRatio)
@@ -137,6 +138,7 @@ namespace Karem {
 			RecalculateProjectionViewMatrix();
 		}
 
+		const OrthographicCameraAtrribute& GetBounds() const { return m_Bounds; }
 
 	public:
 		void Update(TimeStep ts);
