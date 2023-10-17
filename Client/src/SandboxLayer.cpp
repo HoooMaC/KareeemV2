@@ -2,6 +2,7 @@
 
 #include "Scene/Scene.h"
 #include "Scene/Entity.h"
+#include "Scene/Components.h"
 
 #include <imgui.h>
 #include <imgui_setup.h>
@@ -17,10 +18,10 @@ void SandboxLayer::OnAttach()
 	m_Camera = Karem::OrthographicCamera({ 16,9 }, 1.0f);
 
 	Karem::Entity cameraEntity = m_ActiveScene.CreateEntity("Camera");
-	//cameraEntity.AddComponent<Karem::CameraComponent>(Karem::PerspectiveCamera(1280/720, glm::radians(45.0f), 0.001, 1000.0f));
+	auto& cameraComponent = cameraEntity.AddComponent<Karem::CameraComponent>(Karem::OrthographicCamera({ 16,9 }, 1));
+	auto& camera = cameraComponent.Camera;
 
-	auto camera = cameraEntity.AddComponent<Karem::CameraComponent>(Karem::OrthographicCamera({16,9},1)).Camera;
-	camera.SetPerspectiveCamera(Karem::PerspectiveCamera(1.77f, 45.0f, 0.01, 100.0f));
+	camera.SetPerspectiveCamera(Karem::PerspectiveCamera(1.77, 45.0f, 0.01, 100.0f));
 	camera.SetCurrrentCamera(Karem::CameraType::Orthographic);
 
 	Karem::Entity SquareEntity = m_ActiveScene.CreateEntity("Square Entity");
@@ -133,10 +134,7 @@ static void ShowExampleMenuFile()
 		ImGui::EndMenu();
 	}
 
-	// Here we demonstrate appending again to the "Options" menu (which we already created above)
-	// Of course in this demo it is a little bit silly that this function calls BeginMenu("Options") twice.
-	// In a real code-base using it would make senses to use this feature from very different code locations.
-	if (ImGui::BeginMenu("Options")) // <-- Append!
+	if (ImGui::BeginMenu("Options"))
 	{
 		static bool b = true;
 		ImGui::Checkbox("SomeOption", &b);
@@ -234,7 +232,13 @@ void SandboxLayer::RenderImGUI()
 
 		// TO DO : CHANGE THIS ACCORDING TO THE CAMERA
 		if (currentPannelSize.x != fbWidth or currentPannelSize.y != fbHeight)
+		{
 			m_FrameBuffer->Resize((int32_t)currentPannelSize.x, (int32_t)currentPannelSize.y);
+			// also resize the camera
+			// we are in the layer class
+			// how to get the cameara component from registry which inside the scene class.
+			// And the scene class is the data member of layer
+		}
 	}
 
 	ImGui::Image(

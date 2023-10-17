@@ -124,5 +124,4 @@ namespace Karem{
 		ImGui::ShowDemoWindow(&show);
 	}
 
-
 }

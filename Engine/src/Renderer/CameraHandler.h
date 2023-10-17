@@ -66,7 +66,7 @@ namespace Karem {
 		// how about the constructor of orthographic
 		OrthographicCamera m_OrthographicCamera = OrthographicCamera({ 16,9 }, 1); // this is temporary, the default camera
 		// TODO : Add Perspective camera
-		PerspectiveCamera m_PerspectiveCamera = PerspectiveCamera(1920, glm::radians(45.0f), 0.001f, 1000.0f);
+		PerspectiveCamera m_PerspectiveCamera = PerspectiveCamera(1.77, glm::radians(45.0f), 0.001f, 1000.0f);
 	};
 
 }
