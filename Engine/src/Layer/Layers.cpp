@@ -14,14 +14,14 @@ namespace Karem {
 			layer->OnDetach();
 	}
 
-	void Layers::PushLayer(std::shared_ptr<Layer>& layer)
+	void Layers::PushLayer(const std::shared_ptr<Layer>& layer)
 	{
 		m_Layers.emplace(m_Layers.begin() + m_InsertIndex, layer);
 		m_InsertIndex++;
 		layer->OnAttach();
 	}
 
-	void Layers::PushOverlay(std::shared_ptr<Layer>& overlay)
+	void Layers::PushOverlay(const std::shared_ptr<Layer>& overlay)
 	{
 		m_Layers.emplace_back(overlay);
 		overlay->OnAttach();

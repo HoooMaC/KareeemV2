@@ -1,7 +1,6 @@
 workspace "Kareeem"
 	architecture "x64"
 	staticruntime "on"
-	-- linkoptions { "/NODEFAULTLIB:library" }
 
 	configurations 
 	{
@@ -12,7 +11,7 @@ workspace "Kareeem"
 
 outputdir = "%{cfg.buildcfg}"
 
-startproject "Client"
+startproject "Karem"
 
 IncludeDir = {}
 IncludeDir["GLFW"] = "%{wks.location}/Vendor/GLFW/include"
@@ -22,8 +21,8 @@ IncludeDir["spdlog"] = "%{wks.location}/Vendor/spdlog/include"
 IncludeDir["glm"] = "%{wks.location}/Vendor/glm"
 IncludeDir["external"] = "%{wks.location}/Engine/src/external/include"
 
-project "Client"
-	location "Client"
+project "Karem"
+	location "Karem"
 	language  "C++"
 	cppdialect  "C++20"
 	systemversion "latest"

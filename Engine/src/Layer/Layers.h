@@ -11,8 +11,8 @@ namespace Karem {
 		Layers();
 		virtual ~Layers();
 
-		void PushLayer(std::shared_ptr<Layer>& layer);
-		void PushOverlay(std::shared_ptr<Layer>& overlay);
+		void PushLayer(const std::shared_ptr<Layer>& layer);
+		void PushOverlay(const std::shared_ptr<Layer>& overlay);
 		void PopLayer(std::shared_ptr<Layer>& layer);
 		void PopOverlay(std::shared_ptr<Layer>& layer);
 
