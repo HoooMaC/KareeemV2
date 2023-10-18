@@ -13,20 +13,24 @@ namespace Karem {
 
 	void KaremEditorLayer::OnAttach()
 	{
+		//------------------------------------------------------------------------
 		// this is overriding texture in index 3 in texture renderer
 		m_Texture = CreateTexture2D("res/texture/spritesheet/city_tilemap.png", 1);
 		m_SpriteSheet = SubTexture2D(m_Texture, { 0,4 }, { 8,8 }, { 5,4 });
-		m_FrameBuffer = CreateFrameBuffer(1280, 720);
-		m_Camera = OrthographicCamera({ 16,9 }, 1.0f);
+		//------------------------------------------------------------------------
 
-		Entity cameraEntity = m_ActiveScene.CreateEntity("Camera");
+		m_Camera = OrthographicCamera({ 16,9 }, 1.0f);
+		m_ActiveScene = std::make_shared<Scene>();
+		m_HierarcyPanel = SceneHierarcyPanel(m_ActiveScene);
+
+		Entity cameraEntity = m_ActiveScene->CreateEntity("Camera");
 		auto& cameraComponent = cameraEntity.AddComponent<CameraComponent>(OrthographicCamera({ 16,9 }, 1));
 		auto& camera = cameraComponent.Camera;
 
 		camera.SetPerspectiveCamera(PerspectiveCamera(1.77, 45.0f, 0.01, 100.0f));
 		camera.SetCurrrentCamera(CameraType::Orthographic);
 
-		Entity SquareEntity = m_ActiveScene.CreateEntity("Square Entity");
+		Entity SquareEntity = m_ActiveScene->CreateEntity("Square Entity");
 		glm::vec4 color = { 0.4f, 0.0f, 1.0f, 1.0f };
 		SquareEntity.AddComponent<ColorComponent>(color);
 	}
@@ -40,7 +44,7 @@ namespace Karem {
 		//ENGINE_DEBUG("{}", ts);
 		//m_Camera.Update(ts);
 
-		m_FrameBuffer->Bind();
+		m_ActiveScene->m_FrameBuffer->Bind();
 
 		// testing the renderer for texture
 		RendererCommand::Clear();
@@ -74,197 +78,21 @@ namespace Karem {
 		Renderer2D::EndScene();
 #endif
 
-		m_ActiveScene.Update(ts);
-		m_FrameBuffer->UnBind();
-	}
+		m_ActiveScene->Update(ts);
 
-	static void ShowExampleMenuFile()
-	{
-		ImGui::MenuItem("(demo menu)", NULL, false, false);
-		if (ImGui::MenuItem("New")) {}
-		if (ImGui::MenuItem("Open", "Ctrl+O")) {}
-		if (ImGui::BeginMenu("Open Recent"))
-		{
-			ImGui::MenuItem("fish_hat.c");
-			ImGui::MenuItem("fish_hat.inl");
-			ImGui::MenuItem("fish_hat.h");
-			if (ImGui::BeginMenu("More.."))
-			{
-				ImGui::MenuItem("Hello");
-				ImGui::MenuItem("Sailor");
-				if (ImGui::BeginMenu("Recurse.."))
-				{
-					ShowExampleMenuFile();
-					ImGui::EndMenu();
-				}
-				ImGui::EndMenu();
-			}
-			ImGui::EndMenu();
-		}
-		if (ImGui::MenuItem("Save", "Ctrl+S")) {}
-		if (ImGui::MenuItem("Save As..")) {}
-
-		ImGui::Separator();
-		if (ImGui::BeginMenu("Options"))
-		{
-			static bool enabled = true;
-			ImGui::MenuItem("Enabled", "", &enabled);
-			ImGui::BeginChild("child", ImVec2(0, 60), true);
-			for (int i = 0; i < 10; i++)
-				ImGui::Text("Scrolling Text %d", i);
-			ImGui::EndChild();
-			static float f = 0.5f;
-			static int n = 0;
-			ImGui::SliderFloat("Value", &f, 0.0f, 1.0f);
-			ImGui::InputFloat("Input", &f, 0.1f);
-			ImGui::Combo("Combo", &n, "Yes\0No\0Maybe\0\0");
-			ImGui::EndMenu();
-		}
-
-		if (ImGui::BeginMenu("Colors"))
-		{
-			float sz = ImGui::GetTextLineHeight();
-			for (int i = 0; i < ImGuiCol_COUNT; i++)
-			{
-				const char* name = ImGui::GetStyleColorName((ImGuiCol)i);
-				ImVec2 p = ImGui::GetCursorScreenPos();
-				ImGui::GetWindowDrawList()->AddRectFilled(p, ImVec2(p.x + sz, p.y + sz), ImGui::GetColorU32((ImGuiCol)i));
-				ImGui::Dummy(ImVec2(sz, sz));
-				ImGui::SameLine();
-				ImGui::MenuItem(name);
-			}
-			ImGui::EndMenu();
-		}
-
-		if (ImGui::BeginMenu("Options"))
-		{
-			static bool b = true;
-			ImGui::Checkbox("SomeOption", &b);
-			ImGui::EndMenu();
-		}
-
-		if (ImGui::BeginMenu("Disabled", false)) // Disabled
-		{
-			IM_ASSERT(0);
-		}
-		if (ImGui::MenuItem("Checked", NULL, true)) {}
+		m_ActiveScene->m_FrameBuffer->UnBind();
 	}
 
 	void KaremEditorLayer::RenderImGUI()
 	{
-		imgui::BeginFrame();
-
-
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-
-		//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-		const ImGuiViewport* viewport = ImGui::GetMainViewport();
-		static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
-		const ImGuiWindowClass* window_class = NULL;
-
-		ImGui::SetNextWindowPos(viewport->WorkPos);
-		ImGui::SetNextWindowSize(viewport->WorkSize);
-		ImGui::SetNextWindowViewport(viewport->ID);
-
-		char label[32];
-		imgui::ImFormatString(label, IM_ARRAYSIZE(label), "DockSpaceViewport_%08X", viewport->ID);
-
-		ImGuiWindowFlags host_window_flags = 0;
-		host_window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDocking;
-		host_window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus | ImGuiWindowFlags_MenuBar;
-		if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
-			host_window_flags |= ImGuiWindowFlags_NoBackground;
-
-		ImGui::Begin(label, NULL, host_window_flags);
-		if (ImGui::BeginMenuBar())
-		{
-			if (ImGui::BeginMenu("Menu"))
-			{
-				ShowExampleMenuFile();
-				ImGui::Separator();
-				if (ImGui::MenuItem("Quit", "Alt+F4"))
-					KaremEditorLayer::CloseWindow();
-				ImGui::EndMenu();
-			}
-			if (ImGui::BeginMenu("Examples"))
-			{
-				ImGui::MenuItem("Main menu bar");
-				ImGui::MenuItem("Console");
-				ImGui::MenuItem("Log");
-				ImGui::MenuItem("Simple layout");
-				ImGui::MenuItem("Property editor");
-				ImGui::MenuItem("Long text display");
-				ImGui::MenuItem("Auto-resizing window");
-				ImGui::MenuItem("Constrained-resizing window");
-				ImGui::MenuItem("Simple overlay");
-				ImGui::MenuItem("Fullscreen window");
-				ImGui::MenuItem("Manipulating window titles");
-				ImGui::MenuItem("Custom rendering");
-				ImGui::MenuItem("Dockspace");
-				ImGui::MenuItem("Documents");
-				ImGui::EndMenu();
-			}
-			if (ImGui::BeginMenu("Tools"))
-			{
-				ImGui::MenuItem("Metrics/Debugger");
-				ImGui::MenuItem("Debug Log");
-				ImGui::MenuItem("Stack Tool");
-				ImGui::MenuItem("Style Editor");
-				ImGui::MenuItem("About Dear ImGui");
-				ImGui::EndMenu();
-			}
-			ImGui::EndMenuBar();
-		}
-
-		ImGuiID dockspace_id = ImGui::GetID("DockSpace");
-		ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags, window_class);
-		ImGui::End();
-
-		//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-
-
-		ImGui::Begin("main");
-		ImVec2 currentPannelSize = ImGui::GetContentRegionAvail();
-		{
-			const auto& [fbWidth, fbHeight] = m_FrameBuffer->GetFrameBufferSize();
-
-			// TO DO : CHANGE THIS ACCORDING TO THE CAMERA
-			if (currentPannelSize.x != fbWidth or currentPannelSize.y != fbHeight)
-			{
-				m_FrameBuffer->Resize((int32_t)currentPannelSize.x, (int32_t)currentPannelSize.y);
-				// also resize the camera
-				// we are in the layer class
-				// how to get the cameara component from registry which inside the scene class.
-				// And the scene class is the data member of layer
-			}
-		}
-
-		ImGui::Image(
-			(void*)m_FrameBuffer->GetTextureColorAttachmentID(),
-			{ (float)currentPannelSize.x, (float)currentPannelSize.y },
-			ImVec2(0, 1),
-			ImVec2(1, 0)
-		);
-		ImGui::End();
-
-		//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-		ImGui::PopStyleVar(3);
-
-		m_ActiveScene.RenderImGUI();
-
-		imgui::EndFrame();
+		m_HierarcyPanel.RenderImGUI();
 	}
 
 	void KaremEditorLayer::EventHandler(Event& event)
 	{
 		EventDispatcher dispatcher(event);
 		dispatcher.Dispatch<WindowResizeEvent>(std::bind(&KaremEditorLayer::WindowResizeAction, this, std::placeholders::_1));
-		m_ActiveScene.EventHandler(event);
+		m_ActiveScene->EventHandler(event);
 		//m_Camera.EventHandler(event);
 	}
 

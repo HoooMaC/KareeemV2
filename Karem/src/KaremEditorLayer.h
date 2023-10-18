@@ -2,6 +2,8 @@
 
 #include "KaremEngine.h"
 
+#include "Panels/SceneHierarcyPanel.h"
+
 namespace Karem {
 
 	class KaremEditorLayer : public Layer
@@ -25,11 +27,11 @@ namespace Karem {
 		bool WindowResizeAction(WindowResizeEvent& event);
 
 	private:
-		Scene m_ActiveScene;
 		OrthographicCamera m_Camera;
-
+		SceneHierarcyPanel m_HierarcyPanel;
+			
+		std::shared_ptr<Scene> m_ActiveScene;
 		std::shared_ptr<Texture2D> m_Texture;
-		std::shared_ptr<FrameBuffer> m_FrameBuffer;
 		SubTexture2D m_SpriteSheet;
 	};
 

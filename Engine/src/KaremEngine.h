@@ -20,7 +20,7 @@
 
 #include "Scene/Scene.h"
 #include "Scene/Components.h"
-//#include "Scene/Entity.h"
+#include "Scene/Entity.h"
 
 #include "Renderer/Renderer.h"
 #include "Renderer/BaseShader.h"

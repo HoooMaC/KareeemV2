@@ -3,24 +3,31 @@
 #include "Core/TimeStep.h"
 #include "Event/Event.h"
 
+#include "Renderer/FrameBuffer.h"
+
 #include <entt/entt.hpp>
 
 namespace Karem {
 
 	class Entity;
+	class SceneHierarcyPanel;
 
 	class Scene {
 		friend class Entity;
+		friend class SceneHierarcyPanel;
 	public:
 		Scene();
+		~Scene() = default;
 
 		Entity CreateEntity(const std::string& entityName = "Undefined");
 
 		void Update(TimeStep ts);
 		void EventHandler(Event& e);
-		void RenderImGUI();
+
 	private:
 		entt::registry m_Registry;
+	public: // this is temporary section
+		std::shared_ptr<FrameBuffer> m_FrameBuffer; // who owns the frame buffer
 	};
 
 }
