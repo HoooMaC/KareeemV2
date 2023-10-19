@@ -252,8 +252,11 @@ namespace Karem {
 				if (currentPannelSize.x != fbWidth or currentPannelSize.y != fbHeight)
 				{
 					ENGINE_DEBUG("Changing the aspect ratio of the camera {} | {}", currentPannelSize.x, currentPannelSize.y);
+					orthographicCamera.MaintainAspectRatio(currentPannelSize.x / currentPannelSize.y);
+					orthographicCamera.RecalculateNewZoom({ currentPannelSize.x,currentPannelSize.y });
+					//orthographicCamera.SetAspectRatio(*(glm::vec2*)&currentPannelSize);
+
 					m_ContextScene->m_FrameBuffer->Resize((int32_t)currentPannelSize.x, (int32_t)currentPannelSize.y);
-					orthographicCamera.SetAspectRatio(*(glm::vec2*)&currentPannelSize);
 				}
 
 			}

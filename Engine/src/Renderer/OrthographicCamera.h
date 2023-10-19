@@ -24,6 +24,11 @@ namespace Karem {
 				RecalculateBound(zoomPercentage, aspectRatioStatus);
 			}
 
+			void RecalculateBoundsWithAspectRatio(float aspectRatio)
+			{
+
+			}
+
 			void RecalculateBound(float zoomPercentage, bool cameraAspectRatioStatus)
 			{
 				if (cameraAspectRatioStatus)
@@ -114,6 +119,62 @@ namespace Karem {
 		void SetAspectRatioStatus(bool status) { isFixedAspectRatio = status; }
 		glm::vec2 GetAspectRatio() { return m_Bounds.AspectRatio; }
 
+		void SetZoom(float zoomOffset)
+		{
+			m_Zoom = std::clamp(m_Zoom - zoomOffset, 1.0f, 100.0f);
+#if CAMERA_DEBUG
+			auto [Right, Left, Top, Bottom, Near, Far, AspectRatio] = GetBounds();
+			ENGINE_DEBUG("{}", m_Zoom);
+			ENGINE_TRACE("left {:.3f}\tright  {:.3f}", Left, Right);
+			ENGINE_TRACE("Top  {:.3f}\tBottom {:.3f}", Top, Bottom);
+			ENGINE_TRACE("Near {:.3f}\tFar    {:.3f}", Near, Far);
+			ENGINE_TRACE("ASPRX{:.3f}\tASPRY  {:.3f}", AspectRatio.x, AspectRatio.y);
+			const char* status = isFixedAspectRatio ? "True" : "False";
+			ENGINE_TRACE("Stat {}", status);
+#endif
+
+			m_Bounds.RecalculateBound(m_Zoom, isFixedAspectRatio);
+			RecalculateProjectionMatrix();
+			RecalculateProjectionViewMatrix();
+		}
+
+		void MaintainAspectRatio(float newAspectRatio)
+		{
+			// Hitung perubahan dalam aspek rasio
+			float aspectRatioChange = newAspectRatio / m_FloatAspectRatio;
+
+			// Hitung faktor scaling
+			float scaleFactor = 1.0f;
+			if (aspectRatioChange > 1.0f)
+			{
+				// Menggunakan letterboxing
+				scaleFactor = 1.0f / aspectRatioChange;
+			}
+			else
+			{
+				// Menggunakan pillarboxing
+				scaleFactor = aspectRatioChange;
+			}
+
+			// Terapkan scaling pada proyeksi kamera
+			m_ProjectionMatrix = glm::scale(m_ProjectionMatrix, glm::vec3(scaleFactor, 1.0f, 1.0f));
+
+			// Simpan aspek rasio baru
+			m_FloatAspectRatio = newAspectRatio;
+		}
+
+		void RecalculateNewZoom(const glm::vec2& currentPanelSize)
+		{
+			float aspectRatio = currentPanelSize.x / currentPanelSize.y;
+			float aspectRatioFactor = aspectRatio / m_Zoom;
+			float newZoom = m_Zoom * aspectRatioFactor;
+			newZoom = std::clamp(newZoom, 1.0f, 100.0f);
+
+			m_Bounds.RecalculateBound(m_Zoom, isFixedAspectRatio);
+			RecalculateProjectionMatrix();
+			RecalculateProjectionViewMatrix();
+		}
+
 		void SetAspectRatio(const glm::vec2 aspectRatio)
 		{
 			if (isFixedAspectRatio)
@@ -128,14 +189,6 @@ namespace Karem {
 		{ 
 			return m_Zoom; 
 			RecalculateProjectionMatrix();
-		}
-
-		void SetZoom(float zoom) 
-		{ 
-			m_Zoom = zoom;
-			m_Bounds.RecalculateBound(m_Zoom, isFixedAspectRatio);
-			RecalculateProjectionMatrix();
-			RecalculateProjectionViewMatrix();
 		}
 
 		const OrthographicCameraAtrribute& GetBounds() const { return m_Bounds; }
@@ -163,6 +216,7 @@ namespace Karem {
 		bool WindowResizeEventAction(WindowResizeEvent& event);
 	private:
 		glm::vec2 m_AspectRatio = { 16, 9 };
+		float m_FloatAspectRatio = 0.0f;
 		float m_Zoom = 10.0f;
 		bool isFixedAspectRatio = false;
 		OrthographicCameraAtrribute m_Bounds;
