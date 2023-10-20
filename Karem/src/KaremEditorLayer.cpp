@@ -28,7 +28,7 @@ namespace Karem {
 		auto& camera = cameraComponent.Camera;
 
 		camera.SetPerspectiveCamera(PerspectiveCamera(1.77, 45.0f, 0.01, 100.0f));
-		camera.SetCurrrentCamera(CameraType::Orthographic);
+		camera.SetToOrthographic();
 
 		Entity SquareEntity = m_ActiveScene->CreateEntity("Square Entity");
 		glm::vec4 color = { 0.4f, 0.0f, 1.0f, 1.0f };

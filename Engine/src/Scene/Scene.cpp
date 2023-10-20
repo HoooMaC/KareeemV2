@@ -41,9 +41,8 @@ namespace Karem{
 
 		if (activeCamera)
 		{
-			void* camera = activeCamera->GetCamera(CameraType::Orthographic);
-			auto type = activeCamera->GetCurrentCameraType();
-			if(type == CameraType::Orthographic)
+			void* camera = activeCamera->GetCamera();
+			if(activeCamera->IsOrthographic())
 			{
 				auto& data = *(OrthographicCamera*)(camera);
 				Renderer::BeginScene(data.GetViewProjectionMatrix());
