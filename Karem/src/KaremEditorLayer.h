@@ -24,6 +24,9 @@ namespace Karem {
 		void CloseWindow() {}
 
 	private:
+		void RenderDockspace();
+		
+	private:
 		bool WindowResizeAction(WindowResizeEvent& event);
 
 	private:

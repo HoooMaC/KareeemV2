@@ -85,7 +85,15 @@ namespace Karem {
 
 	void KaremEditorLayer::RenderImGUI()
 	{
+		imgui::BeginFrame();
+
+		RenderDockspace();
+
 		m_HierarcyPanel.RenderImGUI();
+
+
+		imgui::EndFrame();
+
 	}
 
 	void KaremEditorLayer::EventHandler(Event& event)
@@ -94,6 +102,158 @@ namespace Karem {
 		dispatcher.Dispatch<WindowResizeEvent>(std::bind(&KaremEditorLayer::WindowResizeAction, this, std::placeholders::_1));
 		m_ActiveScene->EventHandler(event);
 		//m_Camera.EventHandler(event);
+	}
+
+	static void ShowExampleMenuFile()
+	{
+		ImGui::MenuItem("(demo menu)", NULL, false, false);
+		if (ImGui::MenuItem("New")) {}
+		if (ImGui::MenuItem("Open", "Ctrl+O")) {}
+		if (ImGui::BeginMenu("Open Recent"))
+		{
+			ImGui::MenuItem("fish_hat.c");
+			ImGui::MenuItem("fish_hat.inl");
+			ImGui::MenuItem("fish_hat.h");
+			if (ImGui::BeginMenu("More.."))
+			{
+				ImGui::MenuItem("Hello");
+				ImGui::MenuItem("Sailor");
+				if (ImGui::BeginMenu("Recurse.."))
+				{
+					ShowExampleMenuFile();
+					ImGui::EndMenu();
+				}
+				ImGui::EndMenu();
+			}
+			ImGui::EndMenu();
+		}
+		if (ImGui::MenuItem("Save", "Ctrl+S")) {}
+		if (ImGui::MenuItem("Save As..")) {}
+
+		ImGui::Separator();
+		if (ImGui::BeginMenu("Options"))
+		{
+			static bool enabled = true;
+			ImGui::MenuItem("Enabled", "", &enabled);
+			ImGui::BeginChild("child", ImVec2(0, 60), true);
+			for (int i = 0; i < 10; i++)
+				ImGui::Text("Scrolling Text %d", i);
+			ImGui::EndChild();
+			static float f = 0.5f;
+			static int n = 0;
+			ImGui::SliderFloat("Value", &f, 0.0f, 1.0f);
+			ImGui::InputFloat("Input", &f, 0.1f);
+			ImGui::Combo("Combo", &n, "Yes\0No\0Maybe\0\0");
+			ImGui::EndMenu();
+		}
+
+		if (ImGui::BeginMenu("Colors"))
+		{
+			float sz = ImGui::GetTextLineHeight();
+			for (int i = 0; i < ImGuiCol_COUNT; i++)
+			{
+				const char* name = ImGui::GetStyleColorName((ImGuiCol)i);
+				ImVec2 p = ImGui::GetCursorScreenPos();
+				ImGui::GetWindowDrawList()->AddRectFilled(p, ImVec2(p.x + sz, p.y + sz), ImGui::GetColorU32((ImGuiCol)i));
+				ImGui::Dummy(ImVec2(sz, sz));
+				ImGui::SameLine();
+				ImGui::MenuItem(name);
+			}
+			ImGui::EndMenu();
+		}
+
+		if (ImGui::BeginMenu("Options"))
+		{
+			static bool b = true;
+			ImGui::Checkbox("SomeOption", &b);
+			ImGui::EndMenu();
+		}
+
+		if (ImGui::BeginMenu("Disabled", false)) // Disabled
+		{
+			IM_ASSERT(0);
+		}
+		if (ImGui::MenuItem("Checked", NULL, true)) {}
+	}
+
+	static void MenuBar()
+	{
+		// Begin menu bar +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+		if (ImGui::BeginMenuBar())
+		{
+			if (ImGui::BeginMenu("Menu"))
+			{
+				ShowExampleMenuFile();
+				ImGui::Separator();
+				ImGui::MenuItem("Quit", "Alt+F4");
+				// close window here
+
+				ImGui::EndMenu();
+			}
+			if (ImGui::BeginMenu("Examples"))
+			{
+				ImGui::MenuItem("Main menu bar");
+				ImGui::MenuItem("Console");
+				ImGui::MenuItem("Log");
+				ImGui::MenuItem("Simple layout");
+				ImGui::MenuItem("Property editor");
+				ImGui::MenuItem("Long text display");
+				ImGui::MenuItem("Auto-resizing window");
+				ImGui::MenuItem("Constrained-resizing window");
+				ImGui::MenuItem("Simple overlay");
+				ImGui::MenuItem("Fullscreen window");
+				ImGui::MenuItem("Manipulating window titles");
+				ImGui::MenuItem("Custom rendering");
+				ImGui::MenuItem("Dockspace");
+				ImGui::MenuItem("Documents");
+				ImGui::EndMenu();
+			}
+			if (ImGui::BeginMenu("Tools"))
+			{
+				ImGui::MenuItem("Metrics/Debugger");
+				ImGui::MenuItem("Debug Log");
+				ImGui::MenuItem("Stack Tool");
+				ImGui::MenuItem("Style Editor");
+				ImGui::MenuItem("About Dear ImGui");
+				ImGui::EndMenu();
+			}
+			ImGui::EndMenuBar();
+		}
+		// End menu bar +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	}
+
+	void KaremEditorLayer::RenderDockspace()
+	{
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+
+		ImGuiViewport* viewport = ImGui::GetMainViewport();
+
+		ImGui::SetNextWindowPos(viewport->WorkPos);
+		ImGui::SetNextWindowSize(viewport->WorkSize);
+		ImGui::SetNextWindowViewport(viewport->ID);
+
+		ImGuiWindowFlags docks_window_flags = 0;
+		docks_window_flags |= ImGuiWindowFlags_NoTitleBar;
+		docks_window_flags |= ImGuiWindowFlags_NoDocking;
+		docks_window_flags |= ImGuiWindowFlags_NoCollapse;
+		docks_window_flags |= ImGuiWindowFlags_NoCollapse;
+		docks_window_flags |= ImGuiWindowFlags_NoResize;
+		docks_window_flags |= ImGuiWindowFlags_NoMove;
+		docks_window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus;
+		docks_window_flags |= ImGuiWindowFlags_NoNavFocus;
+		docks_window_flags |= ImGuiWindowFlags_MenuBar;
+
+		ImGui::Begin("DockSpaceViewport", NULL, docks_window_flags);
+
+		MenuBar();
+
+		ImGuiID dockspace_id = ImGui::GetID("DockSpace");
+		ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f));
+		ImGui::End();
+
+		ImGui::PopStyleVar(3);
 	}
 
 	bool KaremEditorLayer::WindowResizeAction(WindowResizeEvent& event)

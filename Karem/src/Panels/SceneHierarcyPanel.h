@@ -13,13 +13,12 @@ namespace Karem {
 
 		void RenderImGUI();
 	private:
-		void MenuBar();
 		void ViewportPanel();
 		void EntityPropertiesPanel();
 		void EntityListPanel();
 
 	private:
-		Entity m_SelectionContext;
+		Entity m_SelectedEntity;
 		std::shared_ptr<Scene> m_ContextScene;
 	};
 
