@@ -89,6 +89,8 @@ namespace Karem {
 
 		RenderDockspace();
 
+		ImGui::ShowDemoWindow();
+
 		m_HierarcyPanel.RenderImGUI();
 
 

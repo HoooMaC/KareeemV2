@@ -10,40 +10,12 @@
 
 namespace Karem {
 
-
-
 	void SceneHierarcyPanel::RenderImGUI()
 	{
-
 		ViewportPanel();
 		EntityListPanel();
 		EntityPropertiesPanel();
-		//{
-		//	auto view = m_ContextScene->m_Registry.view<CameraComponent>();
-		//	for (const auto entity : view)
-		//	{
-		//		auto [component] = view.get(entity);
-		//		if (ImGui::Button("ChangeCamera"))
-		//		{
-		//			auto& Camera = component.Camera;
-		//			switch (Camera.GetCurrentCameraType())
-		//			{
-		//			case CameraType::Orthographic:
-		//				Camera.SetCurrrentCamera(CameraType::Perspective);
-		//				break;
-		//			case CameraType::Perspective:
-		//				Camera.SetCurrrentCamera(CameraType::Orthographic);
-		//				break;
-		//			}
-		//		}
-		//	}
-		//}
-
-		static bool show = true;
-		ImGui::ShowDemoWindow(&show);
 	}
-
-
 
 	void SceneHierarcyPanel::ViewportPanel()
 	{
@@ -112,27 +84,8 @@ namespace Karem {
 		ImGui::Begin("Selected Entity Properties");
 		// the problem is here
 		if (m_SelectedEntity)
-		{	
-			//m_SelectedEntity.ShowPropertiesToImGui();
+			DrawEntityTreeNode(m_SelectedEntity);
 
-			TagComponent& tag = m_SelectedEntity.GetComponent<TagComponent>();
-			TransformComponent& transform = m_SelectedEntity.GetComponent<TransformComponent>();
-			ColorComponent& color = m_SelectedEntity.GetComponent<ColorComponent>();
-
-			// Tampilkan komponen-komponen tersebut
-			char tagBuffer[256];
-			strcpy_s(tagBuffer, tag.Tag.c_str());
-			if (ImGui::InputText("##InputText", tagBuffer, IM_ARRAYSIZE(tagBuffer)))
-			{
-				tag.Tag = tagBuffer;
-			}
-
-			ImGui::DragFloat3("Transform", glm::value_ptr(transform.Transform[3]), 0.1f, -10.0f, 20.0f, "%.2f");
-
-			ImGui::ColorEdit4("Color", glm::value_ptr(color.Color));
-
-
-		}
 		ImGui::End();
 	}
 
@@ -145,12 +98,90 @@ namespace Karem {
 				m_SelectedEntity = { entity, m_ContextScene.get()};
 		});
 
-		//if(m_SelectedEntity)
-		//{
-		//	const char* label = m_SelectedEntity.GetComponent<TagComponent>().Tag.c_str();
-		//	ImGui::Text(label);
-		//}
+		if (ImGui::IsMouseDown(0) and ImGui::IsWindowHovered())
+			m_SelectedEntity = {};
+
+		ImGui::Separator();
+
+		if(m_SelectedEntity)
+		{
+			const char* label = m_SelectedEntity.GetComponent<TagComponent>().Tag.c_str();
+			ImGui::Text("Selected : %s", label);
+		}
+
 		ImGui::End();
+	}
+
+	void SceneHierarcyPanel::DrawEntityTreeNode(Entity entity)
+	{
+
+		const char* tag = entity.GetComponent<TagComponent>().Tag.c_str();
+		char tagBuffer[256];
+		strcpy_s(tagBuffer, sizeof(tagBuffer), tag);
+		if (ImGui::InputText("##InputText", tagBuffer, IM_ARRAYSIZE(tagBuffer)))
+			tag = tagBuffer;
+		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_OpenOnArrow;
+		bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity, flags, tag);
+		if (opened)
+		{
+			if (m_SelectedEntity.IsHasComponent<TransformComponent>())
+			{
+				bool componentOpened = ImGui::TreeNodeEx((void*)typeid(TransformComponent).hash_code(), flags, "Transform");
+				if (componentOpened)
+				{
+					TransformComponent& transform = m_SelectedEntity.GetComponent<TransformComponent>();
+					ImGui::DragFloat3("Transform", glm::value_ptr(transform.Transform[3]), 0.1f, -10.0f, 20.0f, "%.2f");
+					ImGui::TreePop();
+				}
+
+			}
+
+			if (m_SelectedEntity.IsHasComponent<ColorComponent>())
+			{
+				bool componentOpened = ImGui::TreeNodeEx((void*)typeid(ColorComponent).hash_code(), flags, "Color");
+				if (componentOpened)
+				{
+					ColorComponent& color = m_SelectedEntity.GetComponent<ColorComponent>();
+					ImGui::ColorEdit4("Color", glm::value_ptr(color.Color));
+					ImGui::TreePop();
+				}
+
+			}
+
+			if (m_SelectedEntity.IsHasComponent<CameraComponent>())
+			{
+				bool componentOpened = ImGui::TreeNodeEx((void*)typeid(ColorComponent).hash_code(), flags, "Camera");
+				if (componentOpened)
+				{
+					CameraHandler& camera = m_SelectedEntity.GetComponent<CameraComponent>().Camera;
+					if(ImGui::Button("Change Camera Projection"))
+						camera.ChangeCameraType();
+
+					if (ImGui::BeginCombo("Projection", camera.GetCameraStringType()))
+					{
+						bool isOrthographicSelected = "Orthographic" == camera.GetCameraStringType() ? true : false;
+						bool isPerspectiveSelected = "Perspective" == camera.GetCameraStringType() ? true : false;
+						if (ImGui::Selectable("Orthographic", isOrthographicSelected))
+						{
+							camera.SetToOrthographic();
+						}
+
+						if (ImGui::Selectable("Perspective", isPerspectiveSelected))
+						{
+							camera.SetToPerspective();
+						}
+
+						ImGui::EndCombo();
+					}
+
+					ImGui::TreePop();
+				}
+			}
+			ImGui::TreePop();
+		}
+
+
+
 	}
 
 }
