@@ -1,11 +1,26 @@
 #include "Core/Kareeem.h"
 #include "Uniform.h"
 
-// this is temporary. Because uniform sholud be general for any API
+// TEMPORARY . Because uniform sholud be general for any API
 #include <glad/glad.h>
 
 namespace Karem {
 
+	void UniformCache::SetUniformData(const std::string& name, void* data)
+	{
+		auto uniformIterator = m_UnifomList.find(name);
+		if (uniformIterator == m_UnifomList.end()) {
+			uniformIterator = m_UnifomList.find(name + "[0]");
+			if (uniformIterator == m_UnifomList.end()) {
+				ENGINE_WARN("Uniform {} not found.", name);
+				return;
+			}
+		}
+
+		uniformIterator->second.Data = data;
+	}
+
+	// WARNING : Consider the lifetime of the object
 	void Karem::UniformCache::UploadUniformData(const UniformElement& uniform)
 	{
 		switch (uniform.Type)
@@ -25,6 +40,18 @@ namespace Karem {
 		default:
 			ENGINE_ASSERT(false, "INVALID UNIFORM TYPE");
 			return;
+		}
+	}
+
+	void UniformCache::Validate()
+	{
+		for (auto [name, uniform] : m_UnifomList)
+		{
+			if (uniform.Data == nullptr)
+			{
+				ENGINE_ASSERT(false, "Unitilialized Uniform {}", name);
+			}
+			UploadUniformData(uniform);
 		}
 	}
 

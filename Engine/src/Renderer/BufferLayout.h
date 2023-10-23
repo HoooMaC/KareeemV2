@@ -3,7 +3,7 @@
 #include "Core/Kareeem.h"
 #include "Renderer/BaseShader.h"
 
-// this is temporary ABSOLUTELY!!!
+// TEMPORARY ABSOLUTELY!!!
 #include <glad/glad.h>
 
 namespace Karem {

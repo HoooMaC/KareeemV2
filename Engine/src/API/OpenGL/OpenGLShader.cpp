@@ -141,7 +141,7 @@ namespace Karem {
 			glGetActiveUniform(m_RendererID, i, maxBuffer, &uniformLength, &uniformCount, &uniformType, uniformName);
 			uniformLocation = glGetUniformLocation(m_RendererID, uniformName);
 
-			// this is temporary
+			// TEMPORARY 
 			ENGINE_ASSERT(uniformLocation == -1, "UniformLocation Not Found");
 			//ENGINE_DEBUG("=================");
 			//ENGINE_DEBUG("{} Uniform name : {}", i, uniformName);

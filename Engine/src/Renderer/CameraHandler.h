@@ -31,6 +31,7 @@ namespace Karem {
 				case Type::Orthographic: return "Orthographic";
 				case Type::Perspective: return "Perspective";
 			}
+			// this is can be replaced with std::unreachable int c++23
 			ENGINE_ASSERT(false, "Invalid Camera Type");
 			return  "Orthographic";
 		}
@@ -38,13 +39,8 @@ namespace Karem {
 		void SetAspectRatio(float aspectRatio) 
 		{ 
 			m_AspectRatio = aspectRatio; 
-			switch (m_CurrentCammeraType)
-			{
-				case Type::Orthographic: return m_OrthographicCamera.RecalculateProjectionMatrix(m_AspectRatio);
-				case Type::Perspective:  return m_PerspectiveCamera.RecalculateProjectionMatrix(m_AspectRatio);
-			}
-			// this is can be replaced with std::unreachable int c++23
-			ENGINE_ASSERT(false, "Invalid Camera Type");
+			m_OrthographicCamera.RecalculateProjectionMatrix(m_AspectRatio);
+			m_PerspectiveCamera.RecalculateProjectionMatrix(m_AspectRatio);
 		}
 
 		float GetAspectRatio() const { return m_AspectRatio; }
@@ -58,7 +54,7 @@ namespace Karem {
 		bool IsOrthographic() const { return m_CurrentCammeraType == Type::Orthographic; }
 		bool IsPerspective() const { return m_CurrentCammeraType == Type::Perspective; }
 
-		// this is temporary
+		// TEMPORARY 
 		const glm::mat4& GetCameraProjectionMatrix() const
 		{
 			switch (m_CurrentCammeraType)
@@ -70,7 +66,7 @@ namespace Karem {
 			ENGINE_ASSERT(false, "Invalid Camera Type");
 		}
 
-		// this is temporary
+		// TEMPORARY 
 		void* GetCamera()
 		{
 			switch (m_CurrentCammeraType)
@@ -83,7 +79,7 @@ namespace Karem {
 		}
 
 	public:
-		// this is temporary
+		// TEMPORARY 
 		std::tuple<float, float, float, float> GetCameraBounds()
 		{
 			switch (m_CurrentCammeraType)
@@ -98,7 +94,7 @@ namespace Karem {
 				}
 				case Type::Perspective:
 				{
-					// this is temporary
+					// TEMPORARY 
 					ENGINE_ASSERT(false, "Invalid Camera Type");
 				}
 			}
@@ -150,7 +146,7 @@ namespace Karem {
 		float GetOrthographicSize() const { return m_OrthographicCamera.m_Size; }
 		void SetOrthographicSize(float size) { m_OrthographicCamera.m_Size = size; m_OrthographicCamera.RecalculateProjectionMatrix(m_AspectRatio); }
 	private:
-		float m_AspectRatio = 16.0f/9.0f;
+		float m_AspectRatio;
 
 		Type m_CurrentCammeraType;
 		OrthographicCamera m_OrthographicCamera;

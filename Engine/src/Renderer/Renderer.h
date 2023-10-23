@@ -1,11 +1,9 @@
 #pragma once
 
 #include "Renderer/BaseBuffer.h"
-#include "Renderer/OrthographicCamera.h"
 #include "Renderer/BaseTexture.h"
 #include "Renderer/SubTexture.h"
-
-#include "Renderer/RendererData/RendererData.h"
+#include "Renderer/Material.h"
 
 #include <glm/glm.hpp>
 
@@ -43,8 +41,51 @@ namespace Karem {
 		static void Bind();
 
 	private:
-		static RendererData* s_Buffer;
-		static RendererMeshes* s_Meshes;
+		struct Vertex
+		{
+			glm::vec4 Position;
+			glm::vec4 Color;
+			glm::vec2 TexCoord;
+			float TexIndex;
+			Vertex()
+				: Position(glm::vec4(0.0f)), Color(glm::vec4(0.0f)), TexCoord(glm::vec2(0.0f)), TexIndex(0.0f) {}
+
+			Vertex(const glm::vec4& position, const glm::vec4& color, const glm::vec2& texCoord, float texIndex)
+				: Position(position), Color(color), TexCoord(texCoord), TexIndex(texIndex) {}
+		};
+
+		struct BufferData
+		{
+			static constexpr uint64_t maxVertex = 1024;
+			static constexpr uint64_t maxIndexBuffer = maxVertex * 6;
+
+			// this is need to change with array, but not std::array
+			std::vector<Vertex> vertexData; // size =  max vertex
+			std::vector<uint32_t> indicesData; // size = max Index Buffer
+
+			std::vector<std::shared_ptr<Texture2D>>TextureContainer; // size = 32
+			std::vector<uint32_t> TextureSlotContainer; // size = 32
+
+			static uint32_t vertexIndex;
+			static uint32_t indicesIndex;
+			static uint32_t indicesOffset;
+		};
+
+		struct Meshes
+		{
+			Material m_Material;
+
+			std::shared_ptr<Shader> m_Shader;
+			std::shared_ptr<VertexArray> m_VertexArray;
+
+			// TEMPORARY 
+			std::shared_ptr<VertexBuffer> vertexBuffer;
+			std::shared_ptr<IndexBuffer> indexBuffer;
+		};
+
+	private:
+		static BufferData* s_Buffer;
+		static Meshes* s_Meshes;
 	};
 
 }

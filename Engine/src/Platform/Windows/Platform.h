@@ -1,6 +1,6 @@
 #pragma once
 
-// this is temporary
+// TEMPORARY 
 struct GLFWwindow;
 
 namespace Karem {

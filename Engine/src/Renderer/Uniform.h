@@ -32,36 +32,14 @@ namespace Karem {
 			m_UnifomList = uniformList;
 		}
 
-		inline void SetUniformData(std::string_view name, void* data)
-		{
-			// Ubah std::string_view menjadi std::string
-			std::string uniformName(name);
+		// WARNING : Consider the lifetime of the object
+		void SetUniformData(const std::string& name, void* data);
 
-			auto uniformIterator = m_UnifomList.find(uniformName);
-			if (uniformIterator == m_UnifomList.end()) {
-				uniformIterator = m_UnifomList.find(uniformName + "[0]");
-				if (uniformIterator == m_UnifomList.end()) {
-					ENGINE_WARN("Uniform {} not found.", uniformName);
-					return;
-				}
-			}
-
-			uniformIterator->second.Data = data;
-		}
-
+		// Sending the data to the GPUD
+		// Consider for changing the name of the variable
 		void UploadUniformData(const UniformElement& uniform);
 
-		inline void Validate()
-		{
-			for (auto [name, uniform] : m_UnifomList)
-			{
-				if (uniform.Data == nullptr)
-				{
-					ENGINE_ASSERT(false, "Unitilialized Uniform {}", name);
-				}
-				UploadUniformData(uniform);
-			}
-		}
+		void Validate();
 	private:
 		std::unordered_map<std::string, UniformElement> m_UnifomList;
 	};

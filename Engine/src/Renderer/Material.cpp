@@ -7,9 +7,4 @@ namespace Karem {
 	{
 	}
 
-	std::shared_ptr<Material> CreateMaterial()
-	{
-		return std::make_shared<Material>();
-	}
-
 }

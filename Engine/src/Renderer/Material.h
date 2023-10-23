@@ -20,7 +20,7 @@ namespace Karem {
 		}
 
 		// Be aware to use this data, make sure the void* data is not NULL
-		void SetUniformData(std::string_view name, void* data)
+		void SetUniformData(const std::string& name, void* data)
 		{
 			ENGINE_ASSERT(data, "ERROR!!! YOUR DATA IS NULL");
 			m_UniformList.SetUniformData(name, data);
@@ -35,6 +35,5 @@ namespace Karem {
 		UniformCache m_UniformList;
 	};
 
-	std::shared_ptr<Material> CreateMaterial();
 
 }

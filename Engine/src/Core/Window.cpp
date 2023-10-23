@@ -15,7 +15,7 @@
 
 #include <GLFW/glfw3.h>
 
-// this is temporary
+// TEMPORARY 
 #include <glad/glad.h>
 
 namespace Karem {

@@ -13,7 +13,7 @@ namespace Karem {
 
 	class OrthographicCamera 
 	{
-		// this is temporary
+		// TEMPORARY 
 		friend class CameraHandler;
 	public:
 		OrthographicCamera(float aspectRatio = 16.0f/9.0f) { RecalculateProjectionMatrix(aspectRatio); }

@@ -38,10 +38,9 @@ namespace Karem {
 
     private:
         float m_VerticalFOV = glm::radians(45.0f);
-        float m_NearClip;
-        float m_FarClip;
+        float m_NearClip = 0.001f;
+        float m_FarClip = 1000.0f;
 
-        // maybe we can remove this
         glm::mat4 m_ProjectionMatrix;
     };
 

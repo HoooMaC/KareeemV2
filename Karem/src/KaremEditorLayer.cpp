@@ -30,15 +30,14 @@ namespace Karem {
 		auto& cameraHandler = cameraComponent.Camera;
 		cameraHandler.SetPerspectiveCamera(PerspectiveCamera(16.0f/9.0f, glm::radians(45.0f), 0.001, 1000.0f));
 		cameraHandler.SetTypeToOrthographic();
-		auto& cameraTransform = m_CameraEntity.GetComponent<TransformComponent>().Transform;
-		cameraTransform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f)) 
-			* glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), { 1,0,0 })
-			* glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), { 0,1,0 })
-			* glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), { 0,0,1 });
+		//cameraTransform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f)) 
+		//	* glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), { 1,0,0 })
+		//	* glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), { 0,1,0 })
+		//	* glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), { 0,0,1 });
 
 		Entity SquareEntity = m_ActiveScene->CreateEntity("Square Entity");
-		auto& squareTransform = SquareEntity.GetComponent<TransformComponent>().Transform;
-		squareTransform = glm::scale(glm::mat4(1.0f), { 5.0f, 5.0f, 1.0f });
+		auto& squareScale = SquareEntity.GetComponent<TransformComponent>().Scale;
+		squareScale = { 5.0f, 5.0f, 1.0f };
 		glm::vec4 color = { 0.4f, 0.0f, 1.0f, 1.0f };
 		SquareEntity.AddComponent<ColorComponent>(color);
 	}
