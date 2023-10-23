@@ -12,72 +12,11 @@ namespace Karem {
 
 	void SceneHierarcyPanel::RenderImGUI()
 	{
-		ViewportPanel();
 		EntityListPanel();
 		EntityPropertiesPanel();
 	}
 
-	void SceneHierarcyPanel::ViewportPanel()
-	{
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
-		ImGui::Begin("Viewport");
-		CameraHandler* activeCamera = nullptr;
-
-		auto view = m_ContextScene->m_Registry.view<CameraComponent>();
-		for (const auto entity : view)
-		{
-			auto [component] = view.get(entity);
-			activeCamera = &component.Camera;
-		}
-
-		if (activeCamera)
-		{
-			ImVec2 currentPannelSize = ImGui::GetContentRegionAvail();
-			void* camera = activeCamera->GetCamera();
-			if (activeCamera->IsOrthographic())
-			{
-				auto& orthographicCamera = *(OrthographicCamera*)(camera);
-				const auto& [fbWidth, fbHeight] = m_ContextScene->m_FrameBuffer->GetFrameBufferSize();
-
-				// TO DO : CHANGE THIS ACCORDING TO THE CAMERA
-				if (currentPannelSize.x != fbWidth or currentPannelSize.y != fbHeight)
-				{
-					ENGINE_DEBUG("Changing the aspect ratio of the camera {} | {}", currentPannelSize.x, currentPannelSize.y);
-					orthographicCamera.MaintainAspectRatio(currentPannelSize.x / currentPannelSize.y);
-					orthographicCamera.RecalculateNewZoom({ currentPannelSize.x,currentPannelSize.y });
-					//orthographicCamera.SetAspectRatio(*(glm::vec2*)&currentPannelSize);
-
-					m_ContextScene->m_FrameBuffer->Resize((int32_t)currentPannelSize.x, (int32_t)currentPannelSize.y);
-				}
-
-			}
-			else
-			{
-				auto& perspectiveCamera = *(PerspectiveCamera*)(camera);
-				const auto& [fbWidth, fbHeight] = m_ContextScene->m_FrameBuffer->GetFrameBufferSize();
-
-				// TO DO : CHANGE THIS ACCORDING TO THE CAMERA
-				if (currentPannelSize.x != fbWidth or currentPannelSize.y != fbHeight)
-				{
-					m_ContextScene->m_FrameBuffer->Resize((int32_t)currentPannelSize.x, (int32_t)currentPannelSize.y);
-					perspectiveCamera.SetAspectRatio(currentPannelSize.x / currentPannelSize.y);
-				}
-			}
-			ImGui::Image(
-				(void*)m_ContextScene->m_FrameBuffer->GetTextureColorAttachmentID(),
-				{ (float)currentPannelSize.x, (float)currentPannelSize.y },
-				ImVec2(0, 1),
-				ImVec2(1, 0)
-			);
-		}
-
-		ImGui::End();
-
-		ImGui::PopStyleVar(3);
-	}
 
 	void SceneHierarcyPanel::EntityPropertiesPanel()
 	{
@@ -95,15 +34,15 @@ namespace Karem {
 		m_ContextScene->m_Registry.view<TagComponent>().each([&](entt::entity entity, TagComponent& tag) {
 			const std::string& tagName = tag.Tag;
 			if (ImGui::Selectable(("Entity : " + tagName).c_str()))
-				m_SelectedEntity = { entity, m_ContextScene.get()};
-		});
+				m_SelectedEntity = { entity, m_ContextScene.get() };
+			});
 
 		if (ImGui::IsMouseDown(0) and ImGui::IsWindowHovered())
 			m_SelectedEntity = {};
 
 		ImGui::Separator();
 
-		if(m_SelectedEntity)
+		if (m_SelectedEntity)
 		{
 			const char* label = m_SelectedEntity.GetComponent<TagComponent>().Tag.c_str();
 			ImGui::Text("Selected : %s", label);
@@ -154,7 +93,7 @@ namespace Karem {
 				if (componentOpened)
 				{
 					CameraHandler& camera = m_SelectedEntity.GetComponent<CameraComponent>().Camera;
-					if(ImGui::Button("Change Camera Projection"))
+					if (ImGui::Button("Change Camera Projection"))
 						camera.ChangeCameraType();
 
 					if (ImGui::BeginCombo("Projection", camera.GetCameraStringType()))
@@ -163,15 +102,49 @@ namespace Karem {
 						bool isPerspectiveSelected = "Perspective" == camera.GetCameraStringType() ? true : false;
 						if (ImGui::Selectable("Orthographic", isOrthographicSelected))
 						{
-							camera.SetToOrthographic();
+							camera.SetTypeToOrthographic();
 						}
 
 						if (ImGui::Selectable("Perspective", isPerspectiveSelected))
 						{
-							camera.SetToPerspective();
+							camera.SetTypeToPerspective();
 						}
-
 						ImGui::EndCombo();
+					}
+
+					const char* sizeLabel = "size";
+					const char* nearLabel = "Near";
+					const char* farLabel = "far";
+
+					if (camera.IsOrthographic())
+					{
+						float orthoSize = camera.GetOrthographicSize();
+						if (ImGui::DragFloat("Ortho size", &orthoSize))
+							camera.SetOrthographicSize(orthoSize);
+					}
+					//ImGui::DragFloat(sizeLabel,);
+					float nearClip = camera.GetCameraNear();
+					float farClip = camera.GetCameraFar();
+
+					if (ImGui::DragFloat("Near Clip", &nearClip))
+						camera.SetCameraNear(nearClip);
+
+					if (ImGui::DragFloat("Far Clip", &farClip))
+						camera.SetCameraFar(farClip);
+
+					if (camera.IsOrthographic())
+					{
+						const auto& [left, right, bottom, top] = camera.GetCameraBounds();
+						float orthoSize = camera.GetOrthographicSize();
+
+						ImGui::Separator();
+						ImGui::Text("Left : %f", left);
+						ImGui::Text("Right : %f", right);
+						ImGui::Text("Bottom : %f", bottom);
+						ImGui::Text("Top : %f", top);
+						ImGui::Text("Near : %f", nearClip);
+						ImGui::Text("Far : %f", farClip);
+						ImGui::Text("Size : %f", orthoSize);
 					}
 
 					ImGui::TreePop();

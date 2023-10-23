@@ -25,14 +25,19 @@ namespace Karem {
 
 	private:
 		void RenderDockspace();
-		
+		void RenderViewportPanel();
+
 	private:
 		bool WindowResizeAction(WindowResizeEvent& event);
 
 	private:
+		Entity m_CameraEntity;
+
+	private:
 		OrthographicCamera m_Camera;
 		SceneHierarcyPanel m_HierarcyPanel;
-			
+
+		std::shared_ptr<FrameBuffer> m_FrameBuffer; // who owns the frame buffer
 		std::shared_ptr<Scene> m_ActiveScene;
 		std::shared_ptr<Texture2D> m_Texture;
 		SubTexture2D m_SpriteSheet;

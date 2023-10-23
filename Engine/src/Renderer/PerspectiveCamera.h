@@ -9,77 +9,40 @@
 
 namespace Karem {
 
+    class CameraHandler;
+
     class PerspectiveCamera
     {
+        friend class CameraHandler;
     public:
         PerspectiveCamera() = default;
         PerspectiveCamera(float aspectRatio, float fov, float nearClip, float farClip)
-            : m_AspectRatio(aspectRatio), m_FOV(fov), m_NearClip(nearClip), m_FarClip(farClip)
+            : m_VerticalFOV(fov), m_NearClip(nearClip), m_FarClip(farClip)
         {
-            RecalculateProjectionMatrix();
-            m_ViewMatrix = glm::mat4(1.0f);
-            RecalculateViewProjectionMatrix();
+            RecalculateProjectionMatrix(aspectRatio);
         }
 
         const glm::mat4& GetProjectionMatrix() const { return m_ProjectionMatrix; }
-        const glm::mat4& GetViewMatrix() const { return m_ViewMatrix; }
-        const glm::mat4& GetViewProjectionMatrix() const { return m_ViewProjectionMatrix; }
 
-        glm::vec3& GetPosition() { return m_Position; }
-        void SetPosition(const glm::vec3& position) { m_Position = position; RecalculateViewProjectionMatrix(); }
+        float GetPerspectiveVerticalFOV() const { return m_VerticalFOV; }
+        void SetPerspectiveVerticalFOV(float fov, float aspectRatio) { m_VerticalFOV = fov; RecalculateProjectionMatrix(aspectRatio); }
 
-        float& GetRotationX() { return m_Rotation.x; }
-        float& GetRotationY() { return m_Rotation.y; }
-        float& GetRotationZ() { return m_Rotation.z; }
-        void SetRotation(const glm::vec3& rotation) { m_Rotation = rotation; RecalculateViewProjectionMatrix(); }
+        float GetPerspectiveNear() const { return m_NearClip; }
+        void SetPerspectiveNearClip(float nearClip, float aspectRatio) { m_NearClip = nearClip; RecalculateProjectionMatrix(aspectRatio); }
 
-        void SetFOV(float fov)
-        {
-            m_FOV = fov;
-            RecalculateProjectionMatrix();
-            RecalculateViewProjectionMatrix();
-        }
-
-        void SetAspectRatio(float aspectRatio)
-        {
-            m_AspectRatio = aspectRatio;
-            RecalculateProjectionMatrix();
-            RecalculateViewProjectionMatrix();
-        }
-
-        void SetNearClip(float nearClip)
-        {
-            m_NearClip = nearClip;
-            RecalculateProjectionMatrix();
-            RecalculateViewProjectionMatrix();
-        }
-
-        void SetFarClip(float farClip)
-        {
-            m_FarClip = farClip;
-            RecalculateProjectionMatrix();
-            RecalculateViewProjectionMatrix();
-        }
-
-        void Update(TimeStep ts) {}
-        void EventHandler(Event& e) {}
+        float GetPerspectiveFar() const { return m_FarClip; }
+        void SetPerspectiveFarClip(float farClip, float aspectRatio) { m_FarClip = farClip; RecalculateProjectionMatrix(aspectRatio); }
 
     private:
-        void RecalculateProjectionMatrix();
-        void RecalculateViewProjectionMatrix();
+        void RecalculateProjectionMatrix(float aspectRatio);
 
     private:
-        float m_AspectRatio;
-        float m_FOV;
+        float m_VerticalFOV = glm::radians(45.0f);
         float m_NearClip;
         float m_FarClip;
 
+        // maybe we can remove this
         glm::mat4 m_ProjectionMatrix;
-        glm::mat4 m_ViewMatrix;
-        glm::mat4 m_ViewProjectionMatrix;
-
-        glm::vec3 m_Position = glm::vec3(0.0f);
-        glm::vec3 m_Rotation = glm::vec3(0.0f);
     };
 
 

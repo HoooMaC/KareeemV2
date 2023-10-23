@@ -19,8 +19,10 @@ namespace Karem {
 			m_UniformList = uniforms;
 		}
 
+		// Be aware to use this data, make sure the void* data is not NULL
 		void SetUniformData(std::string_view name, void* data)
 		{
+			ENGINE_ASSERT(data, "ERROR!!! YOUR DATA IS NULL");
 			m_UniformList.SetUniformData(name, data);
 		}
 

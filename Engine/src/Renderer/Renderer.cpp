@@ -9,14 +9,15 @@ namespace Karem {
 
 	RendererData* Renderer::s_Buffer = new RendererData;
 	RendererMeshes* Renderer::s_Meshes = new RendererMeshes;
+	static constinit glm::mat4 s_ViewProjection = glm::mat4(1.0f);
 
 	// this is temporary
 	const std::vector<glm::vec4> defaultQuadPosition =
 	{
-		{ -0.5f, -0.5f, 0.0f, 1.0f },
-		{  0.5f, -0.5f, 0.0f, 1.0f },
-		{  0.5f,  0.5f, 0.0f, 1.0f },
-		{ -0.5f,  0.5f, 0.0f, 1.0f }
+		{ -0.5f, -0.5f, 1.0f, 1.0f },
+		{  0.5f, -0.5f, 1.0f, 1.0f },
+		{  0.5f,  0.5f, 1.0f, 1.0f },
+		{ -0.5f,  0.5f, 1.0f, 1.0f }
 	};
 
 	void Renderer::Initialize()
@@ -59,9 +60,10 @@ namespace Karem {
 		delete s_Meshes;
 	}
 
-	void Renderer::BeginScene(const glm::mat4& viewProjection)
+	void Renderer::BeginScene(const glm::mat4& projection, const glm::mat4& cameraTransform)
 	{
-		s_Meshes->m_Material->SetUniformData("uProjectionView", (void*)glm::value_ptr(viewProjection));
+		s_ViewProjection = projection * glm::inverse(cameraTransform);
+		s_Meshes->m_Material->SetUniformData("uProjectionView", (void*)glm::value_ptr(s_ViewProjection));
 
 		s_Buffer->vertexData.resize(RendererData::maxVertex);
 		s_Buffer->indicesData.resize(RendererData::maxIndexBuffer);

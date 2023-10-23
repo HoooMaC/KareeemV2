@@ -19,18 +19,26 @@ namespace Karem {
 		m_SpriteSheet = SubTexture2D(m_Texture, { 0,4 }, { 8,8 }, { 5,4 });
 		//------------------------------------------------------------------------
 
-		m_Camera = OrthographicCamera({ 16,9 }, 1.0f);
+		m_FrameBuffer = CreateFrameBuffer(1280, 720);
+
+		m_Camera = OrthographicCamera(5.0f, 16.0f / 9.0f, -5.0f, 5.0f);
 		m_ActiveScene = std::make_shared<Scene>();
 		m_HierarcyPanel = SceneHierarcyPanel(m_ActiveScene);
 
-		Entity cameraEntity = m_ActiveScene->CreateEntity("Camera");
-		auto& cameraComponent = cameraEntity.AddComponent<CameraComponent>(OrthographicCamera({ 16,9 }, 1));
-		auto& camera = cameraComponent.Camera;
-
-		camera.SetPerspectiveCamera(PerspectiveCamera(1.77, 45.0f, 0.01, 100.0f));
-		camera.SetToOrthographic();
+		m_CameraEntity = m_ActiveScene->CreateEntity("Camera");
+		auto& cameraComponent = m_CameraEntity.AddComponent<CameraComponent>(m_Camera);
+		auto& cameraHandler = cameraComponent.Camera;
+		cameraHandler.SetPerspectiveCamera(PerspectiveCamera(16.0f/9.0f, glm::radians(45.0f), 0.001, 1000.0f));
+		cameraHandler.SetTypeToOrthographic();
+		auto& cameraTransform = m_CameraEntity.GetComponent<TransformComponent>().Transform;
+		cameraTransform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f)) 
+			* glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), { 1,0,0 })
+			* glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), { 0,1,0 })
+			* glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), { 0,0,1 });
 
 		Entity SquareEntity = m_ActiveScene->CreateEntity("Square Entity");
+		auto& squareTransform = SquareEntity.GetComponent<TransformComponent>().Transform;
+		squareTransform = glm::scale(glm::mat4(1.0f), { 5.0f, 5.0f, 1.0f });
 		glm::vec4 color = { 0.4f, 0.0f, 1.0f, 1.0f };
 		SquareEntity.AddComponent<ColorComponent>(color);
 	}
@@ -44,12 +52,13 @@ namespace Karem {
 		//ENGINE_DEBUG("{}", ts);
 		//m_Camera.Update(ts);
 
-		m_ActiveScene->m_FrameBuffer->Bind();
+		m_FrameBuffer->Bind();
 
 		// testing the renderer for texture
 		RendererCommand::Clear();
 		RendererCommand::ClearColor("#026773");
 
+#if OLD_RENDERER
 		static glm::vec4 quadPos = glm::vec4(1.0f);
 		static glm::vec2 quadSize = glm::vec2(1.0f);
 		static glm::vec4 quadColor = { 0.1f,0.1f,0.5f,1.0f };
@@ -58,9 +67,6 @@ namespace Karem {
 		//Renderer::BeginScene(m_Camera);
 		//Renderer::SubmitQuad(quatTransform, m_SpriteSheet, 1.0f);
 		//Renderer::EndScene();
-
-
-#if OLD_RENDERER
 		Renderer2D::BeginScene(m_Camera);
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), { -6.0f, 0.0, 0.0f }) * glm::scale(glm::mat4(1.0f), { 10.0f, 10.0f, 1.0f });
 		Renderer2D::SubmitSubTexturedQuad({ -1.0f, -1.0f, 0.0f, 1.0f }, { 3.0f, 3.0f }, m_SpriteSheet, 1.0f);
@@ -80,7 +86,7 @@ namespace Karem {
 
 		m_ActiveScene->Update(ts);
 
-		m_ActiveScene->m_FrameBuffer->UnBind();
+		m_FrameBuffer->UnBind();
 	}
 
 	void KaremEditorLayer::RenderImGUI()
@@ -88,11 +94,11 @@ namespace Karem {
 		imgui::BeginFrame();
 
 		RenderDockspace();
+		RenderViewportPanel();
 
 		ImGui::ShowDemoWindow();
 
 		m_HierarcyPanel.RenderImGUI();
-
 
 		imgui::EndFrame();
 
@@ -258,12 +264,39 @@ namespace Karem {
 		ImGui::PopStyleVar(3);
 	}
 
+	void KaremEditorLayer::RenderViewportPanel()
+	{
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+
+		ImGui::Begin("Viewport");
+		auto& cameraHandler = m_CameraEntity.GetComponent<CameraComponent>();
+
+		ImVec2 currentPannelSize = ImGui::GetContentRegionAvail();
+		const auto& [fbWidth, fbHeight] = m_FrameBuffer->GetFrameBufferSize();
+
+		if (currentPannelSize.x != fbWidth or currentPannelSize.y != fbHeight)
+		{
+			ENGINE_DEBUG("Changing the aspect ratio of the camera {} | {}", currentPannelSize.x, currentPannelSize.y);
+			cameraHandler.Camera.SetAspectRatio(currentPannelSize.x / currentPannelSize.y);
+			m_FrameBuffer->Resize((int32_t)currentPannelSize.x, (int32_t)currentPannelSize.y);
+		}
+
+		ImGui::Image(
+			(void*)m_FrameBuffer->GetTextureColorAttachmentID(),
+			{ (float)currentPannelSize.x, (float)currentPannelSize.y },
+			ImVec2(0, 1),
+			ImVec2(1, 0)
+		);
+
+		ImGui::End();
+
+		ImGui::PopStyleVar(3);
+	}
+
 	bool KaremEditorLayer::WindowResizeAction(WindowResizeEvent& event)
 	{
-		// set camera zoom level
-		float zoom = (float)event.GetWidth() / (float)event.GetHeight();
-		//ENGINE_DEBUG("{}", zoom);
-		//m_Camera.SetZoom(zoom);
 		return true;
 	}
 

@@ -16,7 +16,6 @@ namespace Karem{
 
 	Scene::Scene()
 	{
-		m_FrameBuffer = CreateFrameBuffer(1280, 720);
 	}
 
 	Entity Scene::CreateEntity(const std::string& entityName)
@@ -30,29 +29,20 @@ namespace Karem{
 	void Scene::Update(TimeStep ts)
 	{
 		CameraHandler* activeCamera = nullptr;
-
-		auto view = m_Registry.view<CameraComponent>();
+		glm::mat4 cameraTransform(1.0f);
+		auto view = m_Registry.view<TransformComponent, CameraComponent>();
 		for (const auto entity : view)
 		{
-			auto [component] = view.get(entity);
-			activeCamera = &component.Camera;
+			auto [tc, cc] = view.get(entity);
+			activeCamera = &cc.Camera;
+			cameraTransform = tc.Transform;
 			break;
 		}
 
 		if (activeCamera)
 		{
-			void* camera = activeCamera->GetCamera();
-			if(activeCamera->IsOrthographic())
-			{
-				auto& data = *(OrthographicCamera*)(camera);
-				Renderer::BeginScene(data.GetViewProjectionMatrix());
-			}
-			else
-			{
-				auto& data = *(PerspectiveCamera*)(camera);
-				Renderer::BeginScene(data.GetViewProjectionMatrix());
-			}
-
+			glm::mat4 proj = activeCamera->GetCameraProjectionMatrix();
+			Renderer::BeginScene(proj, cameraTransform);
 
 			auto group = m_Registry.group<TransformComponent>(entt::get<ColorComponent>);
 			for (const auto entity : group)
@@ -66,13 +56,5 @@ namespace Karem{
 
 	void Scene::EventHandler(Event& e)
 	{
-		auto view = m_Registry.view<CameraComponent>();
-		for (const auto entity : view)
-		{
-			auto [component] = view.get(entity);
-			component.Camera.EventHandler(e);
-			break;
-		}
 	}
-
 }

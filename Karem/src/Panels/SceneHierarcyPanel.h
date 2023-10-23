@@ -13,7 +13,6 @@ namespace Karem {
 
 		void RenderImGUI();
 	private:
-		void ViewportPanel();
 		void EntityPropertiesPanel();
 		void EntityListPanel();
 

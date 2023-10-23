@@ -18,7 +18,7 @@ namespace Karem {
 		static void Shutdown();
 
 		/*Material material*/
-		static void BeginScene(const glm::mat4& viewProjection);
+		static void BeginScene(const glm::mat4& projection, const glm::mat4& cameraTransform);
 		static void EndScene();
 
 		static void SubmitQuad(const glm::vec4& pos, const glm::vec2& size, const glm::vec4& color, float texIndex = 0.0f);

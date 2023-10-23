@@ -26,8 +26,6 @@ namespace Karem {
 
 	private:
 		entt::registry m_Registry;
-	public: // this is temporary section
-		std::shared_ptr<FrameBuffer> m_FrameBuffer; // who owns the frame buffer
 	};
 
 }
