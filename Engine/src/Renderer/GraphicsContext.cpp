@@ -3,7 +3,17 @@
 
 #include <GLFW/glfw3.h>
 
-GLFWwindow* Karem::GraphicsContext::GetContextCurrent()
-{
-	return glfwGetCurrentContext();
+namespace Karem {
+
+	GLFWwindow* GraphicsContext::GetContextCurrent()
+	{
+		return glfwGetCurrentContext();
+	}
+
+	void GraphicsContext::SetCurrentContext(GLFWwindow* context)
+	{
+		ENGINE_ASSERT(context, "INVALID CONTEXT");
+		return glfwMakeContextCurrent(context);
+	}
+
 }

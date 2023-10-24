@@ -9,6 +9,7 @@ namespace Karem {
 	public:
 		virtual void Init() = 0;
 		static GLFWwindow* GetContextCurrent();
+		static void SetCurrentContext(GLFWwindow* context);
 	};
 
 }
