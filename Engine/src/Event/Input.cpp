@@ -5,7 +5,7 @@
 
 #include "Renderer/GraphicsContext.h"
 
-//THIS IS STILL SPECIFIC ON WINDOWS
+// TEMPORARY!!! THIS IS STILL SPECIFIC ON WINDOWS
 #include <GLFW/glfw3.h>
 
 namespace Karem {
@@ -14,14 +14,14 @@ namespace Karem {
 	{
 		GLFWwindow* window = GraphicsContext::GetContextCurrent();
 		int state = glfwGetKey(window, keycode);
-		return state == KAREM_PRESS || state == KAREM_REPEAT;
+		return state == (int16_t)Key::Press || state == (int16_t)Key::Repeat;
 	}
 
 	bool Input::IsMouseButtonPressed(int button)
 	{
 		GLFWwindow* window = GraphicsContext::GetContextCurrent();
 		int state = glfwGetMouseButton(window, button);
-		return state == KAREM_PRESS;
+		return state == (uint16_t)Key::Press;
 	}
 
 	float Input::GetMousePositionX()
