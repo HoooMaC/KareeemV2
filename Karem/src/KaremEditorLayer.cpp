@@ -270,16 +270,20 @@ namespace Karem {
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
 		ImGui::Begin("Viewport");
-		auto& cameraHandler = m_CameraEntity.GetComponent<CameraComponent>();
 
 		ImVec2 currentPannelSize = ImGui::GetContentRegionAvail();
-		const auto& [fbWidth, fbHeight] = m_FrameBuffer->GetFrameBufferSize();
 
-		if (currentPannelSize.x != fbWidth or currentPannelSize.y != fbHeight)
+		CameraHandler* mainCamera = m_ActiveScene->GetMainCamera();
+		if (mainCamera)
 		{
-			ENGINE_DEBUG("Changing the aspect ratio of the camera {} | {}", currentPannelSize.x, currentPannelSize.y);
-			cameraHandler.Camera.SetAspectRatio(currentPannelSize.x / currentPannelSize.y);
-			m_FrameBuffer->Resize((int32_t)currentPannelSize.x, (int32_t)currentPannelSize.y);
+			const auto& [fbWidth, fbHeight] = m_FrameBuffer->GetFrameBufferSize();
+
+			if (currentPannelSize.x != fbWidth or currentPannelSize.y != fbHeight)
+			{
+				ENGINE_DEBUG("Changing the aspect ratio of the camera {} | {}", currentPannelSize.x, currentPannelSize.y);
+				mainCamera->SetAspectRatio(currentPannelSize.x / currentPannelSize.y);
+				m_FrameBuffer->Resize((int32_t)currentPannelSize.x, (int32_t)currentPannelSize.y);
+			}
 		}
 
 		ImGui::Image(

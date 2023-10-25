@@ -22,33 +22,33 @@ namespace Karem{
 	{
 		Entity newEntity{ m_Registry.create(), this };
 		newEntity.AddComponent<TagComponent>(entityName.c_str());
-		newEntity.AddComponent<TransformComponent>(glm::mat4(1.0f));
+		newEntity.AddComponent<TransformComponent>();
 		return newEntity;
 	}
 
 	void Scene::Update(TimeStep ts)
 	{
-		CameraHandler* activeCamera = nullptr;
 		glm::mat4 cameraTransform(1.0f);
 		auto view = m_Registry.view<TransformComponent, CameraComponent>();
 		for (const auto entity : view)
 		{
 			auto [tc, cc] = view.get(entity);
-			activeCamera = &cc.Camera;
-			cameraTransform = tc.Transform;
+			m_MainCamera = &cc.Camera;
+			cameraTransform = tc.GetTransformMatrix();
 			break;
 		}
-
-		if (activeCamera)
+		// need to fix
+		// consider with the main camera, if there is no camera
+		if (m_MainCamera)
 		{
-			glm::mat4 proj = activeCamera->GetCameraProjectionMatrix();
+			glm::mat4 proj = m_MainCamera->GetCameraProjectionMatrix();
 			Renderer::BeginScene(proj, cameraTransform);
 
 			auto group = m_Registry.group<TransformComponent>(entt::get<ColorComponent>);
 			for (const auto entity : group)
 			{
 				auto [transform, color] = group.get(entity);
-				Renderer::SubmitQuad(transform.Transform, color.Color);
+				Renderer::SubmitQuad(transform.GetTransformMatrix(), color.Color);
 			}
 			Renderer::EndScene();
 		}
@@ -57,4 +57,10 @@ namespace Karem{
 	void Scene::EventHandler(Event& e)
 	{
 	}
+
+	CameraHandler* Scene::GetMainCamera() const
+	{
+		return m_MainCamera ? m_MainCamera : nullptr;
+	}
+
 }

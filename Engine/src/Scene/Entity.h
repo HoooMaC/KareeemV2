@@ -22,7 +22,7 @@ namespace Karem {
 			bool isHas = IsHasComponent<T>();
 			if (isHas)
 			{
-				ENGINE_WARN("This entity already have the component");
+				ENGINE_WARN("This entity already have the component");	
 				return m_SceneReference->m_Registry.get<T>(m_EntityId);
 			}
 			return m_SceneReference->m_Registry.emplace<T>(m_EntityId, std::forward<Args>(args)...);

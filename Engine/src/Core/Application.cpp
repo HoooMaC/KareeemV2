@@ -7,26 +7,22 @@
 
 #include "Platform/Windows/Platform.h"
 
-#include "imgui.h"
-#include "imgui_setup.h"
+#include <imgui.h>
+#include "external/imgui/imgui_configuration.h"
 
 namespace Karem {
 
     Application::Application(const WindowProperty& props) : m_Window(props)
     {
         m_Window.SetEventCallbacks(std::bind(&Application::EventHandler, this, std::placeholders::_1));
-
-        GLFWwindow* window = Karem::GraphicsContext::GetContextCurrent();
-        imgui::InitializeImGUI(window);
-
+        InitializeImGui();
         Renderer::Initialize();
     }
 
     Application::~Application()
     {
         Renderer::Shutdown();
-
-        imgui::Shutdown();
+        ShutdownImGui();
         Shutdown();
     }
 
@@ -62,7 +58,6 @@ namespace Karem {
         		(*it)->EventHandler(event);
         }
 
-        //ENGINE_TRACE(event);
     }
 
     bool Application::WindowCloseAction(WindowCloseEvent& event)

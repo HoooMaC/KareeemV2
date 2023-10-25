@@ -4,6 +4,7 @@
 #include "Event/Event.h"
 
 #include "Renderer/FrameBuffer.h"
+#include "Renderer/CameraHandler.h"
 
 #include <entt/entt.hpp>
 
@@ -24,7 +25,9 @@ namespace Karem {
 		void Update(TimeStep ts);
 		void EventHandler(Event& e);
 
+		CameraHandler* GetMainCamera() const;
 	private:
+		CameraHandler* m_MainCamera = nullptr;
 		entt::registry m_Registry;
 	};
 

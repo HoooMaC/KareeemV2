@@ -11,21 +11,25 @@ namespace Karem {
 
 	class CameraHandler
 	{
-		enum class Type : uint8_t { Orthographic = 0, Perspective = 1};
+		enum class Type : uint8_t { Orthographic = 0, Perspective = 1 };
 	public:
 		CameraHandler() = default;
 		CameraHandler(const OrthographicCamera& camera)
-			: m_OrthographicCamera(camera) { m_CurrentCammeraType = Type::Orthographic; }
+			: m_OrthographicCamera(camera) {
+			m_CurrentCammeraType = Type::Orthographic;
+		}
 		CameraHandler(const PerspectiveCamera& camera)
-			: m_PerspectiveCamera(camera) { m_CurrentCammeraType = Type::Perspective; }
+			: m_PerspectiveCamera(camera) {
+			m_CurrentCammeraType = Type::Perspective;
+		}
 
-	// field for the camera type functions
+		// field for the camera type functions
 	public:
 		// should consider if any camera hasn't been setted
 		void ChangeCameraType() { m_CurrentCammeraType = static_cast<Type>((uint8_t)m_CurrentCammeraType ^ 1); }
 
-		const char* GetCameraStringType() const 
-		{ 
+		const char* GetCameraStringType() const
+		{
 			switch (m_CurrentCammeraType)
 			{
 				case Type::Orthographic: return "Orthographic";
@@ -36,9 +40,9 @@ namespace Karem {
 			return  "Orthographic";
 		}
 
-		void SetAspectRatio(float aspectRatio) 
-		{ 
-			m_AspectRatio = aspectRatio; 
+		void SetAspectRatio(float aspectRatio)
+		{
+			m_AspectRatio = aspectRatio;
 			m_OrthographicCamera.RecalculateProjectionMatrix(m_AspectRatio);
 			m_PerspectiveCamera.RecalculateProjectionMatrix(m_AspectRatio);
 		}
@@ -101,7 +105,7 @@ namespace Karem {
 			ENGINE_ASSERT(false, "Invalid Camera Type");
 		}
 
-		float GetCameraNear() 
+		float GetCameraNear()
 		{
 			switch (m_CurrentCammeraType)
 			{
@@ -111,8 +115,8 @@ namespace Karem {
 			ENGINE_ASSERT(false, "Invalid Camera Type");
 		}
 
-		void SetCameraNear(float nearClip) 
-		{ 
+		void SetCameraNear(float nearClip)
+		{
 			switch (m_CurrentCammeraType)
 			{
 				case Type::Orthographic: return m_OrthographicCamera.SetOrthographicNear(nearClip, m_AspectRatio);
@@ -145,6 +149,11 @@ namespace Karem {
 	public:
 		float GetOrthographicSize() const { return m_OrthographicCamera.m_Size; }
 		void SetOrthographicSize(float size) { m_OrthographicCamera.m_Size = size; m_OrthographicCamera.RecalculateProjectionMatrix(m_AspectRatio); }
+
+	public:
+		float GetPerspectiveVerticalFOV() const { return m_PerspectiveCamera.GetPerspectiveVerticalFOV(); }
+		void SetPerspectiveVerticalFOV(float fov) { return m_PerspectiveCamera.SetPerspectiveVerticalFOV(fov, m_AspectRatio); }
+
 	private:
 		float m_AspectRatio;
 

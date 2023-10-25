@@ -18,7 +18,7 @@ namespace Karem {
 
 	private:
 		void DrawEntityTreeNode(Entity entity);
-
+		
 	private:
 		Entity m_SelectedEntity;
 		std::shared_ptr<Scene> m_ContextScene;
