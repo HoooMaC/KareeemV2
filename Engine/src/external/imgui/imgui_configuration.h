@@ -3,6 +3,7 @@
 #include <filesystem>
 
 struct ImFont;
+struct ImGuiWindow;
 
 namespace Karem {
 
@@ -12,5 +13,7 @@ namespace Karem {
     void BeginFrame();
     void EndFrame();
     
+    bool IsImGuiContextValid();
+
     ImFont* AddFontToLibrary(std::filesystem::path fontPath, float fontSize);
 }

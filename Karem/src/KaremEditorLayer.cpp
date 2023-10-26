@@ -5,6 +5,7 @@
 #include "Scene/Components.h"
 
 #include <imgui.h>
+#include <imgui_internal.h>
 #include <imgui_setup.h>
 
 static constexpr int32_t appWidth = 1280, appHeight = 720;
@@ -101,7 +102,7 @@ namespace Karem {
 
 		m_HierarcyPanel.RenderImGUI();
 
-		imgui::EndFrame();
+			imgui::EndFrame();
 
 	}
 
@@ -288,6 +289,8 @@ namespace Karem {
 			}
 		}
 
+		//ImGui::Find
+		//ImGui::SetNextWindowViewport()
 		uint64_t textureID = m_FrameBuffer->GetTextureColorAttachmentID();
 		ImGui::Image(
 

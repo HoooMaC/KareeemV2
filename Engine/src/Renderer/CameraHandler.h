@@ -13,16 +13,10 @@ namespace Karem {
 	{
 		enum class Type : uint8_t { Orthographic = 0, Perspective = 1 };
 	public:
-		CameraHandler() = default;
-		CameraHandler(const OrthographicCamera& camera)
-			: m_OrthographicCamera(camera) {
-			m_CurrentCammeraType = Type::Orthographic;
-		}
-		CameraHandler(const PerspectiveCamera& camera)
-			: m_PerspectiveCamera(camera) {
-			m_CurrentCammeraType = Type::Perspective;
-		}
-
+		CameraHandler();
+		CameraHandler(const OrthographicCamera& orthographicCamera);
+		CameraHandler(const PerspectiveCamera& perspectiveCamera);
+		~CameraHandler();
 		// field for the camera type functions
 	public:
 		// should consider if any camera hasn't been setted
@@ -145,7 +139,7 @@ namespace Karem {
 			ENGINE_ASSERT(false, "Invalid Camera Type");
 
 		}
-	// field for orthographic, some code here maybe temporary
+		// field for orthographic, some code here maybe temporary
 	public:
 		float GetOrthographicSize() const { return m_OrthographicCamera.m_Size; }
 		void SetOrthographicSize(float size) { m_OrthographicCamera.m_Size = size; m_OrthographicCamera.RecalculateProjectionMatrix(m_AspectRatio); }

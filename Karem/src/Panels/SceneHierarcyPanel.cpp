@@ -7,7 +7,6 @@
 
 #include <imgui.h>
 #include <imgui_internal.h>
-//#include <imgui_setup.h>
 
 namespace Karem {
 
@@ -17,12 +16,10 @@ namespace Karem {
 		EntityPropertiesPanel();
 	}
 
-
-
 	void SceneHierarcyPanel::EntityPropertiesPanel()
 	{
 		ImGui::Begin("Selected Entity Properties");
-		// the problem is here
+
 		if (m_SelectedEntity)
 			DrawEntityTreeNode(m_SelectedEntity);
 
@@ -36,7 +33,8 @@ namespace Karem {
 			const std::string& tagName = tag.Tag;
 			if (ImGui::Selectable(("Entity : " + tagName).c_str()))
 				m_SelectedEntity = { entity, m_ContextScene.get() };
-			});
+			}
+		);
 
 		if (ImGui::IsMouseDown(0) and ImGui::IsWindowHovered())
 			m_SelectedEntity = {};
@@ -264,7 +262,6 @@ namespace Karem {
 
 		ImGui::Text("Tag");
 
-
 		ImGui::SameLine();
 		if (ImGui::InputText("##InputText", tagBuffer, IM_ARRAYSIZE(tagBuffer), ImGuiInputTextFlags_EnterReturnsTrue))
 			tag = tagBuffer;
@@ -306,12 +303,9 @@ namespace Karem {
 
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4,4 });
 
-
 		ImGui::Separator();
 		bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity, flags, tag.c_str());
 		ImGui::PopStyleVar();
-
-
 
 		if (opened)
 		{
@@ -331,8 +325,8 @@ namespace Karem {
 					DrawFloat3Component("Rotation", rotation);
 					component.Rotation = glm::radians(rotation);
 
-					// consider of the reset value in Scale
-					// maybe the reset value should be following the first value, not any constant value
+					// TODO: consider of the reset value in Scale
+					// TODO: maybe the reset value should be following the first value, not any constant value
 					DrawFloat3Component("Scale", component.Scale, 1.0f);
 
 					ImGui::EndTable();
@@ -383,14 +377,12 @@ namespace Karem {
 						if (ImGui::DragFloat("FOV", &verticalFOV))
 							camera.SetPerspectiveVerticalFOV(verticalFOV);
 					}
-					//ImGui::DragFloat(sizeLabel,);
+
 					float nearClip = camera.GetCameraNear();
 					float farClip = camera.GetCameraFar();
 
 					if (ImGui::DragFloat("Near", &nearClip))
 						camera.SetCameraNear(nearClip);
-
-					//ImGui::SameLine();
 
 					if (ImGui::DragFloat("Far", &farClip))
 						camera.SetCameraFar(farClip);

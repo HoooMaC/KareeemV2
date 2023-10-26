@@ -61,6 +61,12 @@ namespace Karem {
 		GraphicsContext::SetCurrentContext(backup_current_context);
 	}
 
+	bool IsImGuiContextValid()
+	{
+		return ImGui::GetCurrentContext() ? true : false;
+	}
+
+
 	ImFont* AddFontToLibrary(std::filesystem::path fontPath, float fontSize)
 	{
 		ImGuiIO& io = ImGui::GetIO();// (void)io;
