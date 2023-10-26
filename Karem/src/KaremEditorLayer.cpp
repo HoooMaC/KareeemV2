@@ -13,6 +13,10 @@ namespace Karem {
 
 	void KaremEditorLayer::OnAttach()
 	{
+		// @
+		// ! flkdsfajdslkfjlksdjflksaj
+		// ? fkdsjkfsaklfdsjalkj
+		// TODO: FDSFFJKJFDLKJAKSFJFKDSAFDJ
 		//------------------------------------------------------------------------
 		// this is overriding texture in index 3 in texture renderer
 		m_Texture = CreateTexture2D("res/texture/spritesheet/city_tilemap.png", 1);
@@ -20,26 +24,24 @@ namespace Karem {
 		//------------------------------------------------------------------------
 
 		m_FrameBuffer = CreateFrameBuffer(1280, 720);
-
-		m_Camera = OrthographicCamera(5.0f, 16.0f / 9.0f, -5.0f, 5.0f);
 		m_ActiveScene = std::make_shared<Scene>();
 		m_HierarcyPanel = SceneHierarcyPanel(m_ActiveScene);
 
-		m_CameraEntity = m_ActiveScene->CreateEntity("Camera");
-		auto& cameraComponent = m_CameraEntity.AddComponent<CameraComponent>(m_Camera);
-		auto& cameraHandler = cameraComponent.Camera;
-		cameraHandler.SetPerspectiveCamera(PerspectiveCamera(16.0f/9.0f, glm::radians(45.0f), 0.001, 1000.0f));
-		cameraHandler.SetTypeToOrthographic();
-		//cameraTransform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f)) 
-		//	* glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), { 1,0,0 })
-		//	* glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), { 0,1,0 })
-		//	* glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), { 0,0,1 });
+		{
+			Entity cameraEntity = m_ActiveScene->CreateEntity("Camera");
+			auto& cameraComponent = cameraEntity.AddComponent<CameraComponent>(OrthographicCamera(5.0f, 16.0f / 9.0f, -5.0f, 5.0f), true);
+			auto& cameraHandler = cameraComponent.Camera;
+			auto& cameraTransform = cameraEntity.GetComponent<TransformComponent>();
+			cameraTransform.Translation.z += 1.1f;
+			cameraHandler.SetPerspectiveCamera(PerspectiveCamera(16.0f / 9.0f, glm::radians(45.0f), 0.001f, 1000.0f));
+			cameraHandler.SetTypeToOrthographic();
+		}
 
-		Entity SquareEntity = m_ActiveScene->CreateEntity("Square Entity");
-		auto& squareScale = SquareEntity.GetComponent<TransformComponent>().Scale;
-		squareScale = { 5.0f, 5.0f, 1.0f };
-		glm::vec4 color = { 0.4f, 0.0f, 1.0f, 1.0f };
-		SquareEntity.AddComponent<ColorComponent>(color);
+		{
+			Entity SquareEntity = m_ActiveScene->CreateEntity("Square Entity");
+			auto& squareScale = SquareEntity.GetComponent<TransformComponent>().Scale;
+			SquareEntity.AddComponent<ColorComponent>(glm::vec4{ 0.4f, 0.0f, 1.0f, 1.0f });
+		}
 	}
 
 	void KaremEditorLayer::OnDetach()
@@ -286,8 +288,10 @@ namespace Karem {
 			}
 		}
 
+		uint64_t textureID = m_FrameBuffer->GetTextureColorAttachmentID();
 		ImGui::Image(
-			(void*)m_FrameBuffer->GetTextureColorAttachmentID(),
+
+			reinterpret_cast<void*>(textureID),
 			{ (float)currentPannelSize.x, (float)currentPannelSize.y },
 			ImVec2(0, 1),
 			ImVec2(1, 0)

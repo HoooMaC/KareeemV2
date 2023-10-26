@@ -28,20 +28,24 @@ namespace Karem{
 
 	void Scene::Update(TimeStep ts)
 	{
+		CameraHandler* mainCamera = nullptr;
 		glm::mat4 cameraTransform(1.0f);
 		auto view = m_Registry.view<TransformComponent, CameraComponent>();
 		for (const auto entity : view)
 		{
 			auto [tc, cc] = view.get(entity);
-			m_MainCamera = &cc.Camera;
-			cameraTransform = tc.GetTransformMatrix();
-			break;
+			if(cc.mainCamera)
+			{
+				mainCamera = &cc.Camera;
+				cameraTransform = tc.GetTransformMatrix();
+				break;
+			}
 		}
 		// need to fix
 		// consider with the main camera, if there is no camera
-		if (m_MainCamera)
+		if (mainCamera)
 		{
-			glm::mat4 proj = m_MainCamera->GetCameraProjectionMatrix();
+			glm::mat4 proj = mainCamera->GetCameraProjectionMatrix();
 			Renderer::BeginScene(proj, cameraTransform);
 
 			auto group = m_Registry.group<TransformComponent>(entt::get<ColorComponent>);
@@ -58,9 +62,24 @@ namespace Karem{
 	{
 	}
 
-	CameraHandler* Scene::GetMainCamera() const
+	CameraHandler* Scene::GetMainCamera()
 	{
-		return m_MainCamera ? m_MainCamera : nullptr;
+		CameraHandler* mainCamera = nullptr;
+		const auto& view = m_Registry.view<TransformComponent, CameraComponent>();
+
+		for (const auto entity : view)
+		{
+			auto [tc, cc] = view.get(entity);
+			auto& camera = cc.Camera;
+
+			if (cc.mainCamera)  // Anda mungkin perlu memiliki metode untuk memeriksa apakah ini adalah kamera utama
+			{
+				mainCamera = &camera;
+				break;  // Hentikan loop saat menemukan kamera utama
+			}
+		}
+
+		return mainCamera;
 	}
 
 }

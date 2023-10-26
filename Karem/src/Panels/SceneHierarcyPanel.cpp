@@ -246,6 +246,8 @@ namespace Karem {
 		static constexpr ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen
 			| ImGuiTreeNodeFlags_Framed
 			| ImGuiTreeNodeFlags_FramePadding
+			| ImGuiTreeNodeFlags_OpenOnArrow
+			| ImGuiTreeNodeFlags_OpenOnDoubleClick
 			| ImGuiTreeNodeFlags_AllowItemOverlap
 			| ImGuiTreeNodeFlags_SpanAvailWidth;
 
@@ -378,19 +380,19 @@ namespace Karem {
 					else
 					{
 						float verticalFOV = camera.GetPerspectiveVerticalFOV();
-						if (ImGui::DragFloat("Ortho size", &verticalFOV))
+						if (ImGui::DragFloat("FOV", &verticalFOV))
 							camera.SetPerspectiveVerticalFOV(verticalFOV);
 					}
 					//ImGui::DragFloat(sizeLabel,);
 					float nearClip = camera.GetCameraNear();
 					float farClip = camera.GetCameraFar();
 
-					if (ImGui::DragFloat("Near Clip", &nearClip))
+					if (ImGui::DragFloat("Near", &nearClip))
 						camera.SetCameraNear(nearClip);
 
 					//ImGui::SameLine();
 
-					if (ImGui::DragFloat("Far Clip", &farClip))
+					if (ImGui::DragFloat("Far", &farClip))
 						camera.SetCameraFar(farClip);
 				}
 			);

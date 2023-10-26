@@ -58,7 +58,7 @@ namespace Karem {
 		bool IsOrthographic() const { return m_CurrentCammeraType == Type::Orthographic; }
 		bool IsPerspective() const { return m_CurrentCammeraType == Type::Perspective; }
 
-		// TEMPORARY 
+		// TEMPORARY  FDNSFJAK
 		const glm::mat4& GetCameraProjectionMatrix() const
 		{
 			switch (m_CurrentCammeraType)
@@ -155,6 +155,9 @@ namespace Karem {
 		void SetPerspectiveVerticalFOV(float fov) { return m_PerspectiveCamera.SetPerspectiveVerticalFOV(fov, m_AspectRatio); }
 
 	private:
+		// TODO : the default aspect ratio should be set 
+		// according to the viewport size
+		//float m_AspectRatio = ImGui::GetWindowSize().x / ImGui::GetWindowSize().y; // what have i done???
 		float m_AspectRatio;
 
 		Type m_CurrentCammeraType;

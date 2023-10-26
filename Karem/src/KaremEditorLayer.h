@@ -31,10 +31,6 @@ namespace Karem {
 		bool WindowResizeAction(WindowResizeEvent& event);
 
 	private:
-		Entity m_CameraEntity;
-
-	private:
-		OrthographicCamera m_Camera;
 		SceneHierarcyPanel m_HierarcyPanel;
 
 		std::shared_ptr<FrameBuffer> m_FrameBuffer; // who owns the frame buffer

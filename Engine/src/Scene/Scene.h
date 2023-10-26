@@ -25,9 +25,8 @@ namespace Karem {
 		void Update(TimeStep ts);
 		void EventHandler(Event& e);
 
-		CameraHandler* GetMainCamera() const;
+		CameraHandler* GetMainCamera();
 	private:
-		CameraHandler* m_MainCamera = nullptr;
 		entt::registry m_Registry;
 	};
 
