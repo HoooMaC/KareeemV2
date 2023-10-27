@@ -58,7 +58,7 @@ namespace Karem {
 
 		// testing the renderer for texture
 		RendererCommand::Clear();
-		RendererCommand::ClearColor("#026773");
+		RendererCommand::ClearColor("#1E1E1E");
 
 #if OLD_RENDERER
 		static glm::vec4 quadPos = glm::vec4(1.0f);
@@ -102,8 +102,7 @@ namespace Karem {
 
 		m_HierarcyPanel.RenderImGUI();
 
-			imgui::EndFrame();
-
+		imgui::EndFrame();
 	}
 
 	void KaremEditorLayer::EventHandler(Event& event)

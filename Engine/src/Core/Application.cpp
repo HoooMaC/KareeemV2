@@ -16,7 +16,7 @@ namespace Karem {
     {
         m_Window.SetEventCallbacks(std::bind(&Application::EventHandler, this, std::placeholders::_1));
         InitializeImGui();
-        SetupKaremStyleDefault();
+        
         Renderer::Initialize();
     }
 

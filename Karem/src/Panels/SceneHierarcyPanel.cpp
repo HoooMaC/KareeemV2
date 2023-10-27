@@ -86,9 +86,9 @@ namespace Karem {
 	{
 		auto* g = ImGui::GetCurrentContext();
 		ImGuiTable* table = g->CurrentTable;
+		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0);
 		if (table)
 		{
-
 			ImGui::PushID(label);
 
 			ImGui::TableNextRow();
@@ -202,6 +202,7 @@ namespace Karem {
 			ImGui::PopID();
 
 		}
+		ImGui::PopStyleVar();
 	}
 
 	template<typename T, typename UIFunction>
@@ -224,8 +225,6 @@ namespace Karem {
 			const float lineHeight = fontSize + style.FramePadding.y * 2.0f;
 			ImVec2 buttonSize = { lineHeight, lineHeight };
 
-
-			ImGui::Separator();
 			bool componentOpened = ImGui::TreeNodeEx((void*)typeid(T).hash_code(), flags, label.data());
 			ImGui::PopStyleVar();
 
@@ -235,7 +234,6 @@ namespace Karem {
 			ImGui::SameLine(contentRegionAvail.x + lineHeight / 2.0f);
 			if (ImGui::Button("-", buttonSize))
 				ImGui::OpenPopup(popupLabel.c_str());
-			ImGui::Separator();
 
 			bool isComponentDeleted = false;
 			if (ImGui::BeginPopup(popupLabel.c_str(), ImGuiWindowFlags_NoMove))
@@ -279,15 +277,12 @@ namespace Karem {
 		const float lineHeight = fontSize + style.FramePadding.y * 2.0f;
 		const ImVec2 buttonSize = { lineHeight, lineHeight };
 
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4,4 });
+
 		std::string& tag = entity.GetComponent<TagComponent>().Tag;
-		char tagBuffer[256];
-		strcpy_s(tagBuffer, sizeof(tagBuffer), tag.c_str());
-
-		ImGui::Text("Tag");
-
-		ImGui::SameLine();
-		if (ImGui::InputText("##InputText", tagBuffer, IM_ARRAYSIZE(tagBuffer), ImGuiInputTextFlags_EnterReturnsTrue))
-			tag = tagBuffer;
+		ImGui::Separator();
+		bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity, flags, tag.c_str());
+		ImGui::PopStyleVar();
 
 		ImGui::SameLine(contentRegionAvail.x - buttonSize.x * 0.5f);
 		if (ImGui::Button("+", buttonSize))
@@ -324,14 +319,19 @@ namespace Karem {
 			ImGui::EndPopup();
 		}
 
-		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4,4 });
-
-		ImGui::Separator();
-		bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity, flags, tag.c_str());
-		ImGui::PopStyleVar();
-
 		if (opened)
 		{
+			{
+				char tagBuffer[256];
+				strcpy_s(tagBuffer, sizeof(tagBuffer), tag.c_str());
+
+				ImGui::Text("Tag");
+
+				ImGui::SameLine();
+				if (ImGui::InputText("##InputText", tagBuffer, IM_ARRAYSIZE(tagBuffer), ImGuiInputTextFlags_EnterReturnsTrue))
+					tag = tagBuffer;
+			}
+
 			DrawComponent<TransformComponent>("Transform", m_SelectedEntity, [](TransformComponent& component)
 				{
 					static constexpr ImGuiTableFlags transfromTableFlags = ImGuiTableFlags_BordersInnerV

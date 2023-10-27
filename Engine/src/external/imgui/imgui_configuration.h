@@ -13,6 +13,7 @@ namespace Karem {
     void BeginFrame();
     void EndFrame();
     void SetupKaremStyleDefault();
+    void KaremColorStyleDefault();
 
     bool IsImGuiContextValid();
 
