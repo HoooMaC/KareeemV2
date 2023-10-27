@@ -234,6 +234,7 @@ namespace Karem {
 
 	void KaremEditorLayer::RenderDockspace()
 	{
+#if OLD_VIEWPORT
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
@@ -244,16 +245,13 @@ namespace Karem {
 		ImGui::SetNextWindowSize(viewport->WorkSize);
 		ImGui::SetNextWindowViewport(viewport->ID);
 
-		ImGuiWindowFlags docks_window_flags = 0;
-		docks_window_flags |= ImGuiWindowFlags_NoTitleBar;
-		docks_window_flags |= ImGuiWindowFlags_NoDocking;
-		docks_window_flags |= ImGuiWindowFlags_NoCollapse;
-		docks_window_flags |= ImGuiWindowFlags_NoCollapse;
-		docks_window_flags |= ImGuiWindowFlags_NoResize;
-		docks_window_flags |= ImGuiWindowFlags_NoMove;
-		docks_window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus;
-		docks_window_flags |= ImGuiWindowFlags_NoNavFocus;
-		docks_window_flags |= ImGuiWindowFlags_MenuBar;
+		ImGuiWindowFlags docks_window_flags = ImGuiWindowFlags_NoCollapse
+			| ImGuiWindowFlags_AlwaysAutoResize
+			| ImGuiWindowFlags_NoBringToFrontOnFocus
+			| ImGuiWindowFlags_NoNavFocus
+			| ImGuiWindowFlags_MenuBar;
+			//| ImGuiWindowFlags_NoResize
+			//| ImGuiWindowFlags_NoMove
 
 		ImGui::Begin("DockSpaceViewport", NULL, docks_window_flags);
 
@@ -264,6 +262,32 @@ namespace Karem {
 		ImGui::End();
 
 		ImGui::PopStyleVar(3);
+#endif
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+
+		ImGuiViewport* viewport = ImGui::GetMainViewport();
+		ImGui::SetNextWindowPos(viewport->Pos);
+		ImGui::SetNextWindowSize(viewport->WorkSize);
+		ImGui::SetNextWindowViewport(viewport->ID);
+
+		ImGuiWindowFlags docks_window_flags = ImGuiWindowFlags_NoCollapse
+			| ImGuiWindowFlags_NoTitleBar
+			| ImGuiWindowFlags_MenuBar;
+
+		ImGui::Begin("DockSpaceViewport", NULL, docks_window_flags);
+
+		MenuBar();
+
+		ImGuiID dockspace_id = ImGui::GetID("DockSpace");
+		ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f));
+
+		ImGui::End();
+
+		ImGui::PopStyleVar(3);
+
+
 	}
 
 	void KaremEditorLayer::RenderViewportPanel()
@@ -283,17 +307,13 @@ namespace Karem {
 
 			if (currentPannelSize.x != fbWidth or currentPannelSize.y != fbHeight)
 			{
-				ENGINE_DEBUG("Changing the aspect ratio of the camera {} | {}", currentPannelSize.x, currentPannelSize.y);
 				mainCamera->SetAspectRatio(currentPannelSize.x / currentPannelSize.y);
 				m_FrameBuffer->Resize((int32_t)currentPannelSize.x, (int32_t)currentPannelSize.y);
 			}
 		}
 
-		//ImGui::Find
-		//ImGui::SetNextWindowViewport()
 		uint64_t textureID = m_FrameBuffer->GetTextureColorAttachmentID();
 		ImGui::Image(
-
 			reinterpret_cast<void*>(textureID),
 			{ (float)currentPannelSize.x, (float)currentPannelSize.y },
 			ImVec2(0, 1),

@@ -21,6 +21,7 @@ namespace Karem {
 		~Scene() = default;
 
 		Entity CreateEntity(const std::string& entityName = "Undefined");
+		void DestroyEntity(entt::entity entity);
 
 		void Update(TimeStep ts);
 		void EventHandler(Event& e);

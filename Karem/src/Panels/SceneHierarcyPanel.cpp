@@ -29,17 +29,41 @@ namespace Karem {
 	void SceneHierarcyPanel::EntityListPanel()
 	{
 		ImGui::Begin("Entity List");
-		m_ContextScene->m_Registry.view<TagComponent>().each([&](entt::entity entity, TagComponent& tag) {
-			const std::string& tagName = tag.Tag;
-			if (ImGui::Selectable(("Entity : " + tagName).c_str()))
-				m_SelectedEntity = { entity, m_ContextScene.get() };
+		m_ContextScene->m_Registry.view<TagComponent>().each([&](entt::entity entity, TagComponent& tag)
+			{
+				const std::string& tagName = tag.Tag;
+				std::string popupLabel = "Destroy Entity : ";
+				popupLabel.append(tagName);
+				const float spacing = ImGui::GetStyle().ItemInnerSpacing.x;
+
+				if (ImGui::Selectable(("Entity : " + tagName).c_str()))
+					m_SelectedEntity = { entity, m_ContextScene.get() };
+
+				ImGui::AlignTextToFramePadding();
+				ImGui::SameLine(0.0f, spacing);
+				ImGui::Button("+");
+
+				if (ImGui::IsMouseDown(1) and ImGui::IsItemHovered())
+				{
+					ImGui::OpenPopup(popupLabel.c_str());
+				}
+				
+				if (ImGui::BeginPopup(popupLabel.c_str(), ImGuiWindowFlags_NoMove | ImGuiPopupFlags_NoOpenOverItems | ImGuiPopupFlags_NoOpenOverExistingPopup))
+				{
+					if (ImGui::MenuItem(popupLabel.c_str()))
+					{
+						m_ContextScene->DestroyEntity(entity);
+						ImGui::CloseCurrentPopup();
+					}
+					ImGui::EndPopup();
+				}
 			}
 		);
 
 		if (ImGui::IsMouseDown(0) and ImGui::IsWindowHovered())
 			m_SelectedEntity = {};
 
-		if (ImGui::BeginPopupContextWindow("Create new entity", ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems))
+		if (ImGui::BeginPopupContextWindow("Create new entity", ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems | ImGuiPopupFlags_NoOpenOverExistingPopup))
 		{
 			if (ImGui::MenuItem("Create Empty Entity"))
 				m_ContextScene->CreateEntity("Empty Entity");
@@ -133,7 +157,6 @@ namespace Karem {
 			ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 0,0 });
 
-			ImGui::GetFontSize();
 			float lineHeight = ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.y * 2;
 			const ImVec2 buttonSize = { lineHeight + 3.0f, lineHeight };
 
@@ -184,9 +207,9 @@ namespace Karem {
 	template<typename T, typename UIFunction>
 	static void DrawComponent(std::string_view label, Entity entity, UIFunction uiFunction)
 	{
-		static constexpr ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen 
-			| ImGuiTreeNodeFlags_Framed 
-			| ImGuiTreeNodeFlags_FramePadding 
+		static constexpr ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen
+			| ImGuiTreeNodeFlags_Framed
+			| ImGuiTreeNodeFlags_FramePadding
 			| ImGuiTreeNodeFlags_AllowItemOverlap
 			| ImGuiTreeNodeFlags_SpanAvailWidth;
 
@@ -210,7 +233,7 @@ namespace Karem {
 			popupLabel.insert(6, label.data());
 
 			ImGui::SameLine(contentRegionAvail.x + lineHeight / 2.0f);
-			if (ImGui::Button("-", buttonSize ))
+			if (ImGui::Button("-", buttonSize))
 				ImGui::OpenPopup(popupLabel.c_str());
 			ImGui::Separator();
 
@@ -309,12 +332,12 @@ namespace Karem {
 
 		if (opened)
 		{
-			DrawComponent<TransformComponent>("Transform", m_SelectedEntity, [](TransformComponent& component) 
+			DrawComponent<TransformComponent>("Transform", m_SelectedEntity, [](TransformComponent& component)
 				{
-					static constexpr ImGuiTableFlags transfromTableFlags = ImGuiTableFlags_BordersInnerV 
-						| ImGuiTableFlags_SizingFixedFit 
-						| ImGuiTableFlags_SizingFixedSame 
-						| ImGuiTableFlags_SizingStretchProp 
+					static constexpr ImGuiTableFlags transfromTableFlags = ImGuiTableFlags_BordersInnerV
+						| ImGuiTableFlags_SizingFixedFit
+						| ImGuiTableFlags_SizingFixedSame
+						| ImGuiTableFlags_SizingStretchProp
 						| ImGuiTableFlags_NoPadOuterX;
 
 					ImGui::BeginTable("Transform Table", 2, transfromTableFlags);

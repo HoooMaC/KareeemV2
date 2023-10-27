@@ -12,7 +12,8 @@ namespace Karem {
 
     void BeginFrame();
     void EndFrame();
-    
+    void SetupKaremStyleDefault();
+
     bool IsImGuiContextValid();
 
     ImFont* AddFontToLibrary(std::filesystem::path fontPath, float fontSize);

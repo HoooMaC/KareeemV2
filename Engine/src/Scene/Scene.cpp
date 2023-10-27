@@ -26,6 +26,11 @@ namespace Karem{
 		return newEntity;
 	}
 
+	void Scene::DestroyEntity(entt::entity entity)
+	{
+		m_Registry.destroy(entity);
+	}
+
 	void Scene::Update(TimeStep ts)
 	{
 		CameraHandler* mainCamera = nullptr;
