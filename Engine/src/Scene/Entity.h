@@ -48,6 +48,7 @@ namespace Karem {
 			return m_SceneReference->m_Registry.all_of<Args...>(m_EntityId);
 		}
 	
+		operator entt::entity() { return m_EntityId; }
 		operator uint32_t() { return (uint32_t)m_EntityId; }
 		operator bool() { return m_EntityId != entt::null; }
 		operator bool() const { return m_EntityId != entt::null; }
@@ -55,7 +56,7 @@ namespace Karem {
 
 		bool operator==(const Entity& other) const { return m_EntityId == other.m_EntityId and m_SceneReference == other.m_SceneReference; }
 		bool operator!= (const Entity& other) const { return !operator==(other); }
-
+		
 	private:
 		entt::entity m_EntityId{ entt::null };
 		Scene* m_SceneReference = nullptr;

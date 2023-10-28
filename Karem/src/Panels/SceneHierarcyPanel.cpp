@@ -31,32 +31,60 @@ namespace Karem {
 		ImGui::Begin("Entity List");
 		m_ContextScene->m_Registry.view<TagComponent>().each([&](entt::entity entity, TagComponent& tag)
 			{
-				const std::string& tagName = tag.Tag;
-				std::string popupLabel = "Destroy Entity : ";
-				popupLabel.append(tagName);
-				const float spacing = ImGui::GetStyle().ItemInnerSpacing.x;
+				static constexpr ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_Framed
+					| ImGuiTreeNodeFlags_FramePadding
+					//| ImGuiTreeNodeFlags_NoTreePushOnOpen
+					| ImGuiTreeNodeFlags_AllowItemOverlap
+					| ImGuiTreeNodeFlags_SpanAvailWidth;
 
-				if (ImGui::Selectable(("Entity : " + tagName).c_str()))
-					m_SelectedEntity = { entity, m_ContextScene.get() };
+				const auto contentRegionAvail = ImGui::GetContentRegionAvail();
 
-				ImGui::AlignTextToFramePadding();
-				ImGui::SameLine(0.0f, spacing);
-				ImGui::Button("+");
+				const auto fontSize = ImGui::GetFontSize();
+				const auto& style = ImGui::GetStyle();
+				const float lineHeight = fontSize + style.FramePadding.y * 2.0f;
+				const ImVec2 buttonSize = { lineHeight, lineHeight };
+
+				ImGui::Separator();
+				bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity, flags, tag.Tag.c_str());
+				//opened &= (bool)m_SelectedEntity;
+
+				ImGui::SameLine(contentRegionAvail.x - buttonSize.x * 0.5f);
+
+				const std::string popupLabel = "Delete Entity" + tag.Tag;
+
+				if (ImGui::Button("+", buttonSize))
+					ImGui::OpenPopup(popupLabel.c_str());
 
 				if (ImGui::IsMouseDown(1) and ImGui::IsItemHovered())
 				{
 					ImGui::OpenPopup(popupLabel.c_str());
 				}
 				
+				bool isEntityDestroyed = false;
 				if (ImGui::BeginPopup(popupLabel.c_str(), ImGuiWindowFlags_NoMove | ImGuiPopupFlags_NoOpenOverItems | ImGuiPopupFlags_NoOpenOverExistingPopup))
 				{
-					if (ImGui::MenuItem(popupLabel.c_str()))
+					if (ImGui::MenuItem("Remove Entity"))
 					{
-						m_ContextScene->DestroyEntity(entity);
+						isEntityDestroyed = true;
 						ImGui::CloseCurrentPopup();
 					}
 					ImGui::EndPopup();
 				}
+
+				//ImGui::TreePushOverrideID(id);
+				if (opened)
+				{
+					m_SelectedEntity = { entity, m_ContextScene.get() };
+					ImGui::TreePop();
+				}
+
+				if (isEntityDestroyed)
+				{
+					m_ContextScene->DestroyEntity(entity);
+					if (m_SelectedEntity == entity)
+						m_SelectedEntity = {};
+				}
+
 			}
 		);
 
@@ -69,14 +97,6 @@ namespace Karem {
 				m_ContextScene->CreateEntity("Empty Entity");
 
 			ImGui::EndPopup();
-		}
-
-		ImGui::Separator();
-
-		if (m_SelectedEntity)
-		{
-			const char* label = m_SelectedEntity.GetComponent<TagComponent>().Tag.c_str();
-			ImGui::Text("Selected : %s", label);
 		}
 
 		ImGui::End();
@@ -105,9 +125,9 @@ namespace Karem {
 			float lineHeight = ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.y * 2;
 			const ImVec2 buttonSize = { lineHeight + 3.0f, lineHeight };
 
-			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.8f, 0.1f, 0.15f, 1.0f });
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.9f, 0.2f, 0.2f, 1.0f });
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.8f, 0.1f, 0.15f, 1.0f });
+			ImGui::PushStyleColor(ImGuiCol_Button, HexToVec4<ImVec4>("#CC1A26"));
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, HexToVec4<ImVec4>("#FF0000"));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, HexToVec4<ImVec4>("#CC1A26"));
 			if (ImGui::Button("X", buttonSize))
 				values.x = resetValue;
 			ImGui::PopStyleColor(3);
@@ -117,9 +137,9 @@ namespace Karem {
 			ImGui::PopItemWidth();
 			ImGui::SameLine();
 
-			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.2f, 0.7f, 0.2f, 1.0f });
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.3f, 0.8f, 0.3f, 1.0f });
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.2f, 0.7f, 0.2f, 1.0f });
+			ImGui::PushStyleColor(ImGuiCol_Button, HexToVec4<ImVec4>("#0F812B"));
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, HexToVec4<ImVec4>("#33B333"));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, HexToVec4<ImVec4>("#0F812B"));
 			if (ImGui::Button("Y", buttonSize))
 				values.y = resetValue;
 			ImGui::PopStyleColor(3);
@@ -129,9 +149,9 @@ namespace Karem {
 			ImGui::PopItemWidth();
 			ImGui::SameLine();
 
-			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.1f, 0.25f, 0.8f, 1.0f });
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.2f, 0.35f, 0.9f, 1.0f });
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.1f, 0.25f, 0.8f, 1.0f });
+			ImGui::PushStyleColor(ImGuiCol_Button, HexToVec4<ImVec4>("#886C0D"));
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, HexToVec4<ImVec4>("#DAAE19"));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, HexToVec4<ImVec4>("#886C0D"));
 			if (ImGui::Button("Z", buttonSize))
 				values.z = resetValue;
 			ImGui::PopStyleColor(3);
@@ -206,7 +226,7 @@ namespace Karem {
 	}
 
 	template<typename T, typename UIFunction>
-	static void DrawComponent(std::string_view label, Entity entity, UIFunction uiFunction)
+	static void DrawComponent(std::string_view label, Entity entity, UIFunction uiFunction, bool isRemovable = true)
 	{
 		static constexpr ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen
 			| ImGuiTreeNodeFlags_Framed
@@ -231,9 +251,12 @@ namespace Karem {
 			std::string popupLabel = "RemoveComponent";
 			popupLabel.insert(6, label.data());
 
-			ImGui::SameLine(contentRegionAvail.x + lineHeight / 2.0f);
-			if (ImGui::Button("-", buttonSize))
-				ImGui::OpenPopup(popupLabel.c_str());
+			if(isRemovable)
+			{
+				ImGui::SameLine(contentRegionAvail.x + lineHeight / 2.0f);
+				if (ImGui::Button("-", buttonSize))
+					ImGui::OpenPopup(popupLabel.c_str());
+			}
 
 			bool isComponentDeleted = false;
 			if (ImGui::BeginPopup(popupLabel.c_str(), ImGuiWindowFlags_NoMove))
@@ -278,8 +301,8 @@ namespace Karem {
 		const ImVec2 buttonSize = { lineHeight, lineHeight };
 
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4,4 });
+		std::string& tag = m_SelectedEntity.GetComponent<TagComponent>().Tag;
 
-		std::string& tag = entity.GetComponent<TagComponent>().Tag;
 		ImGui::Separator();
 		bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity, flags, tag.c_str());
 		ImGui::PopStyleVar();
@@ -321,16 +344,20 @@ namespace Karem {
 
 		if (opened)
 		{
-			{
-				char tagBuffer[256];
-				strcpy_s(tagBuffer, sizeof(tagBuffer), tag.c_str());
 
-				ImGui::Text("Tag");
+			DrawComponent<TagComponent>("Tag", m_SelectedEntity, [&](TagComponent& component)
+				{
+					const char* tc = m_SelectedEntity.GetComponent<TagComponent>().Tag.c_str();
 
-				ImGui::SameLine();
-				if (ImGui::InputText("##InputText", tagBuffer, IM_ARRAYSIZE(tagBuffer), ImGuiInputTextFlags_EnterReturnsTrue))
-					tag = tagBuffer;
-			}
+					char tagBuffer[256];
+					strcpy_s(tagBuffer, sizeof(tagBuffer), tc);
+					ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0);
+					auto regionAvail = ImGui::GetContentRegionAvail();
+					ImGui::SetNextItemWidth(regionAvail.x);
+					if (ImGui::InputText("##InputText", tagBuffer, IM_ARRAYSIZE(tagBuffer), ImGuiInputTextFlags_EnterReturnsTrue))
+						tc = tagBuffer;
+					ImGui::PopStyleVar();
+				}, false ); // TODO : The argument false here is very weird. Think to move into the component itself
 
 			DrawComponent<TransformComponent>("Transform", m_SelectedEntity, [](TransformComponent& component)
 				{
@@ -358,20 +385,35 @@ namespace Karem {
 
 			DrawComponent<ColorComponent>("Color", m_SelectedEntity, [](ColorComponent& component)
 				{
-					ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
+					ImGui::ColorEdit4("##Color", glm::value_ptr(component.Color));
 				}
 			);
 
 			DrawComponent<CameraComponent>("Camera", m_SelectedEntity, [](CameraComponent& component)
 				{
-					CameraHandler& camera = component.Camera;
-					if (ImGui::Button("Change Camera Projection"))
-						camera.ChangeCameraType();
+					static constexpr ImGuiTableFlags cameraTableFlags = ImGuiTableFlags_BordersInnerV
+						| ImGuiTableFlags_SizingFixedFit
+						| ImGuiTableFlags_SizingFixedSame
+						| ImGuiTableFlags_SizingStretchProp
+						| ImGuiTableFlags_NoPadOuterX;
 
-					if (ImGui::BeginCombo("Projection", camera.GetCameraStringType()))
+					CameraHandler& camera = component.Camera;
+					ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0);
+					ImGui::BeginTable("Camera Table", 2, cameraTableFlags);
+
+					ImGui::TableNextRow();
+
+					ImGui::TableSetColumnIndex(0);
+					ImGui::Text("Projection");
+					ImGui::TableSetColumnIndex(1);
+					ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 0,0 });
+
+					auto regionAvail = ImGui::GetContentRegionAvail();
+					ImGui::SetNextItemWidth(regionAvail.x);
+					if (ImGui::BeginCombo("##Projection", camera.GetCameraStringType()))
 					{
 						bool isOrthographicSelected = "Orthographic" == camera.GetCameraStringType() ? true : false;
-						bool isPerspectiveSelected = "Perspective" == camera.GetCameraStringType() ? true : false;
+						bool isPerspectiveSelected = isOrthographicSelected ^ 1;
 						if (ImGui::Selectable("Orthographic", isOrthographicSelected))
 						{
 							camera.SetTypeToOrthographic();
@@ -384,31 +426,56 @@ namespace Karem {
 						ImGui::EndCombo();
 					}
 
-					const char* sizeLabel = "size";
-					const char* nearLabel = "Near";
-					const char* farLabel = "far";
+					ImGui::TableNextRow();
+
+					ImGui::TableSetColumnIndex(0);
+					ImGui::Text("Size");
+					ImGui::TableSetColumnIndex(1);
 
 					if (camera.IsOrthographic())
 					{
 						float orthoSize = camera.GetOrthographicSize();
-						if (ImGui::DragFloat("Ortho size", &orthoSize))
+						regionAvail = ImGui::GetContentRegionAvail();
+						ImGui::SetNextItemWidth(regionAvail.x);
+						if (ImGui::DragFloat("##Ortho size", &orthoSize))
 							camera.SetOrthographicSize(orthoSize);
 					}
 					else
 					{
 						float verticalFOV = camera.GetPerspectiveVerticalFOV();
-						if (ImGui::DragFloat("FOV", &verticalFOV))
+						regionAvail = ImGui::GetContentRegionAvail();
+						ImGui::SetNextItemWidth(regionAvail.x);
+						if (ImGui::DragFloat("##FOV", &verticalFOV))
 							camera.SetPerspectiveVerticalFOV(verticalFOV);
 					}
 
-					float nearClip = camera.GetCameraNear();
-					float farClip = camera.GetCameraFar();
+					ImGui::TableNextRow();
 
-					if (ImGui::DragFloat("Near", &nearClip))
+					ImGui::TableSetColumnIndex(0);
+					ImGui::Text("Near");
+					ImGui::TableSetColumnIndex(1);
+					
+					float nearClip = camera.GetCameraNear();
+					regionAvail = ImGui::GetContentRegionAvail();
+					ImGui::SetNextItemWidth(regionAvail.x);
+					if (ImGui::DragFloat("##Near", &nearClip))
 						camera.SetCameraNear(nearClip);
 
-					if (ImGui::DragFloat("Far", &farClip))
+					ImGui::TableNextRow();
+
+					ImGui::TableSetColumnIndex(0);
+					ImGui::Text("Far");
+					ImGui::TableSetColumnIndex(1);
+					
+
+					float farClip = camera.GetCameraFar();
+					regionAvail = ImGui::GetContentRegionAvail();
+					ImGui::SetNextItemWidth(regionAvail.x);
+					if (ImGui::DragFloat("##Far", &farClip))
 						camera.SetCameraFar(farClip);
+
+					ImGui::PopStyleVar(2);
+					ImGui::EndTable();
 				}
 			);
 

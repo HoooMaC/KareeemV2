@@ -182,10 +182,10 @@ namespace Karem {
 		colors[ImGuiCol_ButtonActive]		= HexToVec4<ImVec4>("#3364EB");
 		colors[ImGuiCol_Header]				= HexToVec4<ImVec4>("#3364EB");
 		colors[ImGuiCol_HeaderHovered]		= HexToVec4<ImVec4>("#3364EB");
-		colors[ImGuiCol_HeaderActive]		= HexToVec4<ImVec4>("#3364EB") ;
-		colors[ImGuiCol_Separator]			= HexToVec4<ImVec4>("#03164B ");
-		colors[ImGuiCol_SeparatorHovered]	= HexToVec4<ImVec4>("#03164B ");
-		colors[ImGuiCol_SeparatorActive]	= HexToVec4<ImVec4>("#03164B ");
+		colors[ImGuiCol_HeaderActive]		= HexToVec4<ImVec4>("#3364EB");
+		colors[ImGuiCol_Separator]			= HexToVec4<ImVec4>("#03164B");
+		colors[ImGuiCol_SeparatorHovered]	= HexToVec4<ImVec4>("#03164B");
+		colors[ImGuiCol_SeparatorActive]	= HexToVec4<ImVec4>("#03164B");
 		colors[ImGuiCol_ResizeGrip]			= ImVec4(0.26f, 0.59f, 0.98f, 0.20f);
 		colors[ImGuiCol_ResizeGripHovered]	= ImVec4(0.26f, 0.59f, 0.98f, 0.67f);
 		colors[ImGuiCol_ResizeGripActive]	= ImVec4(0.26f, 0.59f, 0.98f, 0.95f);
