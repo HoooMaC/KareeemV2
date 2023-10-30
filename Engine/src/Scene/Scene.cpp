@@ -67,24 +67,17 @@ namespace Karem{
 	{
 	}
 
-	CameraHandler* Scene::GetMainCamera()
+	void Scene::OnViewportResize(float width, float height)
 	{
-		CameraHandler* mainCamera = nullptr;
-		const auto& view = m_Registry.view<TransformComponent, CameraComponent>();
+		const auto& view = m_Registry.view<CameraComponent>();
 
 		for (const auto entity : view)
 		{
-			auto [tc, cc] = view.get(entity);
-			auto& camera = cc.Camera;
-
-			if (cc.mainCamera)  // Anda mungkin perlu memiliki metode untuk memeriksa apakah ini adalah kamera utama
-			{
-				mainCamera = &camera;
-				break;  // Hentikan loop saat menemukan kamera utama
-			}
+			auto [cc] = view.get(entity);
+			cc.Camera.SetAspectRatio(width / height);
 		}
 
-		return mainCamera;
 	}
+
 
 }

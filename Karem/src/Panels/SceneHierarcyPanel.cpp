@@ -12,81 +12,48 @@ namespace Karem {
 
 	void SceneHierarcyPanel::RenderImGUI()
 	{
-		EntityListPanel();
-		EntityPropertiesPanel();
-	}
-
-	void SceneHierarcyPanel::EntityPropertiesPanel()
-	{
-		ImGui::Begin("Selected Entity Properties");
-
-		if (m_SelectedEntity)
-			DrawEntityTreeNode(m_SelectedEntity);
-
-		ImGui::End();
-	}
-
-	void SceneHierarcyPanel::EntityListPanel()
-	{
 		ImGui::Begin("Entity List");
-		m_ContextScene->m_Registry.view<TagComponent>().each([&](entt::entity entity, TagComponent& tag)
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 0.0f,0.0f });
+
+		m_ContextScene->m_Registry.view<TagComponent>().each([&](entt::entity entityId, TagComponent& tagComponent)
+		{
+			Entity entity = Entity{ entityId, m_ContextScene.get() };
+
+			ImGuiTreeNodeFlags entityListFlags = m_SelectedEntity == entity ? ImGuiTreeNodeFlags_Selected : 0;
+			entityListFlags |= ImGuiTreeNodeFlags_Framed
+				| ImGuiTreeNodeFlags_OpenOnArrow
+				| ImGuiTreeNodeFlags_SpanAvailWidth;
+
+			const std::string& tag = tagComponent.Tag;
+			bool isTreeOpened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity, entityListFlags, tag.c_str());
+
+			if (ImGui::IsItemClicked())
 			{
-				static constexpr ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_Framed
-					| ImGuiTreeNodeFlags_FramePadding
-					//| ImGuiTreeNodeFlags_NoTreePushOnOpen
-					| ImGuiTreeNodeFlags_AllowItemOverlap
-					| ImGuiTreeNodeFlags_SpanAvailWidth;
-
-				const auto contentRegionAvail = ImGui::GetContentRegionAvail();
-
-				const auto fontSize = ImGui::GetFontSize();
-				const auto& style = ImGui::GetStyle();
-				const float lineHeight = fontSize + style.FramePadding.y * 2.0f;
-				const ImVec2 buttonSize = { lineHeight, lineHeight };
-
-				ImGui::Separator();
-				bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity, flags, tag.Tag.c_str());
-				//opened &= (bool)m_SelectedEntity;
-
-				ImGui::SameLine(contentRegionAvail.x - buttonSize.x * 0.5f);
-
-				const std::string popupLabel = "Delete Entity" + tag.Tag;
-
-				if (ImGui::Button("+", buttonSize))
-					ImGui::OpenPopup(popupLabel.c_str());
-
-				if (ImGui::IsMouseDown(1) and ImGui::IsItemHovered())
-				{
-					ImGui::OpenPopup(popupLabel.c_str());
-				}
-				
-				bool isEntityDestroyed = false;
-				if (ImGui::BeginPopup(popupLabel.c_str(), ImGuiWindowFlags_NoMove | ImGuiPopupFlags_NoOpenOverItems | ImGuiPopupFlags_NoOpenOverExistingPopup))
-				{
-					if (ImGui::MenuItem("Remove Entity"))
-					{
-						isEntityDestroyed = true;
-						ImGui::CloseCurrentPopup();
-					}
-					ImGui::EndPopup();
-				}
-
-				//ImGui::TreePushOverrideID(id);
-				if (opened)
-				{
-					m_SelectedEntity = { entity, m_ContextScene.get() };
-					ImGui::TreePop();
-				}
-
-				if (isEntityDestroyed)
-				{
-					m_ContextScene->DestroyEntity(entity);
-					if (m_SelectedEntity == entity)
-						m_SelectedEntity = {};
-				}
-
+				m_SelectedEntity = entity;
 			}
-		);
+
+			bool isEntityDeleted = false;
+			if (ImGui::BeginPopupContextItem())
+			{
+				if (ImGui::MenuItem("Delete Entity"))
+				{
+					isEntityDeleted = true;
+				}
+				ImGui::EndPopup();
+			}
+
+			if (isTreeOpened)
+			{
+				ImGui::TreePop();
+			}
+
+			if (isEntityDeleted)
+			{
+				m_ContextScene->DestroyEntity(entity);
+				if (m_SelectedEntity == entity)
+					m_SelectedEntity = {};
+			}
+		});
 
 		if (ImGui::IsMouseDown(0) and ImGui::IsWindowHovered())
 			m_SelectedEntity = {};
@@ -98,8 +65,92 @@ namespace Karem {
 
 			ImGui::EndPopup();
 		}
+		ImGui::PopStyleVar();
+		ImGui::End();
+
+		ImGui::Begin("Selected Entity Properties");
+
+		if (m_SelectedEntity)
+			DrawEntityComponents(m_SelectedEntity);
 
 		ImGui::End();
+
+	}
+	void SceneHierarcyPanel::DrawEntityTree(Entity entity, TagComponent& tag)
+	{
+		static constexpr ImGuiTreeNodeFlags flags = //ImGuiTreeNodeFlags_Framed
+			//| ImGuiTreeNodeFlags_FramePadding
+			ImGuiTreeNodeFlags_AllowItemOverlap
+			| ImGuiTreeNodeFlags_SpanAvailWidth;
+
+		const auto contentRegionAvail = ImGui::GetContentRegionAvail();
+		const auto fontSize = ImGui::GetFontSize();
+		const auto& style = ImGui::GetStyle();
+		const float lineHeight = fontSize + style.FramePadding.y * 2.0f;
+		const ImVec2 buttonSize = { lineHeight, lineHeight };
+
+		bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity, flags | ((m_SelectedEntity == entity) ? ImGuiTreeNodeFlags_Selected : 0), tag.Tag.c_str());
+		//opened &= (bool)m_SelectedEntity;
+
+		ImGui::SameLine(contentRegionAvail.x - buttonSize.x * 0.5f);
+
+		const std::string popupLabel = "Delete Entity" + tag.Tag;
+
+		if (ImGui::Button("+", buttonSize))
+			ImGui::OpenPopup(popupLabel.c_str());
+
+		if (ImGui::IsMouseDown(1) and ImGui::IsItemHovered())
+		{
+			ImGui::OpenPopup(popupLabel.c_str());
+		}
+
+		bool isEntityDestroyed = false;
+		if (ImGui::BeginPopup(popupLabel.c_str(), ImGuiWindowFlags_NoMove | ImGuiPopupFlags_NoOpenOverItems | ImGuiPopupFlags_NoOpenOverExistingPopup))
+		{
+			if (ImGui::MenuItem("Remove Entity"))
+			{
+				isEntityDestroyed = true;
+				ImGui::CloseCurrentPopup();
+			}
+			ImGui::EndPopup();
+		}
+
+		//ImGui::TreePushOverrideID(id);
+		if (opened)
+		{
+			m_SelectedEntity = { entity, m_ContextScene.get() };
+			ImGui::TreePop();
+		}
+
+		if (isEntityDestroyed)
+		{
+			m_ContextScene->DestroyEntity(entity);
+			if (m_SelectedEntity == entity)
+				m_SelectedEntity = {};
+		}
+	}
+	void SceneHierarcyPanel::EntityListPanel()
+	{
+		//ImGui::Begin("Entity List");
+		//m_ContextScene->m_Registry.view<TagComponent>().each([&](entt::entity entityId, TagComponent& tag)
+		//{
+		//	Entity entity = Entity{ entityId, m_ContextScene.get() };
+		//	DrawEntityTree(entity, tag);
+		//});
+
+		//if (ImGui::IsMouseDown(0) and ImGui::IsWindowHovered())
+		//	m_SelectedEntity = {};
+
+		//if (ImGui::BeginPopupContextWindow("Create new entity", ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems | ImGuiPopupFlags_NoOpenOverExistingPopup))
+		//{
+		//	if (ImGui::MenuItem("Create Empty Entity"))
+		//		m_ContextScene->CreateEntity("Empty Entity");
+
+		//	ImGui::EndPopup();
+		//}
+
+		//ImGui::PopStyleVar();
+		//ImGui::End();
 	}
 
 	static void DrawFloat3Component(const char* label, glm::vec3& values, float resetValue = 0.0, float columnWidth = 100.0f)
@@ -283,7 +334,7 @@ namespace Karem {
 		}
 	}
 
-	void SceneHierarcyPanel::DrawEntityTreeNode(Entity entity)
+	void SceneHierarcyPanel::DrawEntityComponents(Entity entity)
 	{
 		static constexpr ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen
 			| ImGuiTreeNodeFlags_Framed
@@ -347,7 +398,8 @@ namespace Karem {
 
 			DrawComponent<TagComponent>("Tag", m_SelectedEntity, [&](TagComponent& component)
 				{
-					const char* tc = m_SelectedEntity.GetComponent<TagComponent>().Tag.c_str();
+					std::string& tag = m_SelectedEntity.GetComponent<TagComponent>().Tag;
+					const char* tc = tag.c_str();
 
 					char tagBuffer[256];
 					strcpy_s(tagBuffer, sizeof(tagBuffer), tc);
@@ -355,7 +407,8 @@ namespace Karem {
 					auto regionAvail = ImGui::GetContentRegionAvail();
 					ImGui::SetNextItemWidth(regionAvail.x);
 					if (ImGui::InputText("##InputText", tagBuffer, IM_ARRAYSIZE(tagBuffer), ImGuiInputTextFlags_EnterReturnsTrue))
-						tc = tagBuffer;
+						tag = tagBuffer;
+
 					ImGui::PopStyleVar();
 				}, false ); // TODO : The argument false here is very weird. Think to move into the component itself
 
@@ -398,7 +451,6 @@ namespace Karem {
 						| ImGuiTableFlags_NoPadOuterX;
 
 					CameraHandler& camera = component.Camera;
-					ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0);
 					ImGui::BeginTable("Camera Table", 2, cameraTableFlags);
 
 					ImGui::TableNextRow();
@@ -474,7 +526,7 @@ namespace Karem {
 					if (ImGui::DragFloat("##Far", &farClip))
 						camera.SetCameraFar(farClip);
 
-					ImGui::PopStyleVar(2);
+					ImGui::PopStyleVar();
 					ImGui::EndTable();
 				}
 			);

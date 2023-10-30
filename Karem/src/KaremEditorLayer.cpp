@@ -51,8 +51,12 @@ namespace Karem {
 
 	void KaremEditorLayer::Update(TimeStep ts)
 	{
-		//ENGINE_DEBUG("{}", ts);
-		//m_Camera.Update(ts);
+		const auto& [fbWidth, fbHeight] = m_FrameBuffer->GetFrameBufferSize();
+		if (m_CurrentViewportSize.x != fbWidth or m_CurrentViewportSize.y != fbHeight)
+		{
+			m_FrameBuffer->Resize((int32_t)m_CurrentViewportSize.x, (int32_t)m_CurrentViewportSize.y);
+			m_ActiveScene->OnViewportResize(m_CurrentViewportSize.x, m_CurrentViewportSize.y);
+		}
 
 		m_FrameBuffer->Bind();
 
@@ -296,25 +300,12 @@ namespace Karem {
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
 		ImGui::Begin("Viewport");
-
 		ImVec2 currentPannelSize = ImGui::GetContentRegionAvail();
-
-		CameraHandler* mainCamera = m_ActiveScene->GetMainCamera();
-		if (mainCamera)
-		{
-			const auto& [fbWidth, fbHeight] = m_FrameBuffer->GetFrameBufferSize();
-
-			if (currentPannelSize.x != fbWidth or currentPannelSize.y != fbHeight)
-			{
-				mainCamera->SetAspectRatio(currentPannelSize.x / currentPannelSize.y);
-				m_FrameBuffer->Resize((int32_t)currentPannelSize.x, (int32_t)currentPannelSize.y);
-			}
-		}
-
+		m_CurrentViewportSize = *(glm::vec2*)&currentPannelSize;
 		uint64_t textureID = m_FrameBuffer->GetTextureColorAttachmentID();
 		ImGui::Image(
 			reinterpret_cast<void*>(textureID),
-			{ (float)currentPannelSize.x, (float)currentPannelSize.y },
+			{ (float)m_FrameBuffer->GetFrameBufferSize().width, (float)m_FrameBuffer->GetFrameBufferSize().height },
 			ImVec2(0, 1),
 			ImVec2(1, 0)
 		);

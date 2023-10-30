@@ -12,12 +12,13 @@ namespace Karem {
 			: m_ContextScene(context) {}
 
 		void RenderImGUI();
+
 	private:
-		void EntityPropertiesPanel();
 		void EntityListPanel();
 
 	private:
-		void DrawEntityTreeNode(Entity entity);
+		void DrawEntityTree(Entity entity, TagComponent& tag);
+		void DrawEntityComponents(Entity entity);
 		
 	private:
 		Entity m_SelectedEntity;

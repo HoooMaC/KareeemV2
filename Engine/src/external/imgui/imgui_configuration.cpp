@@ -14,10 +14,9 @@ namespace Karem {
 
 	void InitializeImGui()
 	{
-		// Setup Dear ImGui context
 		IMGUI_CHECKVERSION();
 		ImGuiContext* ctx = ImGui::CreateContext();
-		ImGuiIO& io = ImGui::GetIO();// (void)io;
+		ImGuiIO& io = ImGui::GetIO();
 
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
@@ -26,11 +25,7 @@ namespace Karem {
 
 		SetupKaremStyleDefault();
 		KaremColorStyleDefault();
-		// Setup Dear ImGui style
-		//ImGui::StyleColorsDark();
-		//ImGui::StyleColorsLight();
 
-		// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
 		ImGuiStyle& style = ImGui::GetStyle();
 		style.WindowRounding = 0.0f;
 		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
@@ -132,8 +127,8 @@ namespace Karem {
 
 		style.WindowRounding = 0;
 		style.ChildRounding = 0;
-		style.FrameRounding = 3.0f;
-		style.PopupRounding = 3.0f;
+		style.FrameRounding = 0.0f;
+		style.PopupRounding = 0.0f;
 		style.ScrollbarRounding = 3.0f;
 		style.GrabRounding = 3.0f;
 		style.TabRounding = 3.0f;
@@ -175,8 +170,8 @@ namespace Karem {
 		colors[ImGuiCol_ScrollbarGrabHovered]=ImVec4(0.41f, 0.41f, 0.41f, 1.00f);
 		colors[ImGuiCol_ScrollbarGrabActive]= ImVec4(0.51f, 0.51f, 0.51f, 1.00f);
 		colors[ImGuiCol_CheckMark]			= ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
-		colors[ImGuiCol_SliderGrab]			= HexToVec4<ImVec4>("#14348B");
-		colors[ImGuiCol_SliderGrabActive]	= ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
+		colors[ImGuiCol_SliderGrab]			= HexToVec4<ImVec4>("#A5A6A8"); // !TEMPORARY : thinking about this again
+		colors[ImGuiCol_SliderGrabActive]	= HexToVec4<ImVec4>("#A5A6A8"); // !TEMPORARY : thinking about this again
 		colors[ImGuiCol_Button]				= HexToVec4<ImVec4>("#3364EB");
 		colors[ImGuiCol_ButtonHovered]		= HexToVec4<ImVec4>("#3364EB");
 		colors[ImGuiCol_ButtonActive]		= HexToVec4<ImVec4>("#3364EB");

@@ -25,8 +25,8 @@ namespace Karem {
 
 		void Update(TimeStep ts);
 		void EventHandler(Event& e);
-
-		CameraHandler* GetMainCamera();
+		
+		void OnViewportResize(float width, float height);
 	private:
 		entt::registry m_Registry;
 	};

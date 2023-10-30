@@ -31,6 +31,7 @@ namespace Karem {
 		bool WindowResizeAction(WindowResizeEvent& event);
 
 	private:
+		glm::vec2 m_CurrentViewportSize = { 0.0f, 0.0f };
 		SceneHierarcyPanel m_HierarcyPanel;
 
 		std::shared_ptr<FrameBuffer> m_FrameBuffer; // who owns the frame buffer
