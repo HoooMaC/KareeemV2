@@ -5,6 +5,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "MenuBar.h"
+
 #include <imgui.h>
 #include <imgui_internal.h>
 
@@ -12,69 +14,72 @@ namespace Karem {
 
 	void SceneHierarcyPanel::RenderImGUI()
 	{
-		ImGui::Begin("Entity List");
-		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 0.0f,0.0f });
-
-		m_ContextScene->m_Registry.view<TagComponent>().each([&](entt::entity entityId, TagComponent& tagComponent)
+		if (MenuBar::showEntityList)
 		{
-			Entity entity = Entity{ entityId, m_ContextScene.get() };
-
-			ImGuiTreeNodeFlags entityListFlags = m_SelectedEntity == entity ? ImGuiTreeNodeFlags_Selected : 0;
-			entityListFlags |= ImGuiTreeNodeFlags_Framed
-				| ImGuiTreeNodeFlags_OpenOnArrow
-				| ImGuiTreeNodeFlags_SpanAvailWidth;
-
-			const std::string& tag = tagComponent.Tag;
-			bool isTreeOpened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity, entityListFlags, tag.c_str());
-
-			if (ImGui::IsItemClicked())
-			{
-				m_SelectedEntity = entity;
-			}
-
-			bool isEntityDeleted = false;
-			if (ImGui::BeginPopupContextItem())
-			{
-				if (ImGui::MenuItem("Delete Entity"))
+			ImGui::Begin("Entity List", &MenuBar::showEntityList);
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 0.0f,0.0f });
+			m_ContextScene->m_Registry.view<TagComponent>().each([&](entt::entity entityId, TagComponent& tagComponent)
 				{
-					isEntityDeleted = true;
-				}
+					Entity entity = Entity{ entityId, m_ContextScene.get() };
+
+					ImGuiTreeNodeFlags entityListFlags = m_SelectedEntity == entity ? ImGuiTreeNodeFlags_Selected : 0;
+					entityListFlags |= ImGuiTreeNodeFlags_Framed
+						| ImGuiTreeNodeFlags_OpenOnArrow
+						| ImGuiTreeNodeFlags_SpanAvailWidth;
+
+					const std::string& tag = tagComponent.Tag;
+					bool isTreeOpened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity, entityListFlags, tag.c_str());
+
+					if (ImGui::IsItemClicked())
+					{
+						m_SelectedEntity = entity;
+					}
+
+					bool isEntityDeleted = false;
+					if (ImGui::BeginPopupContextItem())
+					{
+						if (ImGui::MenuItem("Delete Entity"))
+						{
+							isEntityDeleted = true;
+						}
+						ImGui::EndPopup();
+					}
+
+					if (isTreeOpened)
+					{
+						ImGui::TreePop();
+					}
+
+					if (isEntityDeleted)
+					{
+						m_ContextScene->DestroyEntity(entity);
+						if (m_SelectedEntity == entity)
+							m_SelectedEntity = {};
+					}
+				});
+
+			if (ImGui::IsMouseDown(0) and ImGui::IsWindowHovered())
+				m_SelectedEntity = {};
+
+			if (ImGui::BeginPopupContextWindow("Create new entity", ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems | ImGuiPopupFlags_NoOpenOverExistingPopup))
+			{
+				if (ImGui::MenuItem("Create Empty Entity"))
+					m_ContextScene->CreateEntity("Empty Entity");
+
 				ImGui::EndPopup();
 			}
-
-			if (isTreeOpened)
-			{
-				ImGui::TreePop();
-			}
-
-			if (isEntityDeleted)
-			{
-				m_ContextScene->DestroyEntity(entity);
-				if (m_SelectedEntity == entity)
-					m_SelectedEntity = {};
-			}
-		});
-
-		if (ImGui::IsMouseDown(0) and ImGui::IsWindowHovered())
-			m_SelectedEntity = {};
-
-		if (ImGui::BeginPopupContextWindow("Create new entity", ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems | ImGuiPopupFlags_NoOpenOverExistingPopup))
-		{
-			if (ImGui::MenuItem("Create Empty Entity"))
-				m_ContextScene->CreateEntity("Empty Entity");
-
-			ImGui::EndPopup();
+			ImGui::PopStyleVar();
+			ImGui::End();
 		}
-		ImGui::PopStyleVar();
-		ImGui::End();
+		if (MenuBar::showEntityComponent)
+		{
+			ImGui::Begin("Selected Entity Properties", &MenuBar::showEntityComponent);
 
-		ImGui::Begin("Selected Entity Properties");
+			if (m_SelectedEntity)
+				DrawEntityComponents(m_SelectedEntity);
 
-		if (m_SelectedEntity)
-			DrawEntityComponents(m_SelectedEntity);
-
-		ImGui::End();
-
+			ImGui::End();
+		}
 	}
 	void SceneHierarcyPanel::DrawEntityTree(Entity entity, TagComponent& tag)
 	{
@@ -128,29 +133,6 @@ namespace Karem {
 			if (m_SelectedEntity == entity)
 				m_SelectedEntity = {};
 		}
-	}
-	void SceneHierarcyPanel::EntityListPanel()
-	{
-		//ImGui::Begin("Entity List");
-		//m_ContextScene->m_Registry.view<TagComponent>().each([&](entt::entity entityId, TagComponent& tag)
-		//{
-		//	Entity entity = Entity{ entityId, m_ContextScene.get() };
-		//	DrawEntityTree(entity, tag);
-		//});
-
-		//if (ImGui::IsMouseDown(0) and ImGui::IsWindowHovered())
-		//	m_SelectedEntity = {};
-
-		//if (ImGui::BeginPopupContextWindow("Create new entity", ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems | ImGuiPopupFlags_NoOpenOverExistingPopup))
-		//{
-		//	if (ImGui::MenuItem("Create Empty Entity"))
-		//		m_ContextScene->CreateEntity("Empty Entity");
-
-		//	ImGui::EndPopup();
-		//}
-
-		//ImGui::PopStyleVar();
-		//ImGui::End();
 	}
 
 	static void DrawFloat3Component(const char* label, glm::vec3& values, float resetValue = 0.0, float columnWidth = 100.0f)

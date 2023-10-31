@@ -14,9 +14,6 @@ namespace Karem {
 		void RenderImGUI();
 
 	private:
-		void EntityListPanel();
-
-	private:
 		void DrawEntityTree(Entity entity, TagComponent& tag);
 		void DrawEntityComponents(Entity entity);
 		

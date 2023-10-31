@@ -4,6 +4,8 @@
 #include "Scene/Entity.h"
 #include "Scene/Components.h"
 
+#include "Panels/MenuBar.h"
+
 #include <imgui.h>
 #include <imgui_internal.h>
 #include <imgui_setup.h>
@@ -221,6 +223,12 @@ namespace Karem {
 				ImGui::MenuItem("Documents");
 				ImGui::EndMenu();
 			}
+			if (ImGui::BeginMenu("Entity"))
+			{
+				ImGui::MenuItem("Entity List");
+				ImGui::MenuItem("Entity Component");
+				ImGui::EndMenu();
+			}
 			if (ImGui::BeginMenu("Tools"))
 			{
 				ImGui::MenuItem("Metrics/Debugger");
@@ -281,7 +289,7 @@ namespace Karem {
 
 		ImGui::Begin("DockSpaceViewport", NULL, docks_window_flags);
 
-		MenuBar();
+		MenuBar::Render();
 
 		ImGuiID dockspace_id = ImGui::GetID("DockSpace");
 		ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f));
