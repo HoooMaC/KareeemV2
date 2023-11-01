@@ -5,7 +5,7 @@
 
 #include "Core/TimeStep.h"
 #include "Core/Application.h"
-#include "Core/CoreFunction.h"
+#include "Env/Color.h"
 
 #include "Event/Event.h"
 #include "Event/Input.h"

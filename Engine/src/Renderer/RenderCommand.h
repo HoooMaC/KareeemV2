@@ -4,6 +4,8 @@
 
 #include <glm/glm.hpp>
 
+#include "Env/Color.h"
+
 #include "Renderer/BaseRendererAPI.h"
 #include "Renderer/BufferLayout.h"
 
@@ -26,9 +28,9 @@ namespace Karem {
 		{
 			s_RendererAPI->ClearColor(color);
 		}
-		inline static void ClearColor(std::string_view hexColor)
+		inline static void ClearColor(Color color)
 		{
-			s_RendererAPI->ClearColor(hexColor);
+			s_RendererAPI->ClearColor(color);
 		}
 		inline static void Clear()
 		{

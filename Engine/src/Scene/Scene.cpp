@@ -1,7 +1,7 @@
 #include "Core/Kareeem.h"
 #include "Scene.h"
 
-#include "Core/CoreFunction.h"
+#include "Env/Color.h"
 
 #include "Scene/Components.h"
 #include "Scene/Entity.h"

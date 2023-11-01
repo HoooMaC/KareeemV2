@@ -87,13 +87,8 @@ namespace Karem {
 		{
 			ImGui::Begin("Camera Entity", &MenuBar::showCameraPanel);
 
-			m_ContextScene->m_Registry.view<TagComponent, CameraComponent>().each([&](entt::entity entityId, TagComponent& tagComponent, CameraComponent& cameraComponent)
-			{
-				ImGui::Text("%s : %d", tagComponent.Tag.c_str(), cameraComponent.MainCamera);
-			});
-
 			bool currentCameraSelected = false;
-			const char* combopreview = m_MainCamera ? m_MainCamera.GetComponent<TagComponent>().Tag.c_str() : "";
+			const char* combopreview = m_MainCamera ? m_MainCamera.GetComponent<TagComponent>().Tag.c_str() : "No Main Camera";
 			if (ImGui::BeginCombo("##Camera", combopreview))
 			{
 				m_ContextScene->m_Registry.view<TagComponent, CameraComponent>().each([&](entt::entity entityId, TagComponent& tagComponent, CameraComponent& cameraComponent)
@@ -110,10 +105,7 @@ namespace Karem {
 				});
 
 				ImGui::EndCombo();
-
-
 			}
-
 			ImGui::End();
 		}
 
@@ -195,9 +187,9 @@ namespace Karem {
 			float lineHeight = ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.y * 2;
 			const ImVec2 buttonSize = { lineHeight + 3.0f, lineHeight };
 
-			ImGui::PushStyleColor(ImGuiCol_Button, HexToVec4<ImVec4>("#CC1A26"));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, HexToVec4<ImVec4>("#FF0000"));
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive, HexToVec4<ImVec4>("#CC1A26"));
+			ImGui::PushStyleColor(ImGuiCol_Button, HexToVec4<ImVec4>(Color::RedButton));
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, HexToVec4<ImVec4>(Color::RedButtonHovered));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, HexToVec4<ImVec4>(Color::RedButtonActive));
 			if (ImGui::Button("X", buttonSize))
 				values.x = resetValue;
 			ImGui::PopStyleColor(3);
@@ -207,9 +199,9 @@ namespace Karem {
 			ImGui::PopItemWidth();
 			ImGui::SameLine();
 
-			ImGui::PushStyleColor(ImGuiCol_Button, HexToVec4<ImVec4>("#0F812B"));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, HexToVec4<ImVec4>("#33B333"));
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive, HexToVec4<ImVec4>("#0F812B"));
+			ImGui::PushStyleColor(ImGuiCol_Button, HexToVec4<ImVec4>(Color::GreenButton));
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, HexToVec4<ImVec4>(Color::GreenButtonHovered));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, HexToVec4<ImVec4>(Color::GreenButtonActive));
 			if (ImGui::Button("Y", buttonSize))
 				values.y = resetValue;
 			ImGui::PopStyleColor(3);
@@ -219,9 +211,9 @@ namespace Karem {
 			ImGui::PopItemWidth();
 			ImGui::SameLine();
 
-			ImGui::PushStyleColor(ImGuiCol_Button, HexToVec4<ImVec4>("#886C0D"));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, HexToVec4<ImVec4>("#DAAE19"));
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive, HexToVec4<ImVec4>("#886C0D"));
+			ImGui::PushStyleColor(ImGuiCol_Button, HexToVec4<ImVec4>(Color::BlueButton));
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, HexToVec4<ImVec4>(Color::BlueButtonHovered));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, HexToVec4<ImVec4>(Color::BlueButtonActive));
 			if (ImGui::Button("Z", buttonSize))
 				values.z = resetValue;
 			ImGui::PopStyleColor(3);
@@ -500,19 +492,22 @@ namespace Karem {
 					ImGui::TableNextRow();
 
 					ImGui::TableSetColumnIndex(0);
-					ImGui::Text("Size");
-					ImGui::TableSetColumnIndex(1);
-
 					if (camera.IsOrthographic())
 					{
+						ImGui::Text("Size");
+						ImGui::TableSetColumnIndex(1);
+
 						float orthoSize = camera.GetOrthographicSize();
 						regionAvail = ImGui::GetContentRegionAvail();
 						ImGui::SetNextItemWidth(regionAvail.x);
-						if (ImGui::DragFloat("##Ortho size", &orthoSize))
+						if (ImGui::DragFloat("##OrthoSize", &orthoSize))
 							camera.SetOrthographicSize(orthoSize);
 					}
 					else
 					{
+						ImGui::Text("FOV");
+						ImGui::TableSetColumnIndex(1);
+
 						float verticalFOV = camera.GetPerspectiveVerticalFOV();
 						regionAvail = ImGui::GetContentRegionAvail();
 						ImGui::SetNextItemWidth(regionAvail.x);

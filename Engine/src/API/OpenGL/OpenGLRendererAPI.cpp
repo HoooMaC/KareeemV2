@@ -1,5 +1,5 @@
 #include "Core/Kareeem.h"
-#include "Core/CoreFunction.h"
+#include "Env/Color.h"
 
 #include "OpenGLRendererAPI.h"
 #include <glad/glad.h>
@@ -20,10 +20,10 @@ namespace Karem {
 		glClearColor(color.r, color.g, color.b, color.a);
 	}
 
-	void OpenGLRendererAPI::ClearColor(std::string_view hexColor)
+	void OpenGLRendererAPI::ClearColor(Color color)
 	{
-		glm::vec4 color = HexToVec4<glm::vec4>(hexColor);
-		glClearColor(color.r, color.g, color.b, color.a);
+		glm::vec4 resultColor = HexToVec4<glm::vec4>(color);
+		glClearColor(resultColor.r, resultColor.g, resultColor.b, resultColor.a);
 	}
 
 	void OpenGLRendererAPI::Clear()

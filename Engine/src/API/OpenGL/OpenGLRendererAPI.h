@@ -1,4 +1,6 @@
-	#pragma once
+#pragma once
+
+#include "Env/Color.h"
 
 #include "Renderer/BaseShader.h"
 #include "Renderer/BufferLayout.h"
@@ -13,7 +15,7 @@ namespace Karem {
 
 		void SetViewPort(uint32_t x, uint32_t y, uint32_t width, uint32_t height) override;
 		void ClearColor(const glm::vec4& color) override;
-		void ClearColor(std::string_view hexColor) override;
+		void ClearColor(Color color) override;
 		void Clear() override;
 
 		void Draw(uint32_t count) override;

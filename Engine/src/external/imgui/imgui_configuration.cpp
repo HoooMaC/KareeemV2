@@ -1,7 +1,7 @@
 #include "Core/Kareeem.h"
 #include "imgui_configuration.h"
 
-#include "Core/CoreFunction.h"
+#include "Env/Color.h"
 
 #include "Renderer/GraphicsContext.h"
 
@@ -153,42 +153,42 @@ namespace Karem {
 
 		colors[ImGuiCol_Text]				= ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
 		colors[ImGuiCol_TextDisabled]		= ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
-		colors[ImGuiCol_WindowBg]			= HexToVec4<ImVec4>("#030711");
+		colors[ImGuiCol_WindowBg]			= HexToVec4<ImVec4>(Color::WindowBackground);
 		colors[ImGuiCol_ChildBg]			= ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
 		colors[ImGuiCol_PopupBg]			= ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
-		colors[ImGuiCol_Border]				= HexToVec4<ImVec4>("#3364EB");
+		colors[ImGuiCol_Border]				= HexToVec4<ImVec4>(Color::Border);
 		colors[ImGuiCol_BorderShadow]		= ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
-		colors[ImGuiCol_FrameBg]			= HexToVec4<ImVec4>("#14348B");
-		colors[ImGuiCol_FrameBgHovered]		= HexToVec4<ImVec4>("#14348B");
-		colors[ImGuiCol_FrameBgActive]		= HexToVec4<ImVec4>("#14348B");
-		colors[ImGuiCol_TitleBg]			= HexToVec4<ImVec4>("#1D283A");
-		colors[ImGuiCol_TitleBgActive]		= HexToVec4<ImVec4>("#1D283A");
-		colors[ImGuiCol_TitleBgCollapsed]	= HexToVec4<ImVec4>("#1D283A");
-		colors[ImGuiCol_MenuBarBg]			= HexToVec4<ImVec4>("#1D283A");
+		colors[ImGuiCol_FrameBg]			= HexToVec4<ImVec4>(Color::FrameBackground);
+		colors[ImGuiCol_FrameBgHovered]		= HexToVec4<ImVec4>(Color::FrameBackgroundHovered);
+		colors[ImGuiCol_FrameBgActive]		= HexToVec4<ImVec4>(Color::FrameBackgroundActive);
+		colors[ImGuiCol_TitleBg]			= HexToVec4<ImVec4>(Color::TitleBackground);
+		colors[ImGuiCol_TitleBgActive]		= HexToVec4<ImVec4>(Color::TitleBackgroundActive);
+		colors[ImGuiCol_TitleBgCollapsed]	= HexToVec4<ImVec4>(Color::TitleBackgroundCollapsed);
+		colors[ImGuiCol_MenuBarBg]			= HexToVec4<ImVec4>(Color::MenuBarBackground);
 		colors[ImGuiCol_ScrollbarBg]		= ImVec4(0.02f, 0.02f, 0.02f, 0.53f);
 		colors[ImGuiCol_ScrollbarGrab]		= ImVec4(0.31f, 0.31f, 0.31f, 1.00f);
 		colors[ImGuiCol_ScrollbarGrabHovered]=ImVec4(0.41f, 0.41f, 0.41f, 1.00f);
 		colors[ImGuiCol_ScrollbarGrabActive]= ImVec4(0.51f, 0.51f, 0.51f, 1.00f);
 		colors[ImGuiCol_CheckMark]			= ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
-		colors[ImGuiCol_SliderGrab]			= HexToVec4<ImVec4>("#A5A6A8"); // !TEMPORARY : thinking about this again
-		colors[ImGuiCol_SliderGrabActive]	= HexToVec4<ImVec4>("#A5A6A8"); // !TEMPORARY : thinking about this again
-		colors[ImGuiCol_Button]				= HexToVec4<ImVec4>("#3364EB");
-		colors[ImGuiCol_ButtonHovered]		= HexToVec4<ImVec4>("#3364EB");
-		colors[ImGuiCol_ButtonActive]		= HexToVec4<ImVec4>("#3364EB");
-		colors[ImGuiCol_Header]				= HexToVec4<ImVec4>("#3364EB");
-		colors[ImGuiCol_HeaderHovered]		= HexToVec4<ImVec4>("#9CB6FF");
-		colors[ImGuiCol_HeaderActive]		= HexToVec4<ImVec4>("#002A9C");
-		colors[ImGuiCol_Separator]			= HexToVec4<ImVec4>("#03164B");
-		colors[ImGuiCol_SeparatorHovered]	= HexToVec4<ImVec4>("#03164B");
-		colors[ImGuiCol_SeparatorActive]	= HexToVec4<ImVec4>("#03164B");
+		colors[ImGuiCol_SliderGrab]			= HexToVec4<ImVec4>(Color::Slider); // !TEMPORARY : thinking about this again
+		colors[ImGuiCol_SliderGrabActive]	= HexToVec4<ImVec4>(Color::Slider); // !TEMPORARY : thinking about this again
+		colors[ImGuiCol_Button]				= HexToVec4<ImVec4>(Color::Button);
+		colors[ImGuiCol_ButtonHovered]		= HexToVec4<ImVec4>(Color::ButtonHovered);
+		colors[ImGuiCol_ButtonActive]		= HexToVec4<ImVec4>(Color::ButtonActive);
+		colors[ImGuiCol_Header]				= HexToVec4<ImVec4>(Color::Header);
+		colors[ImGuiCol_HeaderHovered]		= HexToVec4<ImVec4>(Color::HeaderHovered);
+		colors[ImGuiCol_HeaderActive]		= HexToVec4<ImVec4>(Color::HeaderActive);
+		colors[ImGuiCol_Separator]			= HexToVec4<ImVec4>(Color::Separator);
+		colors[ImGuiCol_SeparatorHovered]	= HexToVec4<ImVec4>(Color::Separator);
+		colors[ImGuiCol_SeparatorActive]	= HexToVec4<ImVec4>(Color::Separator);
 		colors[ImGuiCol_ResizeGrip]			= ImVec4(0.26f, 0.59f, 0.98f, 0.20f);
 		colors[ImGuiCol_ResizeGripHovered]	= ImVec4(0.26f, 0.59f, 0.98f, 0.67f);
 		colors[ImGuiCol_ResizeGripActive]	= ImVec4(0.26f, 0.59f, 0.98f, 0.95f);
-		colors[ImGuiCol_Tab]				= HexToVec4<ImVec4>("#3364EB");
-		colors[ImGuiCol_TabHovered]			= HexToVec4<ImVec4>("#3364EB");
-		colors[ImGuiCol_TabActive]			= HexToVec4<ImVec4>("#3364EB");
-		colors[ImGuiCol_TabUnfocused]		= HexToVec4<ImVec4>("#3364EB");
-		colors[ImGuiCol_TabUnfocusedActive] = HexToVec4<ImVec4>("#3364EB");
+		colors[ImGuiCol_Tab]				= HexToVec4<ImVec4>(Color::Tab);
+		colors[ImGuiCol_TabHovered]			= HexToVec4<ImVec4>(Color::TabHovered);
+		colors[ImGuiCol_TabActive]			= HexToVec4<ImVec4>(Color::TabActive);
+		colors[ImGuiCol_TabUnfocused]		= HexToVec4<ImVec4>(Color::TabUnfocused);
+		colors[ImGuiCol_TabUnfocusedActive] = HexToVec4<ImVec4>(Color::TabUnfocusActive);
 		colors[ImGuiCol_DockingPreview]		= colors[ImGuiCol_HeaderActive] /** ImVec4(1.0f, 1.0f, 1.0f, 0.7f)*/;
 		colors[ImGuiCol_DockingEmptyBg]		= ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
 		colors[ImGuiCol_PlotLines]			= ImVec4(0.61f, 0.61f, 0.61f, 1.00f);

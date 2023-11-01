@@ -32,10 +32,9 @@ namespace Karem {
 
 		{
 			Entity cameraEntity = m_ActiveScene->CreateEntity("Camera");
-			auto& cameraComponent = cameraEntity.AddComponent<CameraComponent>(OrthographicCamera(5.0f, 16.0f / 9.0f, -5.0f, 5.0f));
+			auto& cameraComponent = cameraEntity.AddComponent<CameraComponent>(OrthographicCamera(5.0f, 16.0f / 9.0f, -50.0f, 50.0f));
 			auto& cameraHandler = cameraComponent.Camera;
-			auto& cameraTransform = cameraEntity.GetComponent<TransformComponent>();
-			cameraTransform.Translation.z += 1.1f;
+			cameraComponent.MainCamera = true;
 			cameraHandler.SetPerspectiveCamera(PerspectiveCamera(16.0f / 9.0f, glm::radians(45.0f), 0.001f, 1000.0f));
 			cameraHandler.SetTypeToOrthographic();
 		}
@@ -64,7 +63,7 @@ namespace Karem {
 
 		// testing the renderer for texture
 		RendererCommand::Clear();
-		RendererCommand::ClearColor("#1E1E1E");
+		RendererCommand::ClearColor(Color::ViewportBackground);
 
 #if OLD_RENDERER
 		static glm::vec4 quadPos = glm::vec4(1.0f);
