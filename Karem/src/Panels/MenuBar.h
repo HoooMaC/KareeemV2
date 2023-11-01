@@ -4,12 +4,6 @@
 
 namespace Karem {
 
-	enum class Panels
-	{
-		EntityList,
-		EntityComponent
-	};
-
 	class SceneHierarcyPanel;
 
 	class MenuBar
@@ -18,11 +12,10 @@ namespace Karem {
 	public:
 		static void Render();
 
-	public:
-		static std::vector<bool> panelStatus;
 	private:
 		static bool showEntityList;
 		static bool showEntityComponent;
+		static bool showCameraPanel;
 	};
 
 }

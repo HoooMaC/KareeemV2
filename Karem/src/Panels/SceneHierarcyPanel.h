@@ -12,13 +12,15 @@ namespace Karem {
 			: m_ContextScene(context) {}
 
 		void RenderImGUI();
-
+		
 	private:
 		void DrawEntityTree(Entity entity, TagComponent& tag);
 		void DrawEntityComponents(Entity entity);
 		
 	private:
 		Entity m_SelectedEntity;
+		Entity m_MainCamera;
+			
 		std::shared_ptr<Scene> m_ContextScene;
 	};
 

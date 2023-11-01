@@ -39,15 +39,14 @@ namespace Karem{
 		for (const auto entity : view)
 		{
 			auto [tc, cc] = view.get(entity);
-			if(cc.mainCamera)
+			if(cc.MainCamera)
 			{
 				mainCamera = &cc.Camera;
 				cameraTransform = tc.GetTransformMatrix();
 				break;
 			}
 		}
-		// need to fix
-		// consider with the main camera, if there is no camera
+
 		if (mainCamera)
 		{
 			glm::mat4 proj = mainCamera->GetCameraProjectionMatrix();

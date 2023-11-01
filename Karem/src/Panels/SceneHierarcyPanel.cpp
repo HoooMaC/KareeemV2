@@ -71,6 +71,8 @@ namespace Karem {
 			ImGui::PopStyleVar();
 			ImGui::End();
 		}
+
+
 		if (MenuBar::showEntityComponent)
 		{
 			ImGui::Begin("Selected Entity Properties", &MenuBar::showEntityComponent);
@@ -80,6 +82,41 @@ namespace Karem {
 
 			ImGui::End();
 		}
+
+		if (MenuBar::showCameraPanel)
+		{
+			ImGui::Begin("Camera Entity", &MenuBar::showCameraPanel);
+
+			m_ContextScene->m_Registry.view<TagComponent, CameraComponent>().each([&](entt::entity entityId, TagComponent& tagComponent, CameraComponent& cameraComponent)
+			{
+				ImGui::Text("%s : %d", tagComponent.Tag.c_str(), cameraComponent.MainCamera);
+			});
+
+			bool currentCameraSelected = false;
+			const char* combopreview = m_MainCamera ? m_MainCamera.GetComponent<TagComponent>().Tag.c_str() : "";
+			if (ImGui::BeginCombo("##Camera", combopreview))
+			{
+				m_ContextScene->m_Registry.view<TagComponent, CameraComponent>().each([&](entt::entity entityId, TagComponent& tagComponent, CameraComponent& cameraComponent)
+				{
+					currentCameraSelected = m_MainCamera == entityId;
+
+					if (ImGui::Selectable(tagComponent.Tag.c_str(), currentCameraSelected))
+					{
+						cameraComponent.MainCamera = true;
+						if(m_MainCamera and m_MainCamera != entityId)
+							m_MainCamera.GetComponent<CameraComponent>().MainCamera = false;
+						m_MainCamera = { entityId, m_ContextScene.get() };
+					}
+				});
+
+				ImGui::EndCombo();
+
+
+			}
+
+			ImGui::End();
+		}
+
 	}
 	void SceneHierarcyPanel::DrawEntityTree(Entity entity, TagComponent& tag)
 	{

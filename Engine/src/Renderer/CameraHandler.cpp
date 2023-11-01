@@ -9,24 +9,14 @@ namespace Karem {
 
 	CameraHandler::CameraHandler()
 	{
-		// TODO : NEED TO BE SURE
+		m_AspectRatio = 16.0f / 9.0f;
+
 		if (Karem::IsImGuiContextValid())
 		{
-			auto viewportWindow = ImGui::FindWindowByName("Viewport");
-			if (viewportWindow)
-			{
-				auto viewportWindowSize = viewportWindow->Size;
-				m_AspectRatio = viewportWindowSize.x / viewportWindowSize.y;
-			}
-			else
-			{
-				m_AspectRatio = 16.0f / 9.0f;
-			}
+			if (auto viewportWindow = ImGui::FindWindowByName("Viewport"))
+				m_AspectRatio = viewportWindow->Size.x / viewportWindow->Size.y;
 		}
-		else
-		{
-			m_AspectRatio = 16.0f / 9.0f;
-		}
+
 		m_OrthographicCamera = OrthographicCamera(m_AspectRatio);
 		m_PerspectiveCamera = PerspectiveCamera(m_AspectRatio, glm::radians(45.0f), 0.0001f, 1000.0f);
 		m_CurrentCammeraType = Type::Orthographic;
@@ -35,23 +25,12 @@ namespace Karem {
 	CameraHandler::CameraHandler(const OrthographicCamera& camera)
 		: m_OrthographicCamera(camera)
 	{
-		// TODO : NEED TO BE SURE
+		m_AspectRatio = 16.0f / 9.0f;
+
 		if (Karem::IsImGuiContextValid())
 		{
-			auto viewportWindow = ImGui::FindWindowByName("Viewport");
-			if(viewportWindow)
-			{
-				auto viewportWindowSize = viewportWindow->Size;
-				m_AspectRatio = viewportWindowSize.x / viewportWindowSize.y;
-			}
-			else
-			{
-				m_AspectRatio = 16.0f / 9.0f;
-			}
-		}
-		else
-		{
-			m_AspectRatio = 16.0f / 9.0f;
+			if (auto viewportWindow = ImGui::FindWindowByName("Viewport"))
+				m_AspectRatio = viewportWindow->Size.x / viewportWindow->Size.y;
 		}
 
 		m_PerspectiveCamera = PerspectiveCamera(m_AspectRatio, glm::radians(45.0f), 0.0001f, 1000.0f);
@@ -61,24 +40,14 @@ namespace Karem {
 	CameraHandler::CameraHandler(const PerspectiveCamera& camera)
 		: m_PerspectiveCamera(camera)
 	{
-		// TODO : NEED TO BE SURE
+		m_AspectRatio = 16.0f / 9.0f;
+
 		if (Karem::IsImGuiContextValid())
 		{
-			auto viewportWindow = ImGui::FindWindowByName("Viewport");
-			if (viewportWindow)
-			{
-				auto viewportWindowSize = viewportWindow->Size;
-				m_AspectRatio = viewportWindowSize.x / viewportWindowSize.y;
-			}
-			else
-			{
-				m_AspectRatio = 16.0f / 9.0f;
-			}
+			if (auto viewportWindow = ImGui::FindWindowByName("Viewport"))
+				m_AspectRatio = viewportWindow->Size.x / viewportWindow->Size.y;
 		}
-		else
-		{
-			m_AspectRatio = 16.0f / 9.0f;
-		}
+
 		m_OrthographicCamera = OrthographicCamera(m_AspectRatio);
 		m_CurrentCammeraType = Type::Perspective;
 	}

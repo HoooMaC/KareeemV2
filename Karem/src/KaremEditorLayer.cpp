@@ -32,7 +32,7 @@ namespace Karem {
 
 		{
 			Entity cameraEntity = m_ActiveScene->CreateEntity("Camera");
-			auto& cameraComponent = cameraEntity.AddComponent<CameraComponent>(OrthographicCamera(5.0f, 16.0f / 9.0f, -5.0f, 5.0f), true);
+			auto& cameraComponent = cameraEntity.AddComponent<CameraComponent>(OrthographicCamera(5.0f, 16.0f / 9.0f, -5.0f, 5.0f));
 			auto& cameraHandler = cameraComponent.Camera;
 			auto& cameraTransform = cameraEntity.GetComponent<TransformComponent>();
 			cameraTransform.Translation.z += 1.1f;

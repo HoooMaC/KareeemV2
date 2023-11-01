@@ -57,9 +57,7 @@ namespace Karem {
 	struct CameraComponent
 	{
 		CameraHandler Camera;
-		//bool mainCamera = false;
-		// TEMPORARY : maybe the default should be false
-		bool mainCamera = true;
+		bool MainCamera = false;
 
 		CameraComponent() = default;
 		CameraComponent(const CameraComponent&) = default;
@@ -67,13 +65,6 @@ namespace Karem {
 			: Camera(camera) {}
 		CameraComponent(const PerspectiveCamera& camera)
 			: Camera(camera) {}
-
-		// TEMPORARY : Think for the better solution
-		CameraComponent(const OrthographicCamera& camera, bool isMain)
-			: Camera(camera), mainCamera(isMain) {}
-		CameraComponent(const PerspectiveCamera& camera, bool isMain)
-			: Camera(camera), mainCamera(isMain) {}
-
 	};
 
 

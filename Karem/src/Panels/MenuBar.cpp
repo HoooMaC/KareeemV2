@@ -5,10 +5,9 @@
 
 namespace Karem {
 
-	std::vector<bool> MenuBar::panelStatus = std::vector<bool>(2);
-
 	bool MenuBar::showEntityList = true;
 	bool MenuBar::showEntityComponent = true;
+	bool MenuBar::showCameraPanel = true;
 
 	void MenuBar::Render()
 	{
@@ -107,6 +106,7 @@ namespace Karem {
 			{
 				ImGui::MenuItem("Entity List", NULL, &showEntityList);
 				ImGui::MenuItem("Entity Component", NULL, &showEntityComponent);
+				ImGui::MenuItem("Camera Entity", NULL, &showCameraPanel);
 				ImGui::EndMenu();
 			}
 			if (ImGui::BeginMenu("Theme"))
