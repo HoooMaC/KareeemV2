@@ -26,11 +26,9 @@ namespace Karem {
 		{
 			switch (m_CurrentCammeraType)
 			{
-				case Type::Orthographic: return "Orthographic";
 				case Type::Perspective: return "Perspective";
+				case Type::Orthographic: break;
 			}
-			// this is can be replaced with std::unreachable int c++23
-			ENGINE_ASSERT(false, "Invalid Camera Type");
 			return  "Orthographic";
 		}
 
@@ -57,11 +55,10 @@ namespace Karem {
 		{
 			switch (m_CurrentCammeraType)
 			{
-				case Type::Orthographic: return m_OrthographicCamera.GetProjectionMatrix();
 				case Type::Perspective:  return m_PerspectiveCamera.GetProjectionMatrix();
+				case Type::Orthographic: break;
 			}
-			// this is can be replaced with std::unreachable int c++23
-			ENGINE_ASSERT(false, "Invalid Camera Type");
+			return m_OrthographicCamera.GetProjectionMatrix();
 		}
 
 		// TEMPORARY 
@@ -69,11 +66,10 @@ namespace Karem {
 		{
 			switch (m_CurrentCammeraType)
 			{
-				case Type::Orthographic: return &m_OrthographicCamera;
 				case Type::Perspective:  return &m_PerspectiveCamera;
+				case Type::Orthographic: break;
 			}
-			// this is cam be replaced with std::variant or maybe std::optional
-			ENGINE_ASSERT(false, "Invalid Camera Type");
+			return &m_OrthographicCamera;
 		}
 
 	public:
@@ -103,43 +99,43 @@ namespace Karem {
 		{
 			switch (m_CurrentCammeraType)
 			{
-				case Type::Orthographic: return m_OrthographicCamera.GetOrthographicNear();
 				case Type::Perspective:  return m_PerspectiveCamera.GetPerspectiveNear();
+				case Type::Orthographic: break;
 			}
-			ENGINE_ASSERT(false, "Invalid Camera Type");
+			return m_OrthographicCamera.GetOrthographicNear();
 		}
 
 		void SetCameraNear(float nearClip)
 		{
 			switch (m_CurrentCammeraType)
 			{
-				case Type::Orthographic: return m_OrthographicCamera.SetOrthographicNear(nearClip, m_AspectRatio);
 				case Type::Perspective:  return m_PerspectiveCamera.SetPerspectiveNearClip(nearClip, m_AspectRatio);
+				case Type::Orthographic: break;
 			}
-			ENGINE_ASSERT(false, "Invalid Camera Type");
+			return m_OrthographicCamera.SetOrthographicNear(nearClip, m_AspectRatio);
 		}
 
 		float GetCameraFar()
 		{
 			switch (m_CurrentCammeraType)
 			{
-				case Type::Orthographic: return m_OrthographicCamera.GetOrthographicFar();
 				case Type::Perspective:  return m_PerspectiveCamera.GetPerspectiveFar();
+				case Type::Orthographic: break;
 			}
-			ENGINE_ASSERT(false, "Invalid Camera Type");
+			return m_OrthographicCamera.GetOrthographicFar();
 		}
 
 		void SetCameraFar(float farClip)
 		{
 			switch (m_CurrentCammeraType)
 			{
-				case Type::Orthographic: return m_OrthographicCamera.SetOrthographicFar(farClip, m_AspectRatio);
 				case Type::Perspective:  return m_PerspectiveCamera.SetPerspectiveFarClip(farClip, m_AspectRatio);
+				case Type::Orthographic: break;
 			}
-			ENGINE_ASSERT(false, "Invalid Camera Type");
-
+			return m_OrthographicCamera.SetOrthographicFar(farClip, m_AspectRatio);
 		}
-		// field for orthographic, some code here maybe temporary
+
+	// field for orthographic, some code here maybe temporary
 	public:
 		float GetOrthographicSize() const { return m_OrthographicCamera.m_Size; }
 		void SetOrthographicSize(float size) { m_OrthographicCamera.m_Size = size; m_OrthographicCamera.RecalculateProjectionMatrix(m_AspectRatio); }

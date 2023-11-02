@@ -12,3 +12,6 @@
 [submodule "Vendor/glm"]
 	path = Vendor/glm
 	url = https://github.com/HoooMaC/glm.git
+[submodule "Vendor/Rahman"]
+	path = Vendor/Rahman
+	url = https://github.com/HoooMaC/Rahman.git

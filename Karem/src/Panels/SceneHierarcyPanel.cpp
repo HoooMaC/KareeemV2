@@ -55,6 +55,8 @@ namespace Karem {
 						m_ContextScene->DestroyEntity(entity);
 						if (m_SelectedEntity == entity)
 							m_SelectedEntity = {};
+						if (m_MainCamera == entity)
+							m_MainCamera = {};
 					}
 				});
 
@@ -88,7 +90,19 @@ namespace Karem {
 			ImGui::Begin("Camera Entity", &MenuBar::showCameraPanel);
 
 			bool currentCameraSelected = false;
+
+			auto view = m_ContextScene->m_Registry.view<CameraComponent>();
+
+			for (const auto& entity : view)
+			{
+				auto [camera] = view.get(entity);
+				if (camera.MainCamera)
+					m_MainCamera = { entity , m_ContextScene.get() };
+				break;
+			}
+
 			const char* combopreview = m_MainCamera ? m_MainCamera.GetComponent<TagComponent>().Tag.c_str() : "No Main Camera";
+
 			if (ImGui::BeginCombo("##Camera", combopreview))
 			{
 				m_ContextScene->m_Registry.view<TagComponent, CameraComponent>().each([&](entt::entity entityId, TagComponent& tagComponent, CameraComponent& cameraComponent)
@@ -161,6 +175,8 @@ namespace Karem {
 			m_ContextScene->DestroyEntity(entity);
 			if (m_SelectedEntity == entity)
 				m_SelectedEntity = {};
+			if (m_MainCamera == entity)
+				m_MainCamera = {};
 		}
 	}
 

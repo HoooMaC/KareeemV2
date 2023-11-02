@@ -16,8 +16,9 @@ startproject "Karem"
 IncludeDir = {}
 IncludeDir["GLFW"] = "%{wks.location}/Vendor/GLFW/include"
 IncludeDir["glad"] = "%{wks.location}/Vendor/glad/include"
-IncludeDir["ImGUI"] = "%{wks.location}/Vendor/ImGUI"
+IncludeDir["Rahman"] = "%{wks.location}/Vendor/Rahman/include"
 IncludeDir["spdlog"] = "%{wks.location}/Vendor/spdlog/include"
+IncludeDir["ImGUI"] = "%{wks.location}/Vendor/ImGUI"
 IncludeDir["glm"] = "%{wks.location}/Vendor/glm"
 IncludeDir["external"] = "%{wks.location}/Engine/src/external/include"
 
@@ -43,6 +44,7 @@ project "Karem"
 		"%{IncludeDir.glad}",
 		"%{IncludeDir.ImGUI}",
 		"%{IncludeDir.glm}",
+		"%{IncludeDir.Rahman}",
 		"%{IncludeDir.external}",
 	}
 
@@ -115,6 +117,7 @@ project "Engine"
 		"%{IncludeDir.glad}",
 		"%{IncludeDir.ImGUI}",
 		"%{IncludeDir.glm}",
+		"%{IncludeDir.Rahman}",
 		"%{IncludeDir.external}",
 	}
 
@@ -144,3 +147,4 @@ group "Dependencies"
 		include "Vendor/glad"
 		include "Vendor/spdlog"
 		include "Vendor/glm"
+		include "Vendor/Rahman"
