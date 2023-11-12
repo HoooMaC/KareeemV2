@@ -8,6 +8,7 @@ namespace Karem {
 	{
 	public:
 		KaremEditor();
+		KaremEditor(const WindowProperty& prop);
 		~KaremEditor() = default;
 
 	private:

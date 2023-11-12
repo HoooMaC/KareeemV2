@@ -3,7 +3,7 @@
 
 int main()
 {
-	Karem::Application* application = Karem::CreateApplication();
-	application->Run();
-	delete application;
+	Karem::StartUpApplication(Karem::AppType::GameEngine);
+	Karem::RunApplication();
+	Karem::ShutdownApplication();
 }

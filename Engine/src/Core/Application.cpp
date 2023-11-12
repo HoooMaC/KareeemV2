@@ -12,6 +12,18 @@
 
 namespace Karem {
 
+    inline constinit Application* s_Application = nullptr;
+
+    void RunApplication()
+    {
+        s_Application->Run();
+    }
+
+    void ShutdownApplication()
+    {
+        delete s_Application;
+    }
+
     Application::Application(const WindowProperty& props) : m_Window(props)
     {
         m_Window.SetEventCallbacks(std::bind(&Application::EventHandler, this, std::placeholders::_1));
@@ -66,4 +78,5 @@ namespace Karem {
         m_Running = false;
         return true;
     }
+
 }

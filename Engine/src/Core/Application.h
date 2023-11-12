@@ -8,6 +8,16 @@
 
 namespace Karem {
 	
+	enum class AppType
+	{
+		None = 0,
+		GameEngine
+	};
+
+	// note the implemetation of the startup function still ini KaremEditor.cpp
+	void StartUpApplication(AppType type);
+	void RunApplication();
+	void ShutdownApplication();
 
 	class Application
 	{
@@ -35,5 +45,6 @@ namespace Karem {
 		bool m_Running = true;
 	};
 
-	extern Application* CreateApplication();
+	extern constinit Application* s_Application;
+
 }
