@@ -17,10 +17,10 @@ namespace Karem {
 	// TEMPORARY , this should constexpr
 	const std::vector<glm::vec4> defaultQuadPosition =
 	{
-		{ -0.5f, -0.5f, 1.0f, 1.0f },
-		{  0.5f, -0.5f, 1.0f, 1.0f },
-		{  0.5f,  0.5f, 1.0f, 1.0f },
-		{ -0.5f,  0.5f, 1.0f, 1.0f }
+		{ -0.5f, -0.5f, 0.0f, 1.0f },
+		{  0.5f, -0.5f, 0.0f, 1.0f },
+		{  0.5f,  0.5f, 0.0f, 1.0f },
+		{ -0.5f,  0.5f, 0.0f, 1.0f }
 	};
 
 	void Renderer::Initialize()
