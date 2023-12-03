@@ -7,12 +7,29 @@
 
 #include "Platform/Windows/Platform.h"
 
+//#include <KaremAppEditor.h>
+#include "../../Karem/src/KaremAppEditor.h"
+
 #include <imgui.h>
 #include "external/imgui/imgui_configuration.h"
 
 namespace Karem {
 
     inline constinit Application* s_Application = nullptr;
+
+    // TEMPORARY -- this is should in Application.cpp
+    void StartUpApplication(AppType type)
+    {
+        switch (type)
+        {
+            case Karem::AppType::None:
+                break;
+            case Karem::AppType::GameEngine:
+                s_Application = new KaremEditor();
+                break;
+        }
+    }
+
 
     void RunApplication()
     {

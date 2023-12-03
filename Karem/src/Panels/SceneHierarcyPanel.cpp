@@ -240,7 +240,6 @@ namespace Karem {
 
 			ImGui::PopStyleVar();
 
-
 			ImGui::PopID();
 		}
 		else

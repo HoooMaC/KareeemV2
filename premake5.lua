@@ -127,17 +127,20 @@ project "Engine"
 		"_CRT_SECURE_NO_WARNINGS"
 	}
 
+	filter "files:Engine/src/Core/Application.cpp"
+		includedirs {"Karem/src"}
+
 	filter "configurations:Logging"
 		defines { "_DEBUG", "ACTIVATE_LOGGING" }
 		runtime "Debug"
 		links { "spdlog" }
 		includedirs {" %{IncludeDir.spdlog}" }
 		
-		filter "configurations:Debug"
+	filter "configurations:Debug"
 		defines { "_DEBUG" }
 		runtime "Debug"
 		
-		filter "configurations:Release"
+	filter "configurations:Release"
 		defines { "NDEBUG" }
 		runtime "Release"
 		
