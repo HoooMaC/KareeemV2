@@ -47,6 +47,22 @@ namespace Karem {
 		void SetTypeToOrthographic() { m_CurrentCammeraType = Type::Orthographic; }
 		void SetTypeToPerspective() { m_CurrentCammeraType = Type::Perspective; }
 
+		void SetCameraType(int type)
+		{
+			ENGINE_ASSERT(type < 0 and type > 1, "Invalid Camera Type");
+			m_CurrentCammeraType = (Type)type;
+		}
+
+		void SetCameraType(const std::string& type)
+		{
+			if (type == "Perspective")
+				m_CurrentCammeraType = Type::Perspective;
+			else if(type == "Orthographic")
+				m_CurrentCammeraType = Type::Orthographic;
+
+			ENGINE_ASSERT(false, "Invalid Camera Type");
+		}
+
 		bool IsOrthographic() const { return m_CurrentCammeraType == Type::Orthographic; }
 		bool IsPerspective() const { return m_CurrentCammeraType == Type::Perspective; }
 
@@ -115,6 +131,12 @@ namespace Karem {
 			return m_OrthographicCamera.SetOrthographicNear(nearClip, m_AspectRatio);
 		}
 
+		void SetBothCameraNear(float orthoNearClip, float perspectiveNearClip)
+		{
+			m_OrthographicCamera.SetOrthographicNear(orthoNearClip, m_AspectRatio);
+			m_PerspectiveCamera.SetPerspectiveNearClip(perspectiveNearClip, m_AspectRatio);
+		}
+
 		float GetCameraFar()
 		{
 			switch (m_CurrentCammeraType)
@@ -135,15 +157,25 @@ namespace Karem {
 			return m_OrthographicCamera.SetOrthographicFar(farClip, m_AspectRatio);
 		}
 
+		void SetBothCameraFar(float orthoFarClip, float perspectiveFarClip)
+		{
+			m_OrthographicCamera.SetOrthographicFar(orthoFarClip, m_AspectRatio);
+			m_PerspectiveCamera.SetPerspectiveFarClip(perspectiveFarClip, m_AspectRatio);
+		}
+
 	// field for orthographic, some code here maybe temporary
 	public:
 		float GetOrthographicSize() const { return m_OrthographicCamera.m_Size; }
 		void SetOrthographicSize(float size) { m_OrthographicCamera.m_Size = size; m_OrthographicCamera.RecalculateProjectionMatrix(m_AspectRatio); }
 
+		float GetOrthographicNearClip() const { return m_OrthographicCamera.m_Near; }
+		float GetOrthographicFarClip() const { return m_OrthographicCamera.m_Far; }
 	public:
 		float GetPerspectiveVerticalFOV() const { return m_PerspectiveCamera.GetPerspectiveVerticalFOV(); }
 		void SetPerspectiveVerticalFOV(float fov) { return m_PerspectiveCamera.SetPerspectiveVerticalFOV(fov, m_AspectRatio); }
 
+		float GetPerspectiveNearClip() const { return m_PerspectiveCamera.m_NearClip; }
+		float GetPerspectiveFarClip() const { return m_PerspectiveCamera.m_FarClip; }
 	private:
 		// TODO : the default aspect ratio should be set 
 		// according to the viewport size

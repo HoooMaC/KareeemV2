@@ -172,8 +172,11 @@ namespace Karem {
 		MenuBarBackground = 0x1D283A,
 		Slider = 0xA5A6A8,
 		Separator = 0x03164B,
+
 		Header = 0x3364EB,
-		HeaderHovered = 0x9CB6FF,
+		//HeaderHovered = 0x9CB6FF,
+		HeaderHovered = Header,
+
 		HeaderActive = 0x002A9C,
 		Tab = 0x3364EB,
 		TabHovered = 0x3364EB,

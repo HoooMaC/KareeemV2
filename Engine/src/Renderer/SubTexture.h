@@ -2,6 +2,8 @@
 
 #include "Renderer/BaseTexture.h"
 
+#include <Rahman/SmartRef.h>
+
 #include <glm/glm.hpp>
 
 namespace Karem {
@@ -35,9 +37,9 @@ namespace Karem {
 		//}
 
 		const glm::vec2* GetTexCoord() const { return m_TexCoord; }
-		const std::shared_ptr<Texture2D>& GetTextureReference() const { return m_TextureReference; }		
+		Rahman::SmartRef<Texture2D> GetTextureReference() const { return m_TextureReference; }
 	private:
-		std::shared_ptr<Texture2D> m_TextureReference;
+		Rahman::SmartRef<Texture2D> m_TextureReference;
 		glm::vec2 m_TexCoord[4];
 	};
 

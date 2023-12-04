@@ -15,3 +15,9 @@
 [submodule "Vendor/Rahman"]
 	path = Vendor/Rahman
 	url = https://github.com/HoooMaC/Rahman.git
+[submodule "yaml-cpp"]
+	path = yaml-cpp
+	url = https://github.com/HoooMaC/yaml-cpp.git
+[submodule "Vendor/yaml-cpp"]
+	path = Vendor/yaml-cpp
+	url = https://github.com/HoooMaC/yaml-cpp.git

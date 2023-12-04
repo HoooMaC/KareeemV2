@@ -3,6 +3,7 @@
 #include "Scene/Scene.h"
 #include "Scene/Entity.h"
 #include "Scene/Components.h"
+#include "Scene/SceneSerializer.h"
 
 #include "Panels/MenuBar.h"
 
@@ -30,6 +31,7 @@ namespace Karem {
 		m_ActiveScene = std::make_shared<Scene>();
 		m_HierarcyPanel = SceneHierarcyPanel(m_ActiveScene);
 
+#if 0
 		{
 			Entity cameraEntity = m_ActiveScene->CreateEntity("Camera");
 			auto& cameraComponent = cameraEntity.AddComponent<CameraComponent>(OrthographicCamera(5.0f, 16.0f / 9.0f, -50.0f, 50.0f));
@@ -44,10 +46,13 @@ namespace Karem {
 			auto& squareScale = SquareEntity.GetComponent<TransformComponent>().Scale;
 			SquareEntity.AddComponent<ColorComponent>(glm::vec4{ 0.4f, 0.0f, 1.0f, 1.0f });
 		}
+#endif
+		//SceneSerializer::Deserialize(m_ActiveScene, "assets/scenes/numberOne.karem");
 	}
 
 	void KaremEditorLayer::OnDetach()
 	{
+		//SceneSerializer::Serialize(m_ActiveScene, "assets/scenes/numberOne.karem");
 	}
 
 	void KaremEditorLayer::Update(TimeStep ts)
@@ -118,130 +123,6 @@ namespace Karem {
 		//m_Camera.EventHandler(event);
 	}
 
-	static void ShowExampleMenuFile()
-	{
-		ImGui::MenuItem("(demo menu)", NULL, false, false);
-		if (ImGui::MenuItem("New")) {}
-		if (ImGui::MenuItem("Open", "Ctrl+O")) {}
-		if (ImGui::BeginMenu("Open Recent"))
-		{
-			ImGui::MenuItem("fish_hat.c");
-			ImGui::MenuItem("fish_hat.inl");
-			ImGui::MenuItem("fish_hat.h");
-			if (ImGui::BeginMenu("More.."))
-			{
-				ImGui::MenuItem("Hello");
-				ImGui::MenuItem("Sailor");
-				if (ImGui::BeginMenu("Recurse.."))
-				{
-					ShowExampleMenuFile();
-					ImGui::EndMenu();
-				}
-				ImGui::EndMenu();
-			}
-			ImGui::EndMenu();
-		}
-		if (ImGui::MenuItem("Save", "Ctrl+S")) {}
-		if (ImGui::MenuItem("Save As..")) {}
-
-		ImGui::Separator();
-		if (ImGui::BeginMenu("Options"))
-		{
-			static bool enabled = true;
-			ImGui::MenuItem("Enabled", "", &enabled);
-			ImGui::BeginChild("child", ImVec2(0, 60), true);
-			for (int i = 0; i < 10; i++)
-				ImGui::Text("Scrolling Text %d", i);
-			ImGui::EndChild();
-			static float f = 0.5f;
-			static int n = 0;
-			ImGui::SliderFloat("Value", &f, 0.0f, 1.0f);
-			ImGui::InputFloat("Input", &f, 0.1f);
-			ImGui::Combo("Combo", &n, "Yes\0No\0Maybe\0\0");
-			ImGui::EndMenu();
-		}
-
-		if (ImGui::BeginMenu("Colors"))
-		{
-			float sz = ImGui::GetTextLineHeight();
-			for (int i = 0; i < ImGuiCol_COUNT; i++)
-			{
-				const char* name = ImGui::GetStyleColorName((ImGuiCol)i);
-				ImVec2 p = ImGui::GetCursorScreenPos();
-				ImGui::GetWindowDrawList()->AddRectFilled(p, ImVec2(p.x + sz, p.y + sz), ImGui::GetColorU32((ImGuiCol)i));
-				ImGui::Dummy(ImVec2(sz, sz));
-				ImGui::SameLine();
-				ImGui::MenuItem(name);
-			}
-			ImGui::EndMenu();
-		}
-
-		if (ImGui::BeginMenu("Options"))
-		{
-			static bool b = true;
-			ImGui::Checkbox("SomeOption", &b);
-			ImGui::EndMenu();
-		}
-
-		if (ImGui::BeginMenu("Disabled", false)) // Disabled
-		{
-			IM_ASSERT(0);
-		}
-		if (ImGui::MenuItem("Checked", NULL, true)) {}
-	}
-
-	static void MenuBar()
-	{
-		// Begin menu bar +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-		if (ImGui::BeginMenuBar())
-		{
-			if (ImGui::BeginMenu("Menu"))
-			{
-				ShowExampleMenuFile();
-				ImGui::Separator();
-				ImGui::MenuItem("Quit", "Alt+F4");
-				// close window here
-
-				ImGui::EndMenu();
-			}
-			if (ImGui::BeginMenu("Examples"))
-			{
-				ImGui::MenuItem("Main menu bar");
-				ImGui::MenuItem("Console");
-				ImGui::MenuItem("Log");
-				ImGui::MenuItem("Simple layout");
-				ImGui::MenuItem("Property editor");
-				ImGui::MenuItem("Long text display");
-				ImGui::MenuItem("Auto-resizing window");
-				ImGui::MenuItem("Constrained-resizing window");
-				ImGui::MenuItem("Simple overlay");
-				ImGui::MenuItem("Fullscreen window");
-				ImGui::MenuItem("Manipulating window titles");
-				ImGui::MenuItem("Custom rendering");
-				ImGui::MenuItem("Dockspace");
-				ImGui::MenuItem("Documents");
-				ImGui::EndMenu();
-			}
-			if (ImGui::BeginMenu("Entity"))
-			{
-				ImGui::MenuItem("Entity List");
-				ImGui::MenuItem("Entity Component");
-				ImGui::EndMenu();
-			}
-			if (ImGui::BeginMenu("Tools"))
-			{
-				ImGui::MenuItem("Metrics/Debugger");
-				ImGui::MenuItem("Debug Log");
-				ImGui::MenuItem("Stack Tool");
-				ImGui::MenuItem("Style Editor");
-				ImGui::MenuItem("About Dear ImGui");
-				ImGui::EndMenu();
-			}
-			ImGui::EndMenuBar();
-		}
-		// End menu bar +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-	}
-
 	void KaremEditorLayer::RenderDockspace()
 	{
 #if OLD_VIEWPORT
@@ -288,7 +169,7 @@ namespace Karem {
 
 		ImGui::Begin("DockSpaceViewport", NULL, docks_window_flags);
 
-		MenuBar::Render();
+		MenuBar::Render(m_ActiveScene, m_HierarcyPanel);
 
 		ImGuiID dockspace_id = ImGui::GetID("DockSpace");
 		ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f));

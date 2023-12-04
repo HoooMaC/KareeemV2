@@ -28,7 +28,7 @@ namespace Karem {
 
 		virtual void Run();
 		virtual void EventHandler(Event& event);
-
+		virtual void* GetNativeWindow() { return m_Window.GetNativeWindow(); }
 	protected:
 		virtual void Init() {}
 		virtual void Shutdown() {}
@@ -46,5 +46,6 @@ namespace Karem {
 	};
 
 	extern constinit Application* s_Application;
+	inline Application* GetApplication() { return s_Application; }
 
 }

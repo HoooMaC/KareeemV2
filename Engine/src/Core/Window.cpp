@@ -9,7 +9,7 @@
 #include "Event/KeyEvent.h"
 #include "Event/MouseEvent.h"
 
-#include "Platform/Windows/Platform.h"
+#include "Platform/Platform.h"
 
 #include "imgui_setup.h"
 

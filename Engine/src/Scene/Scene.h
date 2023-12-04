@@ -12,10 +12,12 @@ namespace Karem {
 
 	class Entity;
 	class SceneHierarcyPanel;
+	class SceneSerializer;
 
 	class Scene {
 		friend class Entity;
 		friend class SceneHierarcyPanel;
+		friend class SceneSerializer;
 	public:
 		Scene();
 		~Scene() = default;
@@ -27,6 +29,7 @@ namespace Karem {
 		void EventHandler(Event& e);
 		
 		void OnViewportResize(float width, float height);
+		void OnViewportResize(float aspectRatio);
 	private:
 		entt::registry m_Registry;
 	};

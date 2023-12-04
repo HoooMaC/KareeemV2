@@ -78,5 +78,16 @@ namespace Karem{
 
 	}
 
+	void Scene::OnViewportResize(float aspectRatio)
+	{
+		const auto& view = m_Registry.view<CameraComponent>();
+
+		for (const auto entity : view)
+		{
+			auto [cc] = view.get(entity);
+			cc.Camera.SetAspectRatio(aspectRatio);
+		}
+
+	}
 
 }

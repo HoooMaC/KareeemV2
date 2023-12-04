@@ -9,3 +9,9 @@ bin-int
 
 /Karem/res/texture/**.png
 /Karem/imgui.ini
+/Karem/assets/scenes
+
+/scripts/__pycache__/**.pyc
+/scripts/__pycache__/SetupPremake.cpython-311.pyc
+/scripts/__pycache__/SetupPython.cpython-311.pyc
+/scripts/__pycache__/Utils.cpython-311.pyc

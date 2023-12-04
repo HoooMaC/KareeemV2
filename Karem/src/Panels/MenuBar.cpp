@@ -1,6 +1,12 @@
 #include "MenuBar.h"
 
+#include "Scene/SceneSerializer.h"
+#include "SceneHierarcyPanel.h"
+
+#include "Platform/Utils/FileDialog.h"
+
 #include <imgui.h>
+#include <imgui_internal.h>
 #include "external/imgui/imgui_configuration.h"
 
 namespace Karem {
@@ -9,30 +15,23 @@ namespace Karem {
 	bool MenuBar::showEntityComponent = true;
 	bool MenuBar::showCameraPanel = true;
 
-	void MenuBar::Render()
+	void MenuBar::Render(std::shared_ptr<Scene>& scene, SceneHierarcyPanel& hierarcyPanel)
 	{
 		// Begin menu bar +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		if (ImGui::BeginMenuBar())
 		{
 			if (ImGui::BeginMenu("Menu"))
 			{
-				ImGui::MenuItem("(demo menu)", NULL, false, false);
-				if (ImGui::MenuItem("New")) {}
-				if (ImGui::MenuItem("Open", "Ctrl+O")) {}
-				if (ImGui::BeginMenu("Open Recent"))
+				if (ImGui::MenuItem("New")) 
+					NewScene(scene, hierarcyPanel);
+
+				if (ImGui::MenuItem("Open...", "Ctrl+O"))
+					OpenScene(scene, hierarcyPanel);
+
+				if (ImGui::MenuItem("SaveAs...", "Ctrl+S"))
 				{
-					ImGui::MenuItem("fish_hat.c");
-					ImGui::MenuItem("fish_hat.inl");
-					ImGui::MenuItem("fish_hat.h");
-					if (ImGui::BeginMenu("More.."))
-					{
-						ImGui::MenuItem("Hello");
-						ImGui::EndMenu();
-					}
-					ImGui::EndMenu();
+					SaveSceneAs(scene, hierarcyPanel);
 				}
-				if (ImGui::MenuItem("Save", "Ctrl+S")) {}
-				if (ImGui::MenuItem("Save As..")) {}
 
 				ImGui::Separator();
 				if (ImGui::BeginMenu("Options"))
@@ -132,5 +131,48 @@ namespace Karem {
 		}
 		// End menu bar +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	}
+
+	void MenuBar::NewScene(std::shared_ptr<Scene>& scene, SceneHierarcyPanel& hierarcyPanel)
+	{
+		scene = std::make_shared<Scene>();
+		hierarcyPanel.SetContextScene(scene);
+
+		float aspectRatio = 16.0f / 9.0f;
+		if (Karem::IsImGuiContextValid())
+			if (auto viewportWindow = ImGui::FindWindowByName("Viewport"))
+				aspectRatio = viewportWindow->Size.x / viewportWindow->Size.y;
+		scene->OnViewportResize(aspectRatio);
+
+	}
+
+	void MenuBar::OpenScene(std::shared_ptr<Scene>& scene, SceneHierarcyPanel& hierarcyPanel)
+	{
+		std::string target = FileDialog::OpenFile("Karem Scene (*.karem)\0*.karem\0");
+		if(!target.empty())
+		{
+			SceneSerializer::Deserialize(scene, target);
+			hierarcyPanel.SetContextScene(scene);
+
+
+			float aspectRatio = 16.0f / 9.0f;
+			if (Karem::IsImGuiContextValid())
+				if (auto viewportWindow = ImGui::FindWindowByName("Viewport"))
+					aspectRatio = viewportWindow->Size.x / viewportWindow->Size.y;
+			scene->OnViewportResize(aspectRatio);
+
+		}
+	}
+
+	void MenuBar::SaveSceneAs(std::shared_ptr<Scene>& scene, SceneHierarcyPanel& hierarcyPanel)
+	{
+		std::string target = FileDialog::SaveFile("Karem Scene (*.karem)\0*.karem\0");
+		if (!target.empty())
+		{
+			SceneSerializer::Serialize(scene, target);
+			hierarcyPanel.SetContextScene(scene);
+		}
+
+	}
+
 
 }

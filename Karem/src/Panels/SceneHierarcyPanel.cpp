@@ -103,6 +103,7 @@ namespace Karem {
 
 			const char* combopreview = m_MainCamera ? m_MainCamera.GetComponent<TagComponent>().Tag.c_str() : "No Main Camera";
 
+			ImGui::SetNextItemWidth(ImGui::GetWindowContentRegionWidth());
 			if (ImGui::BeginCombo("##Camera", combopreview))
 			{
 				m_ContextScene->m_Registry.view<TagComponent, CameraComponent>().each([&](entt::entity entityId, TagComponent& tagComponent, CameraComponent& cameraComponent)
@@ -121,9 +122,18 @@ namespace Karem {
 				ImGui::EndCombo();
 			}
 			ImGui::End();
+
 		}
 
 	}
+
+	void SceneHierarcyPanel::SetContextScene(std::shared_ptr<Scene>& context)
+	{
+		m_ContextScene = context;
+		m_SelectedEntity = {};
+		m_MainCamera = {};
+	}
+
 	void SceneHierarcyPanel::DrawEntityTree(Entity entity, TagComponent& tag)
 	{
 		static constexpr ImGuiTreeNodeFlags flags = //ImGuiTreeNodeFlags_Framed
@@ -256,6 +266,7 @@ namespace Karem {
 
 			float lineHeight = ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.y * 2;
 			const ImVec2 buttonSize = { lineHeight + 3.0f, lineHeight };
+			//ImGui::PushStyleColor(ImGuiCol_HeaderHovered, HexToVec4<ImVec4>(Color::Header));
 
 			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.8f, 0.1f, 0.15f, 1.0f });
 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.9f, 0.2f, 0.2f, 1.0f });
@@ -421,7 +432,6 @@ namespace Karem {
 
 		if (opened)
 		{
-
 			DrawComponent<TagComponent>("Tag", m_SelectedEntity, [&](TagComponent& component)
 				{
 					std::string& tag = m_SelectedEntity.GetComponent<TagComponent>().Tag;
@@ -535,7 +545,7 @@ namespace Karem {
 					ImGui::TableSetColumnIndex(0);
 					ImGui::Text("Near");
 					ImGui::TableSetColumnIndex(1);
-					
+
 					float nearClip = camera.GetCameraNear();
 					regionAvail = ImGui::GetContentRegionAvail();
 					ImGui::SetNextItemWidth(regionAvail.x);
@@ -547,7 +557,7 @@ namespace Karem {
 					ImGui::TableSetColumnIndex(0);
 					ImGui::Text("Far");
 					ImGui::TableSetColumnIndex(1);
-					
+
 
 					float farClip = camera.GetCameraFar();
 					regionAvail = ImGui::GetContentRegionAvail();
@@ -557,7 +567,7 @@ namespace Karem {
 
 					ImGui::PopStyleVar();
 					ImGui::EndTable();
-				}
+				}, m_SelectedEntity == m_MainCamera ? false : true // TODO: THIS IS WEIRD
 			);
 
 			ImGui::TreePop();

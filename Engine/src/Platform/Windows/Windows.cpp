@@ -1,5 +1,5 @@
 #include "Core/Kareeem.h"
-#include "Platform.h"
+#include "Platform/Platform.h"
 
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>

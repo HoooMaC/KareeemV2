@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Scene/Scene.h"
+
 #include <vector>
 
 namespace Karem {
@@ -10,7 +12,12 @@ namespace Karem {
 	{
 		friend SceneHierarcyPanel;
 	public:
-		static void Render();
+		static void Render(std::shared_ptr<Scene>& scene, SceneHierarcyPanel& hierarcyPanel);
+
+	private:
+		static void NewScene(std::shared_ptr<Scene>& scene, SceneHierarcyPanel& hierarcyPanel);
+		static void OpenScene(std::shared_ptr<Scene>& scene, SceneHierarcyPanel& hierarcyPanel);
+		static void SaveSceneAs(std::shared_ptr<Scene>& scene, SceneHierarcyPanel& hierarcyPanel);
 
 	private:
 		static bool showEntityList;

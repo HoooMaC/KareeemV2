@@ -5,7 +5,7 @@
 #include "Renderer/Renderer.h"
 #include "Renderer/RenderCommand.h"
 
-#include "Platform/Windows/Platform.h"
+#include "Platform/Platform.h"
 
 //#include <KaremAppEditor.h>
 #include "../../Karem/src/KaremAppEditor.h"

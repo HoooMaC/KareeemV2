@@ -13,6 +13,7 @@ namespace Karem {
 
 		void RenderImGUI();
 		
+		void SetContextScene(std::shared_ptr<Scene>& context);
 	private:
 		void DrawEntityTree(Entity entity, TagComponent& tag);
 		void DrawEntityComponents(Entity entity);

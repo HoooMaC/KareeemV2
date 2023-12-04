@@ -4,7 +4,6 @@
 #include "Scene/Scene.h"
 
 #include <Rahman/SmartRef.h>
-
 #include <entt/entt.hpp>
 
 namespace Karem {
