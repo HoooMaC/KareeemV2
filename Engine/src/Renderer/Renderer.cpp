@@ -13,9 +13,9 @@ namespace Karem {
 	Renderer::Meshes* Renderer::s_Meshes = new Meshes;
 
 	static constinit glm::mat4 s_ViewProjection = glm::mat4(1.0f);
+	static constinit std::shared_ptr<Texture2D> whiteTexture;
 
-	// TEMPORARY , this should constexpr
-	const std::vector<glm::vec4> defaultQuadPosition =
+	static constexpr glm::vec4 defaultQuadPosition[4] =
 	{
 		{ -0.5f, -0.5f, 0.0f, 1.0f },
 		{  0.5f, -0.5f, 0.0f, 1.0f },
@@ -49,7 +49,8 @@ namespace Karem {
 
 		s_Buffer->TextureContainer.resize(32);
 		s_Buffer->TextureSlotContainer.resize(32);
-		s_Buffer->TextureContainer[0] = Karem::CreateTexture2D(0);
+		whiteTexture = Karem::CreateTexture2D(0);
+		s_Buffer->TextureContainer[0] = whiteTexture;
 
 		for (int i = 0; i < 32; i++)
 			s_Buffer->TextureSlotContainer[i] = i;
@@ -170,7 +171,7 @@ namespace Karem {
 		BufferData::indicesOffset += 4;
 	}
 
-	void Renderer::SubmitQuad(const glm::mat4& transform, const std::shared_ptr<Texture2D>& texture, float texIndex, const glm::vec4& color)
+	void Renderer::SubmitQuad(const glm::mat4& transform, Rahman::SmartRef<Texture2D> texture, float texIndex, const glm::vec4& color)
 	{
 		if (BufferData::vertexIndex + 4 >= BufferData::maxVertex or BufferData::indicesIndex + 6 >= BufferData::maxIndexBuffer)
 		{
@@ -205,7 +206,7 @@ namespace Karem {
 			EndScene();
 		}
 
-		const std::shared_ptr<Texture2D>& reference = subTexture.GetTextureReference();
+		s_Buffer->TextureContainer[(int)texIndex] = subTexture.GetTextureReference();
 		const glm::vec2* texCoord = subTexture.GetTexCoord();
 
 		uint32_t offset = BufferData::indicesOffset;
@@ -222,8 +223,6 @@ namespace Karem {
 		s_Buffer->indicesData[BufferData::indicesIndex + 4] = offset + 3;
 		s_Buffer->indicesData[BufferData::indicesIndex + 5] = offset + 0;
 
-		s_Buffer->TextureContainer[(int)texIndex] = reference;
-
 		BufferData::vertexIndex += 4;
 		BufferData::indicesIndex += 6;
 		BufferData::indicesOffset += 4;
@@ -236,7 +235,7 @@ namespace Karem {
 			EndScene();
 		}
 
-		const std::shared_ptr<Texture2D>& reference = subTexture.GetTextureReference();
+		s_Buffer->TextureContainer[(int)texIndex] = subTexture.GetTextureReference();
 		const glm::vec2* texCoord = subTexture.GetTexCoord();
 
 		uint32_t offset = BufferData::indicesOffset;
@@ -255,8 +254,6 @@ namespace Karem {
 		s_Buffer->indicesData[BufferData::indicesIndex + 3] = offset + 2;
 		s_Buffer->indicesData[BufferData::indicesIndex + 4] = offset + 3;
 		s_Buffer->indicesData[BufferData::indicesIndex + 5] = offset + 0;
-
-		s_Buffer->TextureContainer[(int)texIndex] = reference;
 
 		BufferData::vertexIndex += 4;
 		BufferData::indicesIndex += 6;
@@ -306,7 +303,7 @@ namespace Karem {
 		BufferData::indicesOffset += 4;
 	}
 
-	void Renderer::SubmitRotatedQuad(const glm::vec4& pos, const glm::vec2& size, float rotation, const std::shared_ptr<Texture2D>& texture, float texIndex, const glm::vec4& color)
+	void Renderer::SubmitRotatedQuad(const glm::vec4& pos, const glm::vec2& size, float rotation, Rahman::SmartRef<Texture2D> texture, float texIndex, const glm::vec4& color)
 	{
 		if (BufferData::vertexIndex + 4 >= BufferData::maxVertex || BufferData::indicesIndex + 6 >= BufferData::maxIndexBuffer)
 		{
@@ -383,9 +380,13 @@ namespace Karem {
 
 		for (const auto& texture : s_Buffer->TextureContainer)
 		{
-			if (texture == nullptr)
-				continue;
-			texture->Bind();
+			try {
+				if(texture.IsValid())
+					texture->Bind();
+			}
+			catch (...) {
+				ENGINE_ASSERT(false, "");
+			}
 		}
 	}
 
