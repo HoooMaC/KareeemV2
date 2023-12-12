@@ -2,6 +2,7 @@
 #include "Renderer.h"
 
 #include "Renderer/RenderCommand.h"
+#include "Renderer/EditorCamera.h"
 
 namespace Karem {
 
@@ -13,7 +14,7 @@ namespace Karem {
 	Renderer::Meshes* Renderer::s_Meshes = new Meshes;
 
 	static constinit glm::mat4 s_ViewProjection = glm::mat4(1.0f);
-	static constinit std::shared_ptr<Texture2D> whiteTexture;
+	static constinit Texture2D* s_WhiteTexture = nullptr;
 
 	static constexpr glm::vec4 defaultQuadPosition[4] =
 	{
@@ -49,8 +50,8 @@ namespace Karem {
 
 		s_Buffer->TextureContainer.resize(32);
 		s_Buffer->TextureSlotContainer.resize(32);
-		whiteTexture = Karem::CreateTexture2D(0);
-		s_Buffer->TextureContainer[0] = whiteTexture;
+		s_WhiteTexture = CreateRawTexture2D(0);
+		s_Buffer->TextureContainer[0] = s_WhiteTexture;
 
 		for (int i = 0; i < 32; i++)
 			s_Buffer->TextureSlotContainer[i] = i;
@@ -58,8 +59,17 @@ namespace Karem {
 
 	void Renderer::Shutdown()
 	{
+		DestroyRawTexture2D(s_WhiteTexture);
 		delete s_Buffer;
 		delete s_Meshes;
+	}
+
+	void Renderer::BeginScene(EditorCamera& camera)
+	{
+		s_ViewProjection = camera.GetViewProjectionMatrix();
+
+		s_Buffer->vertexData.resize(BufferData::maxVertex);
+		s_Buffer->indicesData.resize(BufferData::maxIndexBuffer);
 	}
 
 	void Renderer::BeginScene(const glm::mat4& projection, const glm::mat4& cameraTransform)

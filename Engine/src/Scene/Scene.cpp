@@ -31,11 +31,13 @@ namespace Karem{
 		m_Registry.destroy(entity);
 	}
 
-	void Scene::Update(TimeStep ts)
+	void Scene::UpdateOnPlay(TimeStep ts)
 	{
 		CameraHandler* mainCamera = nullptr;
 		glm::mat4 cameraTransform(1.0f);
 		auto view = m_Registry.view<TransformComponent, CameraComponent>();
+
+		// look for the camera
 		for (const auto entity : view)
 		{
 			auto [tc, cc] = view.get(entity);
@@ -62,10 +64,24 @@ namespace Karem{
 		}
 	}
 
+	void Scene::UpdateOnEdit(TimeStep ts, EditorCamera& camera)
+	{
+		Renderer::BeginScene(camera);
+
+		auto group = m_Registry.group<TransformComponent>(entt::get<ColorComponent>);
+		for (const auto entity : group)
+		{
+			auto [transform, color] = group.get(entity);
+			Renderer::SubmitQuad(transform.GetTransformMatrix(), color.Color);
+		}
+		Renderer::EndScene();
+	}
+
 	void Scene::EventHandler(Event& e)
 	{
 	}
 
+	// Change the aspect ratio of all camera
 	void Scene::OnViewportResize(float width, float height)
 	{
 		const auto& view = m_Registry.view<CameraComponent>();
@@ -78,6 +94,7 @@ namespace Karem{
 
 	}
 
+	// Change the aspect ratio of all camera
 	void Scene::OnViewportResize(float aspectRatio)
 	{
 		const auto& view = m_Registry.view<CameraComponent>();

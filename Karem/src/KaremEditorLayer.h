@@ -2,7 +2,7 @@
 
 #include "KaremEngine.h"
 
-#include "Panels/SceneHierarcyPanel.h"
+#include "Panels/Panel.h"
 
 namespace Karem {
 
@@ -20,24 +20,44 @@ namespace Karem {
 		void RenderImGUI() override;
 		void EventHandler(Event& event) override;
 
-		// TO DO : this is shold close the window. For now this do nothing
-		void CloseWindow() {}
-
 	private:
 		void RenderDockspace();
 		void RenderViewportPanel();
-
+		void ChangeScene() {} // TODO : Need to implemented
 	private:
 		bool WindowResizeAction(WindowResizeEvent& event);
 
+		void NewScene()
+		{
+			m_ActiveScene = std::make_shared<Scene>();
+			m_Panels.SetScene(m_ActiveScene);
+		}
+
+		void SaveSceneAs(std::string_view filepath)
+		{
+			SceneSerializer::Serialize(m_ActiveScene, filepath);
+		}
+
+		void OpenScene(std::string_view filepath)
+		{
+			m_ActiveScene.reset(new Scene);
+			SceneSerializer::Deserialize(m_ActiveScene, filepath);
+			m_Panels.SetScene(m_ActiveScene);
+		}
+	private:
+		enum class State
+		{
+			Edit = 0,
+			Play
+		};
+		State m_CurrentState = State::Play;
 	private:
 		glm::vec2 m_CurrentViewportSize = { 0.0f, 0.0f };
-		SceneHierarcyPanel m_HierarcyPanel;
-
+		Panels m_Panels;
 		std::shared_ptr<FrameBuffer> m_FrameBuffer; // who owns the frame buffer
 		std::shared_ptr<Scene> m_ActiveScene;
-		std::shared_ptr<Texture2D> m_Texture;
-		SubTexture2D m_SpriteSheet;
+
+		EditorCamera m_EditorCamera;
 	};
 
 }

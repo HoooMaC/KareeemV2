@@ -1,28 +1,23 @@
+#include "KaremEngine.h"
+
 #include "SceneHierarcyPanel.h"
-
-#include "Scene/Components.h"
-
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
-#include "MenuBar.h"
 
 #include <imgui.h>
 #include <imgui_internal.h>
 
 namespace Karem {
 
-	void SceneHierarcyPanel::RenderImGUI()
+	void SceneHierarcyPanel::Render(Entity& selectedEntity, Entity& mainCamera, const std::shared_ptr<Scene>& m_ContextScene)
 	{
-		if (MenuBar::showEntityList)
+		if (m_Panels[(int16_t)PanelsStatus::EntityList])
 		{
-			ImGui::Begin("Entity List", &MenuBar::showEntityList);
+			ImGui::Begin("Entity List", &m_Panels[(int16_t)PanelsStatus::EntityList]);
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 0.0f,0.0f });
 			m_ContextScene->m_Registry.view<TagComponent>().each([&](entt::entity entityId, TagComponent& tagComponent)
 				{
 					Entity entity = Entity{ entityId, m_ContextScene.get() };
 
-					ImGuiTreeNodeFlags entityListFlags = m_SelectedEntity == entity ? ImGuiTreeNodeFlags_Selected : 0;
+					ImGuiTreeNodeFlags entityListFlags = selectedEntity == entity ? ImGuiTreeNodeFlags_Selected : 0;
 					entityListFlags |= ImGuiTreeNodeFlags_Framed
 						| ImGuiTreeNodeFlags_OpenOnArrow
 						| ImGuiTreeNodeFlags_SpanAvailWidth;
@@ -32,7 +27,7 @@ namespace Karem {
 
 					if (ImGui::IsItemClicked())
 					{
-						m_SelectedEntity = entity;
+						selectedEntity = entity;
 					}
 
 					bool isEntityDeleted = false;
@@ -53,15 +48,15 @@ namespace Karem {
 					if (isEntityDeleted)
 					{
 						m_ContextScene->DestroyEntity(entity);
-						if (m_SelectedEntity == entity)
-							m_SelectedEntity = {};
-						if (m_MainCamera == entity)
-							m_MainCamera = {};
+						if (selectedEntity == entity)
+							selectedEntity = {};
+						if (mainCamera == entity)
+							mainCamera = {};
 					}
 				});
 
 			if (ImGui::IsMouseDown(0) and ImGui::IsWindowHovered())
-				m_SelectedEntity = {};
+				selectedEntity = {};
 
 			if (ImGui::BeginPopupContextWindow("Create new entity", ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems | ImGuiPopupFlags_NoOpenOverExistingPopup))
 			{
@@ -75,19 +70,19 @@ namespace Karem {
 		}
 
 
-		if (MenuBar::showEntityComponent)
+		if (m_Panels[(int16_t)PanelsStatus::EntityComponent])
 		{
-			ImGui::Begin("Selected Entity Properties", &MenuBar::showEntityComponent);
+			ImGui::Begin("Selected Entity Properties", &m_Panels[(int16_t)PanelsStatus::EntityComponent]);
 
-			if (m_SelectedEntity)
-				DrawEntityComponents(m_SelectedEntity);
+			if (selectedEntity)
+				DrawEntityComponents(selectedEntity, selectedEntity, mainCamera);
 
 			ImGui::End();
 		}
 
-		if (MenuBar::showCameraPanel)
+		if (m_Panels[(int16_t)PanelsStatus::CameraPanel])
 		{
-			ImGui::Begin("Camera Entity", &MenuBar::showCameraPanel);
+			ImGui::Begin("Camera Entity", &m_Panels[(int16_t)PanelsStatus::CameraPanel]);
 
 			bool currentCameraSelected = false;
 
@@ -97,27 +92,27 @@ namespace Karem {
 			{
 				auto [camera] = view.get(entity);
 				if (camera.MainCamera)
-					m_MainCamera = { entity , m_ContextScene.get() };
+					mainCamera = { entity , m_ContextScene.get() };
 				break;
 			}
 
-			const char* combopreview = m_MainCamera ? m_MainCamera.GetComponent<TagComponent>().Tag.c_str() : "No Main Camera";
+			const char* combopreview = mainCamera ? mainCamera.GetComponent<TagComponent>().Tag.c_str() : "No Main Camera";
 
 			ImGui::SetNextItemWidth(ImGui::GetWindowContentRegionWidth());
 			if (ImGui::BeginCombo("##Camera", combopreview))
 			{
 				m_ContextScene->m_Registry.view<TagComponent, CameraComponent>().each([&](entt::entity entityId, TagComponent& tagComponent, CameraComponent& cameraComponent)
-				{
-					currentCameraSelected = m_MainCamera == entityId;
-
-					if (ImGui::Selectable(tagComponent.Tag.c_str(), currentCameraSelected))
 					{
-						cameraComponent.MainCamera = true;
-						if(m_MainCamera and m_MainCamera != entityId)
-							m_MainCamera.GetComponent<CameraComponent>().MainCamera = false;
-						m_MainCamera = { entityId, m_ContextScene.get() };
-					}
-				});
+						currentCameraSelected = mainCamera == entityId;
+
+						if (ImGui::Selectable(tagComponent.Tag.c_str(), currentCameraSelected))
+						{
+							cameraComponent.MainCamera = true;
+							if (mainCamera and mainCamera != entityId)
+								mainCamera.GetComponent<CameraComponent>().MainCamera = false;
+							mainCamera = { entityId, m_ContextScene.get() };
+						}
+					});
 
 				ImGui::EndCombo();
 			}
@@ -125,69 +120,6 @@ namespace Karem {
 
 		}
 
-	}
-
-	void SceneHierarcyPanel::SetContextScene(std::shared_ptr<Scene>& context)
-	{
-		m_ContextScene = context;
-		m_SelectedEntity = {};
-		m_MainCamera = {};
-	}
-
-	void SceneHierarcyPanel::DrawEntityTree(Entity entity, TagComponent& tag)
-	{
-		static constexpr ImGuiTreeNodeFlags flags = //ImGuiTreeNodeFlags_Framed
-			//| ImGuiTreeNodeFlags_FramePadding
-			ImGuiTreeNodeFlags_AllowItemOverlap
-			| ImGuiTreeNodeFlags_SpanAvailWidth;
-
-		const auto contentRegionAvail = ImGui::GetContentRegionAvail();
-		const auto fontSize = ImGui::GetFontSize();
-		const auto& style = ImGui::GetStyle();
-		const float lineHeight = fontSize + style.FramePadding.y * 2.0f;
-		const ImVec2 buttonSize = { lineHeight, lineHeight };
-
-		bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity, flags | ((m_SelectedEntity == entity) ? ImGuiTreeNodeFlags_Selected : 0), tag.Tag.c_str());
-		//opened &= (bool)m_SelectedEntity;
-
-		ImGui::SameLine(contentRegionAvail.x - buttonSize.x * 0.5f);
-
-		const std::string popupLabel = "Delete Entity" + tag.Tag;
-
-		if (ImGui::Button("+", buttonSize))
-			ImGui::OpenPopup(popupLabel.c_str());
-
-		if (ImGui::IsMouseDown(1) and ImGui::IsItemHovered())
-		{
-			ImGui::OpenPopup(popupLabel.c_str());
-		}
-
-		bool isEntityDestroyed = false;
-		if (ImGui::BeginPopup(popupLabel.c_str(), ImGuiWindowFlags_NoMove | ImGuiPopupFlags_NoOpenOverItems | ImGuiPopupFlags_NoOpenOverExistingPopup))
-		{
-			if (ImGui::MenuItem("Remove Entity"))
-			{
-				isEntityDestroyed = true;
-				ImGui::CloseCurrentPopup();
-			}
-			ImGui::EndPopup();
-		}
-
-		//ImGui::TreePushOverrideID(id);
-		if (opened)
-		{
-			m_SelectedEntity = { entity, m_ContextScene.get() };
-			ImGui::TreePop();
-		}
-
-		if (isEntityDestroyed)
-		{
-			m_ContextScene->DestroyEntity(entity);
-			if (m_SelectedEntity == entity)
-				m_SelectedEntity = {};
-			if (m_MainCamera == entity)
-				m_MainCamera = {};
-		}
 	}
 
 	static void DrawFloat3Component(const char* label, glm::vec3& values, float resetValue = 0.0, float columnWidth = 100.0f)
@@ -339,7 +271,7 @@ namespace Karem {
 			std::string popupLabel = "RemoveComponent";
 			popupLabel.insert(6, label.data());
 
-			if(isRemovable)
+			if (isRemovable)
 			{
 				ImGui::SameLine(contentRegionAvail.x + lineHeight / 2.0f);
 				if (ImGui::Button("-", buttonSize))
@@ -371,7 +303,7 @@ namespace Karem {
 		}
 	}
 
-	void SceneHierarcyPanel::DrawEntityComponents(Entity entity)
+	void SceneHierarcyPanel::DrawEntityComponents(Entity entity, Entity& selectedEntity, Entity& mainCamera)
 	{
 		static constexpr ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen
 			| ImGuiTreeNodeFlags_Framed
@@ -389,7 +321,7 @@ namespace Karem {
 		const ImVec2 buttonSize = { lineHeight, lineHeight };
 
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4,4 });
-		std::string& tag = m_SelectedEntity.GetComponent<TagComponent>().Tag;
+		std::string& tag = selectedEntity.GetComponent<TagComponent>().Tag;
 
 		ImGui::Separator();
 		bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity, flags, tag.c_str());
@@ -401,29 +333,29 @@ namespace Karem {
 
 		if (ImGui::BeginPopup("Add Component", ImGuiWindowFlags_NoMove))
 		{
-			if (!m_SelectedEntity.IsHasComponent<TransformComponent>())
+			if (!selectedEntity.IsHasComponent<TransformComponent>())
 			{
 				if (ImGui::MenuItem("Transform"))
 				{
-					m_SelectedEntity.AddComponent<TransformComponent>();
+					selectedEntity.AddComponent<TransformComponent>();
 					ImGui::CloseCurrentPopup();
 				}
 			}
 
-			if (!m_SelectedEntity.IsHasComponent<ColorComponent>())
+			if (!selectedEntity.IsHasComponent<ColorComponent>())
 			{
 				if (ImGui::MenuItem("Color"))
 				{
-					m_SelectedEntity.AddComponent<ColorComponent>();
+					selectedEntity.AddComponent<ColorComponent>();
 					ImGui::CloseCurrentPopup();
 				}
 			}
 
-			if (!m_SelectedEntity.IsHasComponent<CameraComponent>())
+			if (!selectedEntity.IsHasComponent<CameraComponent>())
 			{
 				if (ImGui::MenuItem("Camera"))
 				{
-					m_SelectedEntity.AddComponent<CameraComponent>();
+					selectedEntity.AddComponent<CameraComponent>();
 					ImGui::CloseCurrentPopup();
 				}
 			}
@@ -432,9 +364,9 @@ namespace Karem {
 
 		if (opened)
 		{
-			DrawComponent<TagComponent>("Tag", m_SelectedEntity, [&](TagComponent& component)
+			DrawComponent<TagComponent>("Tag", selectedEntity, [&](TagComponent& component)
 				{
-					std::string& tag = m_SelectedEntity.GetComponent<TagComponent>().Tag;
+					std::string& tag = selectedEntity.GetComponent<TagComponent>().Tag;
 					const char* tc = tag.c_str();
 
 					char tagBuffer[256];
@@ -446,9 +378,9 @@ namespace Karem {
 						tag = tagBuffer;
 
 					ImGui::PopStyleVar();
-				}, false ); // TODO : The argument false here is very weird. Think to move into the component itself
+				}, false); // TODO : The argument false here is very weird. Think to move into the component itself
 
-			DrawComponent<TransformComponent>("Transform", m_SelectedEntity, [](TransformComponent& component)
+			DrawComponent<TransformComponent>("Transform", selectedEntity, [](TransformComponent& component)
 				{
 					static constexpr ImGuiTableFlags transfromTableFlags = ImGuiTableFlags_BordersInnerV
 						| ImGuiTableFlags_SizingFixedFit
@@ -472,13 +404,13 @@ namespace Karem {
 				}
 			);
 
-			DrawComponent<ColorComponent>("Color", m_SelectedEntity, [](ColorComponent& component)
+			DrawComponent<ColorComponent>("Color", selectedEntity, [](ColorComponent& component)
 				{
 					ImGui::ColorEdit4("##Color", glm::value_ptr(component.Color));
 				}
 			);
 
-			DrawComponent<CameraComponent>("Camera", m_SelectedEntity, [](CameraComponent& component)
+			DrawComponent<CameraComponent>("Camera", selectedEntity, [](CameraComponent& component)
 				{
 					static constexpr ImGuiTableFlags cameraTableFlags = ImGuiTableFlags_BordersInnerV
 						| ImGuiTableFlags_SizingFixedFit
@@ -567,7 +499,7 @@ namespace Karem {
 
 					ImGui::PopStyleVar();
 					ImGui::EndTable();
-				}, m_SelectedEntity == m_MainCamera ? false : true // TODO: THIS IS WEIRD
+				}, selectedEntity == mainCamera ? false : true // TODO: THIS IS WEIRD
 			);
 
 			ImGui::TreePop();

@@ -1,28 +1,40 @@
 #pragma once
 
-#include "KaremEngine.h"
+#include "Scene/Scene.h"
+
+#include <memory>
 
 namespace Karem {
 
 	class SceneHierarcyPanel
 	{
+		friend class MenubarPanel;
+
+		enum class PanelsStatus : int16_t
+		{
+			EntityList = 0,
+			EntityComponent,
+			CameraPanel,
+			Counts
+		};
 	public:
 		SceneHierarcyPanel() = default;
 		SceneHierarcyPanel(const std::shared_ptr<Scene>& context)
-			: m_ContextScene(context) {}
+		{
+			static_assert((uint64_t)PanelsStatus::Counts * sizeof(bool) == sizeof(m_Panels), "Size mismatch");
+			memset(m_Panels, 0, sizeof(m_Panels));
+		}
 
-		void RenderImGUI();
-		
-		void SetContextScene(std::shared_ptr<Scene>& context);
+		void Render(Entity& selectedEntity, Entity& mainCamera, const std::shared_ptr<Scene>& scene);
+
+
+		bool* GetPanelStatus() { return m_Panels; }
 	private:
-		void DrawEntityTree(Entity entity, TagComponent& tag);
-		void DrawEntityComponents(Entity entity);
-		
+		//void DrawEntityTree(Entity entity, TagComponent& tag);
+		void DrawEntityComponents(Entity entity, Entity& selectedEntity, Entity& mainCamera);
+
 	private:
-		Entity m_SelectedEntity;
-		Entity m_MainCamera;
-			
-		std::shared_ptr<Scene> m_ContextScene;
+		bool m_Panels[(int16_t)PanelsStatus::Counts];
 	};
 
 }

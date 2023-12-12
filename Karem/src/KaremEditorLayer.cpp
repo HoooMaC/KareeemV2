@@ -5,8 +5,6 @@
 #include "Scene/Components.h"
 #include "Scene/SceneSerializer.h"
 
-#include "Panels/MenuBar.h"
-
 #include <imgui.h>
 #include <imgui_internal.h>
 #include <imgui_setup.h>
@@ -22,15 +20,16 @@ namespace Karem {
 		// ? fkdsjkfsaklfdsjalkj
 		// TODO: FDSFFJKJFDLKJAKSFJFKDSAFDJ
 		//------------------------------------------------------------------------
-		// this is overriding texture in index 3 in texture renderer
-		m_Texture = CreateTexture2D("res/texture/spritesheet/city_tilemap.png", 1);
-		m_SpriteSheet = SubTexture2D(m_Texture, { 0,4 }, { 8,8 }, { 5,4 });
+		//m_Texture = CreateTexture2D("res/texture/spritesheet/city_tilemap.png", 1);
+		//m_SpriteSheet = SubTexture2D(m_Texture, { 0,4 }, { 8,8 }, { 5,4 });
 		//------------------------------------------------------------------------
 
 		m_FrameBuffer = CreateFrameBuffer(1280, 720);
 		m_ActiveScene = std::make_shared<Scene>();
-		m_HierarcyPanel = SceneHierarcyPanel(m_ActiveScene);
-
+		m_Panels.SetScene(m_ActiveScene);
+		m_Panels.SetNewSceneFuction(std::bind(&KaremEditorLayer::NewScene, this));
+		m_Panels.SetSaveSceneAsFuction(std::bind(&KaremEditorLayer::SaveSceneAs, this, std::placeholders::_1));
+		m_Panels.SetOpenSceneFuction(std::bind(&KaremEditorLayer::OpenScene, this, std::placeholders::_1));
 #if 0
 		{
 			Entity cameraEntity = m_ActiveScene->CreateEntity("Camera");
@@ -47,12 +46,10 @@ namespace Karem {
 			SquareEntity.AddComponent<ColorComponent>(glm::vec4{ 0.4f, 0.0f, 1.0f, 1.0f });
 		}
 #endif
-		//SceneSerializer::Deserialize(m_ActiveScene, "assets/scenes/numberOne.karem");
 	}
 
 	void KaremEditorLayer::OnDetach()
 	{
-		//SceneSerializer::Serialize(m_ActiveScene, "assets/scenes/numberOne.karem");
 	}
 
 	void KaremEditorLayer::Update(TimeStep ts)
@@ -95,8 +92,19 @@ namespace Karem {
 		}
 		Renderer2D::EndScene();
 #endif
-
-		m_ActiveScene->Update(ts);
+		switch (m_CurrentState)
+		{
+			case State::Edit:
+			{
+				m_ActiveScene->UpdateOnEdit(ts, m_EditorCamera);
+				break;
+			}
+			case State::Play:
+			{
+				m_ActiveScene->UpdateOnPlay(ts);
+				break;
+			}
+		}
 
 		m_FrameBuffer->UnBind();
 	}
@@ -106,11 +114,13 @@ namespace Karem {
 		imgui::BeginFrame();
 
 		RenderDockspace();
+		// old
 		RenderViewportPanel();
 
 		ImGui::ShowDemoWindow();
 
-		m_HierarcyPanel.RenderImGUI();
+		//m_HierarcyPanel.RenderImGUI();
+		m_Panels.RenderHierarcyPanel();
 
 		imgui::EndFrame();
 	}
@@ -118,9 +128,9 @@ namespace Karem {
 	void KaremEditorLayer::EventHandler(Event& event)
 	{
 		EventDispatcher dispatcher(event);
-		dispatcher.Dispatch<WindowResizeEvent>(std::bind(&KaremEditorLayer::WindowResizeAction, this, std::placeholders::_1));
+			
 		m_ActiveScene->EventHandler(event);
-		//m_Camera.EventHandler(event);
+		m_Panels.EventHandler(event);
 	}
 
 	void KaremEditorLayer::RenderDockspace()
@@ -141,8 +151,8 @@ namespace Karem {
 			| ImGuiWindowFlags_NoBringToFrontOnFocus
 			| ImGuiWindowFlags_NoNavFocus
 			| ImGuiWindowFlags_MenuBar;
-			//| ImGuiWindowFlags_NoResize
-			//| ImGuiWindowFlags_NoMove
+		//| ImGuiWindowFlags_NoResize
+		//| ImGuiWindowFlags_NoMove
 
 		ImGui::Begin("DockSpaceViewport", NULL, docks_window_flags);
 
@@ -169,7 +179,12 @@ namespace Karem {
 
 		ImGui::Begin("DockSpaceViewport", NULL, docks_window_flags);
 
-		MenuBar::Render(m_ActiveScene, m_HierarcyPanel);
+		//old
+		//MenuBar::Render(m_ActiveScene, m_HierarcyPanel);
+
+		// !TODO
+		// target
+		m_Panels.RenderMenubar();
 
 		ImGuiID dockspace_id = ImGui::GetID("DockSpace");
 		ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f));
@@ -188,6 +203,7 @@ namespace Karem {
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
 		ImGui::Begin("Viewport");
+
 		ImVec2 currentPannelSize = ImGui::GetContentRegionAvail();
 		m_CurrentViewportSize = *(glm::vec2*)&currentPannelSize;
 		uint64_t textureID = m_FrameBuffer->GetTextureColorAttachmentID();

@@ -37,4 +37,6 @@ namespace Karem {
 	std::shared_ptr<Texture2D> CreateTexture2D(uint32_t slot = 0);
 	std::shared_ptr<Texture2D> CreateTexture2D(std::string_view filePath, uint32_t slot = 0, uint32_t filter = KAREM_NEAREST);
 
+	Texture2D* CreateRawTexture2D(uint32_t slot = 0);
+	bool DestroyRawTexture2D(Texture2D* texture);
 }

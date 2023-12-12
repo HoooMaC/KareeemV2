@@ -1,28 +1,27 @@
 #pragma once
 
-#include "Scene/Scene.h"
-
-#include <vector>
+#include "Event/Event.h"
+#include "Event/KeyEvent.h"
 
 namespace Karem {
 
-	class SceneHierarcyPanel;
+	class Panels;
 
-	class MenuBar
+	class MenubarPanel
 	{
-		friend SceneHierarcyPanel;
+		friend class Panels;
 	public:
-		static void Render(std::shared_ptr<Scene>& scene, SceneHierarcyPanel& hierarcyPanel);
+		void Render(bool* statusArray);
+		void EventHandler(Event& event);
 
 	private:
-		static void NewScene(std::shared_ptr<Scene>& scene, SceneHierarcyPanel& hierarcyPanel);
-		static void OpenScene(std::shared_ptr<Scene>& scene, SceneHierarcyPanel& hierarcyPanel);
-		static void SaveSceneAs(std::shared_ptr<Scene>& scene, SceneHierarcyPanel& hierarcyPanel);
+		bool KeyPressedAction(KeyPressedEvent& event);
 
 	private:
-		static bool showEntityList;
-		static bool showEntityComponent;
-		static bool showCameraPanel;
+		std::function<void()> newSceneFunction;
+		std::function<void(std::string_view)> saveSceneAsFunction;
+		std::function<void(std::string_view)> openSceneFunction;
+
 	};
 
 }

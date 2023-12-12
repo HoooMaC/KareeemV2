@@ -11,6 +11,8 @@
 
 namespace Karem {
 
+	class EditorCamera;
+
 	class Renderer
 	{
 	public:
@@ -18,6 +20,7 @@ namespace Karem {
 		static void Shutdown();
 
 		/*Material material*/
+		static void BeginScene(EditorCamera& camera);
 		static void BeginScene(const glm::mat4& projection, const glm::mat4& cameraTransform);
 		static void EndScene();
 

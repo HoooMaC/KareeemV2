@@ -28,4 +28,24 @@ namespace Karem {
 		return nullptr;
 	}
 
+	Texture2D* Karem::CreateRawTexture2D(uint32_t slot)
+	{
+		switch (RendererAPI::GetAPI())
+		{
+			case API::None: ENGINE_ASSERT(false, "Renderer API::NONE hasn't supported yet") break;
+			case API::OpenGL: return new OpenGLTexture2D(slot);
+		}
+		return nullptr;
+	}
+
+	bool Karem::DestroyRawTexture2D(Texture2D* texture)
+	{
+		switch (RendererAPI::GetAPI())
+		{
+			case API::None: ENGINE_ASSERT(false, "Renderer API::NONE hasn't supported yet") break;
+			case API::OpenGL: delete texture;
+		}
+		return false;
+	}
+
 }

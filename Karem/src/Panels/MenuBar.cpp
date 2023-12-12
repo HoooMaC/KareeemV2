@@ -1,178 +1,104 @@
-#include "MenuBar.h"
+#include "Core/Kareeem.h"
 
-#include "Scene/SceneSerializer.h"
+#include "Menubar.h"
 #include "SceneHierarcyPanel.h"
+#include "Panel.h"
 
 #include "Platform/Utils/FileDialog.h"
 
 #include <imgui.h>
-#include <imgui_internal.h>
 #include "external/imgui/imgui_configuration.h"
 
 namespace Karem {
 
-	bool MenuBar::showEntityList = true;
-	bool MenuBar::showEntityComponent = true;
-	bool MenuBar::showCameraPanel = true;
-
-	void MenuBar::Render(std::shared_ptr<Scene>& scene, SceneHierarcyPanel& hierarcyPanel)
+	void MenubarPanel::Render(bool* statusArray)
 	{
-		// Begin menu bar +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		if (ImGui::BeginMenuBar())
 		{
-			if (ImGui::BeginMenu("Menu"))
+			if (ImGui::BeginMenu("File"))
 			{
-				if (ImGui::MenuItem("New")) 
-					NewScene(scene, hierarcyPanel);
-
-				if (ImGui::MenuItem("Open...", "Ctrl+O"))
-					OpenScene(scene, hierarcyPanel);
-
-				if (ImGui::MenuItem("SaveAs...", "Ctrl+S"))
+				if (ImGui::MenuItem("New", "Ctrl + N"))
 				{
-					SaveSceneAs(scene, hierarcyPanel);
+					newSceneFunction();
 				}
-
-				ImGui::Separator();
-				if (ImGui::BeginMenu("Options"))
+				if (ImGui::MenuItem("Save As...", "Ctrl + Shift + S"))
 				{
-					static bool enabled = true;
-					ImGui::MenuItem("Enabled", "", &enabled);
-					ImGui::BeginChild("child", ImVec2(0, 60), true);
-					for (int i = 0; i < 10; i++)
-						ImGui::Text("Scrolling Text %d", i);
-					ImGui::EndChild();
-					static float f = 0.5f;
-					static int n = 0;
-					ImGui::SliderFloat("Value", &f, 0.0f, 1.0f);
-					ImGui::InputFloat("Input", &f, 0.1f);
-					ImGui::Combo("Combo", &n, "Yes\0No\0Maybe\0\0");
-					ImGui::EndMenu();
+					std::string filepath = FileDialog::SaveFile("Karem");
+					saveSceneAsFunction(filepath);
 				}
-
-				if (ImGui::BeginMenu("Colors"))
+				if (ImGui::MenuItem("Open...", "Ctrl + O"))
 				{
-					float sz = ImGui::GetTextLineHeight();
-					for (int i = 0; i < ImGuiCol_COUNT; i++)
-					{
-						const char* name = ImGui::GetStyleColorName((ImGuiCol)i);
-						ImVec2 p = ImGui::GetCursorScreenPos();
-						ImGui::GetWindowDrawList()->AddRectFilled(p, ImVec2(p.x + sz, p.y + sz), ImGui::GetColorU32((ImGuiCol)i));
-						ImGui::Dummy(ImVec2(sz, sz));
-						ImGui::SameLine();
-						ImGui::MenuItem(name);
-					}
-					ImGui::EndMenu();
+					std::string filepath = FileDialog::OpenFile("Karem");
+					openSceneFunction(filepath);
 				}
-
-				if (ImGui::BeginMenu("Options"))
-				{
-					static bool b = true;
-					ImGui::Checkbox("SomeOption", &b);
-					ImGui::EndMenu();
-				}
-
-				if (ImGui::BeginMenu("Disabled", false)) // Disabled
-				{
-					IM_ASSERT(0);
-				}
-				if (ImGui::MenuItem("Checked", NULL, true)) {}
-				ImGui::Separator();
-				ImGui::MenuItem("Quit", "Alt+F4");
-				// close window here
-
 				ImGui::EndMenu();
 			}
-			if (ImGui::BeginMenu("Examples"))
-			{
-				ImGui::MenuItem("Main menu bar");
-				ImGui::MenuItem("Console");
-				ImGui::MenuItem("Log");
-				ImGui::MenuItem("Simple layout");
-				ImGui::MenuItem("Property editor");
-				ImGui::MenuItem("Long text display");
-				ImGui::MenuItem("Auto-resizing window");
-				ImGui::MenuItem("Constrained-resizing window");
-				ImGui::MenuItem("Simple overlay");
-				ImGui::MenuItem("Fullscreen window");
-				ImGui::MenuItem("Manipulating window titles");
-				ImGui::MenuItem("Custom rendering");
-				ImGui::MenuItem("Dockspace");
-				ImGui::MenuItem("Documents");
-				ImGui::EndMenu();
-			}
+
 			if (ImGui::BeginMenu("Entity"))
 			{
-				ImGui::MenuItem("Entity List", NULL, &showEntityList);
-				ImGui::MenuItem("Entity Component", NULL, &showEntityComponent);
-				ImGui::MenuItem("Camera Entity", NULL, &showCameraPanel);
+				ImGui::MenuItem("Entity List", nullptr, &statusArray[(int16_t)SceneHierarcyPanel::PanelsStatus::EntityList]);
+				ImGui::MenuItem("Entity Component", nullptr, &statusArray[(int16_t)SceneHierarcyPanel::PanelsStatus::EntityComponent]);
+				ImGui::MenuItem("Camera", nullptr, &statusArray[(int16_t)SceneHierarcyPanel::PanelsStatus::CameraPanel]);
 				ImGui::EndMenu();
 			}
-			if (ImGui::BeginMenu("Theme"))
+
+			if (ImGui::BeginMenu("Themes"))
 			{
 				if (ImGui::MenuItem("Karem Default"))
 				{
 					SetupKaremStyleDefault();
 					KaremColorStyleDefault();
 				}
-
 				ImGui::EndMenu();
 			}
 			if (ImGui::BeginMenu("Tools"))
 			{
-				ImGui::MenuItem("Metrics/Debugger");
-				ImGui::MenuItem("Debug Log");
-				ImGui::MenuItem("Stack Tool");
-				ImGui::MenuItem("Style Editor");
-				ImGui::MenuItem("About Dear ImGui");
-				ImGui::EndMenu();
+
 			}
 			ImGui::EndMenuBar();
 		}
-		// End menu bar +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	}
 
-	void MenuBar::NewScene(std::shared_ptr<Scene>& scene, SceneHierarcyPanel& hierarcyPanel)
+	void MenubarPanel::EventHandler(Event& event)
 	{
-		scene = std::make_shared<Scene>();
-		hierarcyPanel.SetContextScene(scene);
-
-		float aspectRatio = 16.0f / 9.0f;
-		if (Karem::IsImGuiContextValid())
-			if (auto viewportWindow = ImGui::FindWindowByName("Viewport"))
-				aspectRatio = viewportWindow->Size.x / viewportWindow->Size.y;
-		scene->OnViewportResize(aspectRatio);
-
+		EventDispatcher dispatcher(event);
+		dispatcher.Dispatch<KeyPressedEvent>(std::bind(&MenubarPanel::KeyPressedAction, this, std::placeholders::_1));
 	}
 
-	void MenuBar::OpenScene(std::shared_ptr<Scene>& scene, SceneHierarcyPanel& hierarcyPanel)
+	bool MenubarPanel::KeyPressedAction(KeyPressedEvent& event)
 	{
-		std::string target = FileDialog::OpenFile("Karem Scene (*.karem)\0*.karem\0");
-		if(!target.empty())
+		bool isCtrlClicked = Input::IsKeyPressed((int)Key::LeftControl);
+		bool isShiftClicked = Input::IsKeyPressed((int)Key::LeftShift);
+
+		switch (event.GetKeyCode())
 		{
-			SceneSerializer::Deserialize(scene, target);
-			hierarcyPanel.SetContextScene(scene);
-
-
-			float aspectRatio = 16.0f / 9.0f;
-			if (Karem::IsImGuiContextValid())
-				if (auto viewportWindow = ImGui::FindWindowByName("Viewport"))
-					aspectRatio = viewportWindow->Size.x / viewportWindow->Size.y;
-			scene->OnViewportResize(aspectRatio);
-
+			case (int)Key::N:
+			{
+				if (isCtrlClicked)
+				{
+					newSceneFunction();
+				}
+				break;
+			}
+			case (int)Key::S:
+			{
+				if (isCtrlClicked and isShiftClicked)
+				{
+					std::string filepath = FileDialog::SaveFile("Karem");
+					saveSceneAsFunction(filepath);
+				}
+				break;
+			}
+			case (int)Key::O:
+			{
+				if (isCtrlClicked)
+				{
+					std::string filepath = FileDialog::OpenFile("Karem");
+					openSceneFunction(filepath);
+				}
+				break;
+			}
 		}
+		return false;
 	}
-
-	void MenuBar::SaveSceneAs(std::shared_ptr<Scene>& scene, SceneHierarcyPanel& hierarcyPanel)
-	{
-		std::string target = FileDialog::SaveFile("Karem Scene (*.karem)\0*.karem\0");
-		if (!target.empty())
-		{
-			SceneSerializer::Serialize(scene, target);
-			hierarcyPanel.SetContextScene(scene);
-		}
-
-	}
-
-
 }

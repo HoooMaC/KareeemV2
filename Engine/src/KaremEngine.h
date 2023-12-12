@@ -19,8 +19,9 @@
 #include "Layer/ImGUILayer.h"
 
 #include "Scene/Scene.h"
-#include "Scene/Components.h"
 #include "Scene/Entity.h"
+#include "Scene/Components.h"
+#include "Scene/SceneSerializer.h"
 
 #include "Renderer/Renderer.h"
 #include "Renderer/BaseShader.h"
@@ -28,6 +29,7 @@
 #include "Renderer/SubTexture.h"
 #include "Renderer/FrameBuffer.h"
 #include "Renderer/BaseTexture.h"
+#include "Renderer/EditorCamera.h"
 #include "Renderer/BufferLayout.h"
 #include "Renderer/RenderCommand.h"
 #include "Renderer/TextureFormat.h"

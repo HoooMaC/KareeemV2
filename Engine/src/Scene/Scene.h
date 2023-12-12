@@ -13,6 +13,7 @@ namespace Karem {
 	class Entity;
 	class SceneHierarcyPanel;
 	class SceneSerializer;
+	class EditorCamera;
 
 	class Scene {
 		friend class Entity;
@@ -25,7 +26,9 @@ namespace Karem {
 		Entity CreateEntity(const std::string& entityName = "Undefined");
 		void DestroyEntity(entt::entity entity);
 
-		void Update(TimeStep ts);
+		void UpdateOnPlay(TimeStep ts);
+		void UpdateOnEdit(TimeStep ts, EditorCamera& camera);
+
 		void EventHandler(Event& e);
 		
 		void OnViewportResize(float width, float height);
