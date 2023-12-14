@@ -8,6 +8,7 @@
 #include <imgui.h>
 #include <imgui_internal.h>
 #include <imgui_setup.h>
+#include "external/imgui/imgui_configuration.h"
 
 static constexpr int32_t appWidth = 1280, appHeight = 720;
 
@@ -23,6 +24,7 @@ namespace Karem {
 		//m_Texture = CreateTexture2D("res/texture/spritesheet/city_tilemap.png", 1);
 		//m_SpriteSheet = SubTexture2D(m_Texture, { 0,4 }, { 8,8 }, { 5,4 });
 		//------------------------------------------------------------------------
+		m_EditorCamera = EditorCamera(45.f, 1.777f, 0.0001, 1000.f);
 
 		m_FrameBuffer = CreateFrameBuffer(1280, 720);
 		m_ActiveScene = std::make_shared<Scene>();
@@ -54,11 +56,30 @@ namespace Karem {
 
 	void KaremEditorLayer::Update(TimeStep ts)
 	{
-		const auto& [fbWidth, fbHeight] = m_FrameBuffer->GetFrameBufferSize();
-		if (m_CurrentViewportSize.x != fbWidth or m_CurrentViewportSize.y != fbHeight)
+		bool isDocktabVisible = false;
+		float titleBarHeight = 0.0f;
+		if (Karem::IsImGuiContextValid())
 		{
+			if (auto viewportWindow = ImGui::FindWindowByName("Viewport"))
+			{
+				m_CurrentViewportSize = { viewportWindow->Size.x, viewportWindow->Size.y };
+				isDocktabVisible = viewportWindow->DockTabIsVisible or !viewportWindow->DockIsActive;
+				if (isDocktabVisible)
+				{
+					// get the docktab size
+					titleBarHeight = viewportWindow->TitleBarHeight();
+				}
+			}
+		}
+
+		if ((m_CurrentViewportSize.x != m_PreviousViewportSize.x or m_CurrentViewportSize.y != m_PreviousViewportSize.y) and (m_CurrentViewportSize.x > 0 and m_CurrentViewportSize.y > 0))
+		{
+			if (isDocktabVisible)
+				m_CurrentViewportSize.y -= titleBarHeight;
 			m_FrameBuffer->Resize((int32_t)m_CurrentViewportSize.x, (int32_t)m_CurrentViewportSize.y);
-			m_ActiveScene->OnViewportResize(m_CurrentViewportSize.x, m_CurrentViewportSize.y);
+			m_ActiveScene->OnViewportResize((float)m_CurrentViewportSize.x, (float)m_CurrentViewportSize.y);
+			m_EditorCamera.SetViewportSize((float)m_CurrentViewportSize.x, (float)m_CurrentViewportSize.y);
+			m_CurrentViewportSize = { m_CurrentViewportSize.x, m_CurrentViewportSize.y };
 		}
 
 		m_FrameBuffer->Bind();
@@ -97,6 +118,7 @@ namespace Karem {
 			case State::Edit:
 			{
 				m_ActiveScene->UpdateOnEdit(ts, m_EditorCamera);
+				m_EditorCamera.OnUpdate(ts);
 				break;
 			}
 			case State::Play:
@@ -114,7 +136,6 @@ namespace Karem {
 		imgui::BeginFrame();
 
 		RenderDockspace();
-		// old
 		RenderViewportPanel();
 
 		ImGui::ShowDemoWindow();
@@ -131,6 +152,19 @@ namespace Karem {
 			
 		m_ActiveScene->EventHandler(event);
 		m_Panels.EventHandler(event);
+
+		switch (m_CurrentState)
+		{
+			case State::Edit:
+			{
+				m_EditorCamera.EventHandler(event);
+				break;
+			}
+			case State::Play:
+			{
+				break;
+			}
+		}
 	}
 
 	void KaremEditorLayer::RenderDockspace()

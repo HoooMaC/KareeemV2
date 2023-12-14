@@ -50,9 +50,10 @@ namespace Karem {
 			Edit = 0,
 			Play
 		};
-		State m_CurrentState = State::Play;
+		State m_CurrentState = State::Edit;
 	private:
 		glm::vec2 m_CurrentViewportSize = { 0.0f, 0.0f };
+		glm::vec2 m_PreviousViewportSize = { 0.0f, 0.0f };
 		Panels m_Panels;
 		std::shared_ptr<FrameBuffer> m_FrameBuffer; // who owns the frame buffer
 		std::shared_ptr<Scene> m_ActiveScene;

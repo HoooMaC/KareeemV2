@@ -54,7 +54,7 @@ namespace Karem{
 			glm::mat4 proj = mainCamera->GetCameraProjectionMatrix();
 			Renderer::BeginScene(proj, cameraTransform);
 
-			auto group = m_Registry.group<TransformComponent>(entt::get<ColorComponent>);
+			auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
 			for (const auto entity : group)
 			{
 				auto [transform, color] = group.get(entity);
@@ -68,7 +68,7 @@ namespace Karem{
 	{
 		Renderer::BeginScene(camera);
 
-		auto group = m_Registry.group<TransformComponent>(entt::get<ColorComponent>);
+		auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
 		for (const auto entity : group)
 		{
 			auto [transform, color] = group.get(entity);

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Event/KeyCode.h"
+#include "Event/MouseCode.h"
 
 namespace Karem {
 

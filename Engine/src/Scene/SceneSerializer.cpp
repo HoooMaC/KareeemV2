@@ -130,12 +130,12 @@ namespace Karem {
 			out << YAML::EndMap; // CameraComponent
 		}
 
-		if (entity.IsHasComponent<ColorComponent>())
+		if (entity.IsHasComponent<SpriteRendererComponent>())
 		{
 			out << YAML::Key << "SpriteRendererComponent";
 			out << YAML::BeginMap; // SpriteRendererComponent
 
-			auto& spriteRendererComponent = entity.GetComponent<ColorComponent>();
+			auto& spriteRendererComponent = entity.GetComponent<SpriteRendererComponent>();
 			out << YAML::Key << "Color" << YAML::Value << spriteRendererComponent.Color;
 
 			out << YAML::EndMap; // SpriteRendererComponent
@@ -224,7 +224,7 @@ namespace Karem {
 				auto colorComponent = entity["SpriteRendererComponent"];
 				if (colorComponent)
 				{
-					auto& src = deserializedEntity.AddComponent<ColorComponent>();
+					auto& src = deserializedEntity.AddComponent<SpriteRendererComponent>();
 					src.Color = colorComponent["Color"].as<glm::vec4>();
 				}
 			}

@@ -53,7 +53,7 @@ namespace Karem {
 			}
 			if (ImGui::BeginMenu("Tools"))
 			{
-
+				ImGui::EndMenu();
 			}
 			ImGui::EndMenuBar();
 		}

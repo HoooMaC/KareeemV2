@@ -342,11 +342,11 @@ namespace Karem {
 				}
 			}
 
-			if (!selectedEntity.IsHasComponent<ColorComponent>())
+			if (!selectedEntity.IsHasComponent<SpriteRendererComponent>())
 			{
 				if (ImGui::MenuItem("Color"))
 				{
-					selectedEntity.AddComponent<ColorComponent>();
+					selectedEntity.AddComponent<SpriteRendererComponent>();
 					ImGui::CloseCurrentPopup();
 				}
 			}
@@ -404,7 +404,7 @@ namespace Karem {
 				}
 			);
 
-			DrawComponent<ColorComponent>("Color", selectedEntity, [](ColorComponent& component)
+			DrawComponent<SpriteRendererComponent>("Color", selectedEntity, [](SpriteRendererComponent& component)
 				{
 					ImGui::ColorEdit4("##Color", glm::value_ptr(component.Color));
 				}

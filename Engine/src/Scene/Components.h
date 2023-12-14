@@ -42,13 +42,13 @@ namespace Karem {
 		}
 	};
 
-	struct ColorComponent
+	struct SpriteRendererComponent
 	{
 		glm::vec4 Color = glm::vec4(1.0f);
 
-		ColorComponent() = default;
-		ColorComponent(const ColorComponent&) = default;
-		ColorComponent(const glm::vec4& color)
+		SpriteRendererComponent() = default;
+		SpriteRendererComponent(const SpriteRendererComponent&) = default;
+		SpriteRendererComponent(const glm::vec4& color)
 			: Color(color) {}
 
 		operator glm::vec4() { return Color; }
