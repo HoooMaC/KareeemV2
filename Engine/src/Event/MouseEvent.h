@@ -1,5 +1,6 @@
 #pragma once
 #include "Event/Event.h"
+#include "Event/MouseCode.h"
 
 namespace Karem {
 
@@ -62,22 +63,24 @@ namespace Karem {
 	class MouseButtonEvent : public Event
 	{
 	public:
-		inline int GetMouseButton() const { return m_Button; }
+		inline Mouse GetMouseButton() const { return m_Button; }
 
 		// is equal with EVENT_CLASS_CATEGORY in Hazel
 		int GetCategoryFlag() const override { return EventCategoryMouse | EventCategoryInput; }
 	protected:
-		MouseButtonEvent(int button)
+		MouseButtonEvent(Mouse button)
 			: m_Button(button) {}
 
-		int m_Button;
+		Mouse m_Button;
 	};
 
 	class MouseButtonPressedEvent : public MouseButtonEvent
 	{
 	public:
-		MouseButtonPressedEvent(int button)
+		MouseButtonPressedEvent(Mouse button)
 			: MouseButtonEvent(button) {}
+		MouseButtonPressedEvent(int button)
+			: MouseButtonEvent((Mouse)button) {}
 
 		// is equal with EVENT_CLASS_TYPE in Hazel
 		static EventType GetStaticType() { return EventType::MousePressed; }
@@ -87,7 +90,7 @@ namespace Karem {
 		std::string ToString() const override
 		{
 			std::stringstream ss;
-			ss << "Mouse Button Pressed Event " << m_Button;
+			ss << "Mouse Button Pressed Event " << (int16_t)m_Button;
 			return ss.str();
 		}
 
@@ -96,8 +99,10 @@ namespace Karem {
 	class MouseButtonReleasedEvent : public MouseButtonEvent
 	{
 	public:
-		MouseButtonReleasedEvent(int button)
+		MouseButtonReleasedEvent(Mouse button)
 			: MouseButtonEvent(button) {}
+		MouseButtonReleasedEvent(int button)
+			: MouseButtonEvent((Mouse)button) {}
 
 		// is equal with EVENT_CLASS_TYPE in Hazel
 		static EventType GetStaticType() { return EventType::MouseReleased; }
@@ -107,7 +112,7 @@ namespace Karem {
 		std::string ToString() const override
 		{
 			std::stringstream ss;
-			ss << "Mouse Button Released Event " << m_Button;
+			ss << "Mouse Button Released Event " << (int16_t)m_Button;
 			return ss.str();
 		}
 	};

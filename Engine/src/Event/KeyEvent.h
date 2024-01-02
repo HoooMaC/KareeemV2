@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Event.h"
+#include "Event/KeyCode.h"
 
 #include <string>
 
@@ -9,23 +10,25 @@ namespace Karem {
 	class KeyEvent : public Event
 	{
 	public:
-		inline int GetKeyCode() const { return m_KeyCode; }
+		inline Key GetKeyCode() const { return m_KeyCode; }
 
 		// is equal with EVENT_CLASS_CATEGORY in Hazel
 		int GetCategoryFlag() const override { return EventCategoryKeyboard | EventCategoryInput; }
 
 	protected:
-		KeyEvent(int keyCode)
+		KeyEvent(Key keyCode)
 			: m_KeyCode(keyCode) {}
 
-		int m_KeyCode;
+		Key m_KeyCode;
 	};
 
 	class KeyPressedEvent : public KeyEvent
 	{
 	public:
-		KeyPressedEvent(int keyCode, int repeatCount)
+		KeyPressedEvent(Key keyCode, int repeatCount)
 			: KeyEvent(keyCode), m_RepeatCount(repeatCount) {}
+		KeyPressedEvent(int keyCode, int repeatCount)
+			: KeyEvent((Key)keyCode), m_RepeatCount(repeatCount) {}
 
 		inline int GetRepeatCount() const { return m_RepeatCount; }
 
@@ -37,7 +40,7 @@ namespace Karem {
 		std::string ToString() const override
 		{
 			std::stringstream ss;
-			ss << "Key Pressed Event " << m_KeyCode << " (" << m_RepeatCount << ")";
+			ss << "Key Pressed Event " << (uint16_t)m_KeyCode << " (" << m_RepeatCount << ")";
 			return ss.str();
 		}
 
@@ -48,9 +51,10 @@ namespace Karem {
 	class KeyReleasedEvent : public KeyEvent
 	{
 	public:
-		KeyReleasedEvent(int keyCode)
+		KeyReleasedEvent(Key keyCode)
 			: KeyEvent(keyCode) {}
-
+		KeyReleasedEvent(int keyCode)
+			: KeyEvent((Key)keyCode) {}
 		// is equal with EVENT_CLASS_TYPE in Hazel
 		static EventType GetStaticType() { return EventType::KeyReleased; }
 		EventType GetEventType() const override { return GetStaticType(); }
@@ -59,7 +63,7 @@ namespace Karem {
 		std::string ToString() const override
 		{
 			std::stringstream ss;
-			ss << "Key Released Event " << m_KeyCode;
+			ss << "Key Released Event " << (uint16_t)m_KeyCode;
 			return ss.str();
 		}
 

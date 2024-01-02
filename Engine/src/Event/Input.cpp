@@ -10,18 +10,28 @@
 
 namespace Karem {
 
-	bool Input::IsKeyPressed(int keycode)
+	bool Input::IsKeyPressed(Key keycode)
 	{
 		GLFWwindow* window = GraphicsContext::GetContextCurrent();
-		int state = glfwGetKey(window, keycode);
+		int state = glfwGetKey(window, (int)keycode);
 		return state == (int16_t)Key::Press || state == (int16_t)Key::Repeat;
 	}
 
-	bool Input::IsMouseButtonPressed(int button)
+	bool Input::IsKeyPressed(int16_t keycode)
+	{
+		return IsKeyPressed((Key)keycode);
+	}
+
+	bool Input::IsMouseButtonPressed(Mouse button)
 	{
 		GLFWwindow* window = GraphicsContext::GetContextCurrent();
-		int state = glfwGetMouseButton(window, button);
+		int state = glfwGetMouseButton(window, (int)button);
 		return state == (uint16_t)Key::Press;
+	}
+
+	bool Input::IsMouseButtonPressed(int16_t button)
+	{
+		return IsMouseButtonPressed((Mouse)button);
 	}
 
 	float Input::GetMousePositionX()
