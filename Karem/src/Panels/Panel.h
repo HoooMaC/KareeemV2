@@ -18,6 +18,7 @@ namespace Karem {
 		void RenderHierarcyPanel();
 		void EventHandler(Event& event);
 
+		Entity& GetSelectedEntity() { return m_SelectedEntity; }
 	private:
 		SceneHierarcyPanel m_HierarcyPanel;
 		MenubarPanel m_Menubar;

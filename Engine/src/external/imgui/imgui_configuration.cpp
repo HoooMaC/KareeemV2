@@ -10,6 +10,8 @@
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
 
+#include "external/ImGuizmo/ImGuizmo.h"
+
 namespace Karem {
 
 	void InitializeImGui()
@@ -47,6 +49,7 @@ namespace Karem {
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
+		ImGuizmo::BeginFrame();
 	}
 
 	void EndFrame()

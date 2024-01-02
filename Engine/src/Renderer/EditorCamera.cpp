@@ -60,22 +60,22 @@ namespace Karem {
 
 	void EditorCamera::OnUpdate(TimeStep ts)
 	{
-		if (Input::IsKeyPressed((int16_t)Key::Space))
+		if (Input::IsKeyPressed(Key::Space))
 		{
 			const glm::vec2& mouse{ Input::GetMousePositionX(), Input::GetMousePositionY() };
 			glm::vec2 delta = (mouse - m_InitialMousePosition) * 0.003f;
 			m_InitialMousePosition = mouse;
 
-			if (Input::IsMouseButtonPressed((int16_t)Mouse::ButtonLeft))
+			if (Input::IsMouseButtonPressed(Mouse::ButtonLeft))
 				MousePan(delta);
 		}
-		else if (Input::IsKeyPressed((int16_t)Key::LeftAlt))
+		else if (Input::IsKeyPressed(Key::LeftAlt))
 		{
 			const glm::vec2& mouse{ Input::GetMousePositionX(), Input::GetMousePositionY() };
 			glm::vec2 delta = (mouse - m_InitialMousePosition) * 0.003f;
 			m_InitialMousePosition = mouse;
 
-			if (Input::IsMouseButtonPressed((int16_t)Mouse::ButtonLeft))
+			if (Input::IsMouseButtonPressed(Mouse::ButtonLeft))
 				MouseRotate(delta);
 		}
 
@@ -90,7 +90,7 @@ namespace Karem {
 
 	bool EditorCamera::OnMouseScroll(MouseScrolledEvent& e)
 	{
-		if (Input::IsKeyPressed((int16_t)Key::LeftControl))
+		if (Input::IsKeyPressed(Key::LeftControl))
 		{
 			float delta = e.GetOffsetY() * 0.1f;
 			MouseZoom(delta);

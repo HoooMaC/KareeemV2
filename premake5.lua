@@ -18,7 +18,7 @@ IncludeDir["GLFW"] = "%{wks.location}/Vendor/GLFW/include"
 IncludeDir["glad"] = "%{wks.location}/Vendor/glad/include"
 IncludeDir["Rahman"] = "%{wks.location}/Vendor/Rahman/include"
 IncludeDir["spdlog"] = "%{wks.location}/Vendor/spdlog/include"
-IncludeDir["yaml_cpp"] = "%{wks.location}/Vendor/yaml-cpp/include"
+IncludeDir["yaml_cpp"] = "%{wks.location}/Engine/src/external/yaml-cpp/include"
 IncludeDir["ImGUI"] = "%{wks.location}/Vendor/ImGUI"
 IncludeDir["glm"] = "%{wks.location}/Vendor/glm"
 IncludeDir["external"] = "%{wks.location}/Engine/src/external/include"
@@ -103,6 +103,7 @@ project "Engine"
 
 	libdirs
 	{
+		"%{wks.location}/bin"
 	}
 
 	links 
@@ -110,7 +111,6 @@ project "Engine"
 		"GLFW",
 		"glad",
 		"ImGUI",
-		"yaml-cpp",
 	}
 	
 	includedirs
@@ -130,7 +130,7 @@ project "Engine"
 		"GLFW_INCLUDE_NONE",
 		"_CRT_SECURE_NO_WARNINGS"
 	}
-
+	
 	filter "files:Engine/src/Core/Application.cpp"
 		includedirs {"Karem/src"}
 
@@ -155,4 +155,3 @@ group "Dependencies"
 		include "Vendor/spdlog"
 		include "Vendor/glm"
 		include "Vendor/Rahman"
-		include "Vendor/yaml-cpp"

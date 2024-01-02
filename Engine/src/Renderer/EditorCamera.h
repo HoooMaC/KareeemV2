@@ -26,6 +26,7 @@ namespace Karem {
 
 		const glm::mat4& GetViewMatrix() const { return m_ViewMatrix; }
 		glm::mat4 GetViewProjectionMatrix() const { return m_Projection * m_ViewMatrix; }
+		glm::mat4 GetProjectionMatrix() const { return m_Projection; }
 
 		glm::vec3 GetUpDirection() const;
 		glm::vec3 GetRightDirection() const;

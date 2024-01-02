@@ -5,10 +5,16 @@
 #include "Scene/Components.h"
 #include "Scene/SceneSerializer.h"
 
+#include "Math/Matrix.h"
+
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/matrix_decompose.hpp>
+
 #include <imgui.h>
 #include <imgui_internal.h>
 #include <imgui_setup.h>
 #include "external/imgui/imgui_configuration.h"
+#include "external/ImGuizmo/ImGuizmo.h"
 
 static constexpr int32_t appWidth = 1280, appHeight = 720;
 
@@ -24,7 +30,7 @@ namespace Karem {
 		//m_Texture = CreateTexture2D("res/texture/spritesheet/city_tilemap.png", 1);
 		//m_SpriteSheet = SubTexture2D(m_Texture, { 0,4 }, { 8,8 }, { 5,4 });
 		//------------------------------------------------------------------------
-		m_EditorCamera = EditorCamera(45.f, 1.777f, 0.0001, 1000.f);
+		m_EditorCamera = EditorCamera(45.f, 1.777f, 0.0001f, 1000.f);
 
 		m_FrameBuffer = CreateFrameBuffer(1280, 720);
 		m_ActiveScene = std::make_shared<Scene>();
@@ -213,11 +219,6 @@ namespace Karem {
 
 		ImGui::Begin("DockSpaceViewport", NULL, docks_window_flags);
 
-		//old
-		//MenuBar::Render(m_ActiveScene, m_HierarcyPanel);
-
-		// !TODO
-		// target
 		m_Panels.RenderMenubar();
 
 		ImGuiID dockspace_id = ImGui::GetID("DockSpace");
@@ -248,6 +249,68 @@ namespace Karem {
 			ImVec2(1, 0)
 		);
 
+		// Gizmos Here
+
+		if (ImGui::IsWindowHovered())
+		{
+			if (Input::IsKeyPressed(Key::V))
+			{
+				m_CurrentGizmoType = -1;
+			}
+			else if (Input::IsKeyPressed(Key::S))
+			{
+				m_CurrentGizmoType = ImGuizmo::OPERATION::SCALE;
+			}
+			// IN PROCESSSSSS
+			else if (Input::IsKeyPressed(Key::R))
+			{
+				m_CurrentGizmoType = ImGuizmo::OPERATION::ROTATE;
+			}
+			else if (Input::IsKeyPressed(Key::E)) // i downt know what the good keyword for this
+			{
+				m_CurrentGizmoType = ImGuizmo::OPERATION::TRANSLATE;
+			}
+		}
+
+		Entity& selectedEntity = m_Panels.GetSelectedEntity();
+		if (selectedEntity and m_CurrentGizmoType != -1)
+		{
+			ImGuizmo::SetOrthographic(false);
+			ImGuizmo::SetDrawlist();
+
+			auto windowPos = ImGui::GetWindowPos();
+			auto windowSize = ImGui::GetWindowSize();
+			ImGuizmo::SetRect(windowPos.x, windowPos.y, windowSize.x, windowSize.y);
+
+			auto& entityTranslation = selectedEntity.GetComponent<TransformComponent>().Translation;
+			auto& entityRotation = selectedEntity.GetComponent<TransformComponent>().Rotation;
+			auto& entityScale = selectedEntity.GetComponent<TransformComponent>().Scale;
+
+			auto& tc = selectedEntity.GetComponent<TransformComponent>();
+
+			glm::mat4 transform = tc.GetTransformMatrix();
+			glm::mat4 viewMatrix = m_EditorCamera.GetViewMatrix();
+			glm::mat4 projMatrix = m_EditorCamera.GetProjectionMatrix();
+
+			ImGuizmo::Manipulate(glm::value_ptr(viewMatrix), glm::value_ptr(projMatrix), (ImGuizmo::OPERATION)m_CurrentGizmoType, ImGuizmo::MODE::LOCAL, glm::value_ptr(transform), nullptr);
+
+			if(ImGuizmo::IsUsing())
+			{
+				glm::vec3 translation, rotation, scale;
+
+				Math::DecomposeMatrix(transform, translation, rotation, scale);
+				//ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(transform), glm::value_ptr(translation), glm::value_ptr(rotation), glm::value_ptr(scale));
+
+				tc.Translation = translation;
+
+				// TODO :: FIX ROTATION
+				//glm::vec3 deltaRotation = rotation - tc.Rotation;
+				//tc.Rotation += deltaRotation;
+
+				tc.Scale = scale;
+			}
+
+		}
 		ImGui::End();
 
 		ImGui::PopStyleVar(3);
@@ -256,6 +319,12 @@ namespace Karem {
 	bool KaremEditorLayer::WindowResizeAction(WindowResizeEvent& event)
 	{
 		return true;
+	}
+
+	bool KaremEditorLayer::KeyPressedAction(KeyPressedEvent& event)
+	{
+		event.GetKeyCode();
+		return false;
 	}
 
 }

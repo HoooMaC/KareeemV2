@@ -67,12 +67,12 @@ namespace Karem {
 
 	bool MenubarPanel::KeyPressedAction(KeyPressedEvent& event)
 	{
-		bool isCtrlClicked = Input::IsKeyPressed((int)Key::LeftControl);
-		bool isShiftClicked = Input::IsKeyPressed((int)Key::LeftShift);
+		bool isCtrlClicked = Input::IsKeyPressed(Key::LeftControl);
+		bool isShiftClicked = Input::IsKeyPressed(Key::LeftShift);
 
 		switch (event.GetKeyCode())
 		{
-			case (int)Key::N:
+			case Key::N:
 			{
 				if (isCtrlClicked)
 				{
@@ -80,7 +80,7 @@ namespace Karem {
 				}
 				break;
 			}
-			case (int)Key::S:
+			case Key::S:
 			{
 				if (isCtrlClicked and isShiftClicked)
 				{
@@ -89,12 +89,13 @@ namespace Karem {
 				}
 				break;
 			}
-			case (int)Key::O:
+			case Key::O:
 			{
 				if (isCtrlClicked)
 				{
 					std::string filepath = FileDialog::OpenFile("Karem");
-					openSceneFunction(filepath);
+					if(!filepath.empty())
+						openSceneFunction(filepath);
 				}
 				break;
 			}
