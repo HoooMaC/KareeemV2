@@ -7,13 +7,11 @@
 
 #include "Math/Matrix.h"
 
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/matrix_decompose.hpp>
-
 #include <imgui.h>
 #include <imgui_internal.h>
 #include <imgui_setup.h>
 #include "external/imgui/imgui_configuration.h"
+
 #include "external/ImGuizmo/ImGuizmo.h"
 
 static constexpr int32_t appWidth = 1280, appHeight = 720;
@@ -62,30 +60,23 @@ namespace Karem {
 
 	void KaremEditorLayer::Update(TimeStep ts)
 	{
-		bool isDocktabVisible = false;
 		float titleBarHeight = 0.0f;
 		if (Karem::IsImGuiContextValid())
 		{
 			if (auto viewportWindow = ImGui::FindWindowByName("Viewport"))
 			{
 				m_CurrentViewportSize = { viewportWindow->Size.x, viewportWindow->Size.y };
-				isDocktabVisible = viewportWindow->DockTabIsVisible or !viewportWindow->DockIsActive;
-				if (isDocktabVisible)
-				{
-					// get the docktab size
-					titleBarHeight = viewportWindow->TitleBarHeight();
-				}
+				titleBarHeight = viewportWindow->TitleBarHeight();
 			}
 		}
 
-		if ((m_CurrentViewportSize.x != m_PreviousViewportSize.x or m_CurrentViewportSize.y != m_PreviousViewportSize.y) and (m_CurrentViewportSize.x > 0 and m_CurrentViewportSize.y > 0))
+		if (m_CurrentViewportSize != m_PreviousViewportSize and (m_CurrentViewportSize.x > 0 and m_CurrentViewportSize.y > 0))
 		{
-			if (isDocktabVisible)
-				m_CurrentViewportSize.y -= titleBarHeight;
+			m_PreviousViewportSize = m_CurrentViewportSize;
+			m_CurrentViewportSize.y -= titleBarHeight;
 			m_FrameBuffer->Resize((int32_t)m_CurrentViewportSize.x, (int32_t)m_CurrentViewportSize.y);
 			m_ActiveScene->OnViewportResize((float)m_CurrentViewportSize.x, (float)m_CurrentViewportSize.y);
 			m_EditorCamera.SetViewportSize((float)m_CurrentViewportSize.x, (float)m_CurrentViewportSize.y);
-			m_CurrentViewportSize = { m_CurrentViewportSize.x, m_CurrentViewportSize.y };
 		}
 
 		m_FrameBuffer->Bind();
@@ -146,7 +137,6 @@ namespace Karem {
 
 		ImGui::ShowDemoWindow();
 
-		//m_HierarcyPanel.RenderImGUI();
 		m_Panels.RenderHierarcyPanel();
 
 		imgui::EndFrame();
@@ -227,8 +217,6 @@ namespace Karem {
 		ImGui::End();
 
 		ImGui::PopStyleVar(3);
-
-
 	}
 
 	void KaremEditorLayer::RenderViewportPanel()
@@ -278,8 +266,8 @@ namespace Karem {
 			ImGuizmo::SetOrthographic(false);
 			ImGuizmo::SetDrawlist();
 
-			auto windowPos = ImGui::GetWindowPos();
-			auto windowSize = ImGui::GetWindowSize();
+			const auto& windowPos = ImGui::GetWindowPos();
+			const auto& windowSize = ImGui::GetWindowSize();
 			ImGuizmo::SetRect(windowPos.x, windowPos.y, windowSize.x, windowSize.y);
 
 			auto& entityTranslation = selectedEntity.GetComponent<TransformComponent>().Translation;
@@ -299,7 +287,6 @@ namespace Karem {
 				glm::vec3 translation, rotation, scale;
 
 				Math::DecomposeMatrix(transform, translation, rotation, scale);
-				//ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(transform), glm::value_ptr(translation), glm::value_ptr(rotation), glm::value_ptr(scale));
 
 				tc.Translation = translation;
 

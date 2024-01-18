@@ -16,7 +16,8 @@ namespace Karem::Math {
 
 		// Normalize the matrix.
 		if (epsilonEqual(LocalMatrix[3][3], static_cast<float>(0), epsilon<T>()))
-			return false;
+			//return false;
+			ENGINE_ASSERT(false, "Invalid Matrix");
 
 		// First, isolate perspective.  This is the messiest.
 		if (
