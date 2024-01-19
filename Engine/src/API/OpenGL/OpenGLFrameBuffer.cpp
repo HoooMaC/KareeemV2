@@ -5,23 +5,106 @@
 
 namespace Karem {
 
-	OpenGLFrameBuffer::OpenGLFrameBuffer(int32_t width, int32_t height)
-		: m_RendererID(0), m_TextureColorAttachment(0), m_Width(width), m_Height(height)
+	namespace Utils {
+		
+		static GLenum TextureTarget(bool isMultisampled)
+		{
+			return isMultisampled ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
+		}
+
+		static void CreateTexture(bool isMultisampled, uint32_t* outId, uint32_t count)
+		{
+			glCreateTextures(TextureTarget(isMultisampled), count, outId);
+		}
+
+		static void BindTexture(bool isMultisampled, uint32_t id)
+		{
+			glBindTexture(TextureTarget(isMultisampled), id);
+		}
+
+		static void AttachColorTexture(uint32_t id, uint32_t samples, GLenum internalFormat, GLenum format, uint32_t width, uint32_t height, int index)
+		{
+			bool isMultisampled = samples > 1;
+			if (isMultisampled)
+			{
+				glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, internalFormat, width, height, GL_FALSE);
+			}
+			else
+			{
+				glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, nullptr);
+
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			}
+
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + index, TextureTarget(isMultisampled), id, 0);
+		}
+
+		static void AttachDepthTexture(uint32_t id, uint32_t samples, GLenum internalFormat, GLenum attachmentType, uint32_t width, uint32_t height)
+		{
+			bool isMultiSampled = samples > 1;
+			if (isMultiSampled)
+			{
+				glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, internalFormat, width, height, GL_FALSE);
+			}
+			else
+			{
+				glTexStorage2D(GL_TEXTURE_2D, 1, internalFormat, width, height);
+
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			}
+
+			glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentType, TextureTarget(isMultiSampled), id, 0);
+		}
+				
+		static bool IsDepthFormat(FrameBufferTextureFormat format)
+		{
+			switch (format)
+			{
+				case Karem::FrameBufferTextureFormat::DEPTH24STENCIL8:
+					return true;
+			}
+			return false;
+		}
+
+	}
+
+	OpenGLFrameBuffer::OpenGLFrameBuffer(FrameBufferSpecifications specifications)
+		: m_Specifications(specifications)
 	{
+		for (const auto& spec : m_Specifications.Attachments.Attachments)
+		{
+			if (!Utils::IsDepthFormat(spec.TextureFormat))
+			{
+				m_ColorAttachmentSpecifications.emplace_back(spec);
+			}
+			else
+			{
+				m_DepthAttachmentSpecification = spec;
+			}
+		}
+
 		Invalidate();
 	}
 
 	OpenGLFrameBuffer::~OpenGLFrameBuffer()
 	{
 		glDeleteFramebuffers(1, &m_RendererID);
-		glDeleteTextures(1, &m_TextureColorAttachment);
+		glDeleteTextures(m_ColorAttachments.size(), m_ColorAttachments.data());
 		glDeleteTextures(1, &m_DepthAttachment);
 	}
 
 	void OpenGLFrameBuffer::Bind() const
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
-		glViewport(0, 0, m_Width, m_Height);
+		glViewport(0, 0, m_Specifications.Width, m_Specifications.Height);
 	}
 
 	void OpenGLFrameBuffer::UnBind() const
@@ -31,15 +114,15 @@ namespace Karem {
 
 	void OpenGLFrameBuffer::Resize(int32_t width, int32_t height)
 	{
-		m_Width = width;
-		m_Height = height;
-
 		if (width <= 0 || height <= 0)
-			//ENGINE_ASSERT(false, "");
+		{
+			ENGINE_ASSERT(false, "");
 			// Nilai tidak valid, kembalikan atau tangani kesalahan sesuai kebutuhan Anda
-			// Misalnya, Anda dapat membatalkan perubahan ukuran atau melempar exception.
 			return;
+		}
 
+		m_Specifications.Width = width;
+		m_Specifications.Height = height;
 
 		Invalidate();
 	}
@@ -49,13 +132,60 @@ namespace Karem {
 		if (m_RendererID)
 		{
 			glDeleteFramebuffers(1, &m_RendererID);
-			glDeleteTextures(1, &m_TextureColorAttachment);
+			glDeleteTextures(m_ColorAttachments.size(), m_ColorAttachments.data());
 			glDeleteTextures(1, &m_DepthAttachment);
 		}
 
 		glCreateFramebuffers(1, &m_RendererID);
 		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
 
+
+		bool isMultisampled = m_Specifications.Samples > 1;
+		if (m_ColorAttachmentSpecifications.size())
+		{
+			m_ColorAttachments.resize(m_ColorAttachmentSpecifications.size());
+			Utils::CreateTexture(isMultisampled, m_ColorAttachments.data(), m_ColorAttachments.size());
+
+			for (int i = 0; i < m_ColorAttachments.size(); i++)
+			{
+				Utils::BindTexture(isMultisampled, m_ColorAttachments[i]);
+				switch (m_ColorAttachmentSpecifications[i].TextureFormat)
+				{
+					case FrameBufferTextureFormat::RGBA8:
+						Utils::AttachColorTexture(m_ColorAttachments[i], m_Specifications.Samples, GL_RGBA8, GL_RGBA, m_Specifications.Width, m_Specifications.Height, i);
+						break;
+					case FrameBufferTextureFormat::RED_INTEGER:
+						Utils::AttachColorTexture(m_ColorAttachments[i], m_Specifications.Samples, GL_R32I, GL_RED_INTEGER, m_Specifications.Width, m_Specifications.Height, i);
+						break;
+				}
+			}
+		}
+
+		if (m_DepthAttachmentSpecification.TextureFormat != FrameBufferTextureFormat::None)
+		{
+			Utils::CreateTexture(isMultisampled, &m_DepthAttachment, 1);
+			Utils::BindTexture(isMultisampled, m_DepthAttachment);
+			switch (m_DepthAttachmentSpecification.TextureFormat)
+			{
+				case FrameBufferTextureFormat::DEPTH24STENCIL8:
+					Utils::AttachDepthTexture(m_DepthAttachment, m_Specifications.Samples, GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL_ATTACHMENT, m_Specifications.Width, m_Specifications.Height);
+						break;
+			}
+		}
+
+		if (m_ColorAttachments.size() > 1)
+		{
+			ENGINE_ASSERT(m_ColorAttachments.size() <= 4, "Only supports 4 color attachments");
+			GLenum buffers[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
+			glDrawBuffers(m_ColorAttachments.size(), buffers);
+		}
+		else if(m_ColorAttachments.empty())
+		{
+			// Only depth pass
+			glDrawBuffers(GL_FRAMEBUFFER, 0);
+		}
+
+#if 0
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_TextureColorAttachment);
 		glBindTexture(GL_TEXTURE_2D, m_TextureColorAttachment);
 
@@ -72,10 +202,7 @@ namespace Karem {
 
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, m_DepthAttachment, 0);
 
-		ENGINE_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Framebuffer is incomplete!");
-
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-#if OLD_CODE
+#elif OLD_CODE
 		// Build the texture that will serve as the depth attachment for the framebuffer.
 		GLuint depthTexture;
 		glGenTextures(1, &depthTexture);
@@ -114,6 +241,10 @@ namespace Karem {
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 #endif
+
+		ENGINE_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Framebuffer is incomplete!");
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
 }

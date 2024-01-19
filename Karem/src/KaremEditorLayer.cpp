@@ -30,7 +30,12 @@ namespace Karem {
 		//------------------------------------------------------------------------
 		m_EditorCamera = EditorCamera(45.f, 1.777f, 0.0001f, 1000.f);
 
-		m_FrameBuffer = CreateFrameBuffer(1280, 720);
+		FrameBufferSpecifications fbSpecs;
+		fbSpecs.Width = 1280;
+		fbSpecs.Height = 720;
+		fbSpecs.Attachments = { FrameBufferTextureFormat::RGBA8,FrameBufferTextureFormat::DEPTH24STENCIL8 };
+		m_FrameBuffer = CreateFrameBuffer(fbSpecs);
+
 		m_ActiveScene = std::make_shared<Scene>();
 		m_Panels.SetScene(m_ActiveScene);
 		m_Panels.SetNewSceneFuction(std::bind(&KaremEditorLayer::NewScene, this));
@@ -50,9 +55,9 @@ namespace Karem {
 			Entity SquareEntity = m_ActiveScene->CreateEntity("Square Entity");
 			auto& squareScale = SquareEntity.GetComponent<TransformComponent>().Scale;
 			SquareEntity.AddComponent<ColorComponent>(glm::vec4{ 0.4f, 0.0f, 1.0f, 1.0f });
-		}
-#endif
 	}
+#endif
+}
 
 	void KaremEditorLayer::OnDetach()
 	{
@@ -106,7 +111,7 @@ namespace Karem {
 				float red = i / 10.0f, green = j / 10.0f;
 				const glm::vec4 color = { red, green, 0.5f, 1.0f };
 				Renderer2D::SubmitQuad({ i, j, -0.1f, 1.0f }, { 3.0f, 3.0f }, color);
-			}
+	}
 		}
 		Renderer2D::EndScene();
 #endif
@@ -145,7 +150,7 @@ namespace Karem {
 	void KaremEditorLayer::EventHandler(Event& event)
 	{
 		EventDispatcher dispatcher(event);
-			
+
 		m_ActiveScene->EventHandler(event);
 		m_Panels.EventHandler(event);
 
@@ -229,10 +234,12 @@ namespace Karem {
 
 		ImVec2 currentPannelSize = ImGui::GetContentRegionAvail();
 		m_CurrentViewportSize = *(glm::vec2*)&currentPannelSize;
+		float fbWidth = m_FrameBuffer->GetFramebufferWidth();
+		float fbHeight = m_FrameBuffer->GetFramebufferHeight();
 		uint64_t textureID = m_FrameBuffer->GetTextureColorAttachmentID();
 		ImGui::Image(
 			reinterpret_cast<void*>(textureID),
-			{ (float)m_FrameBuffer->GetFrameBufferSize().width, (float)m_FrameBuffer->GetFrameBufferSize().height },
+			{ fbWidth, fbHeight },
 			ImVec2(0, 1),
 			ImVec2(1, 0)
 		);
@@ -254,7 +261,7 @@ namespace Karem {
 			{
 				m_CurrentGizmoType = ImGuizmo::OPERATION::ROTATE;
 			}
-			else if (Input::IsKeyPressed(Key::E)) // i downt know what the good keyword for this
+			else if (Input::IsKeyPressed(Key::E)) // i dont know what the good keyword for this
 			{
 				m_CurrentGizmoType = ImGuizmo::OPERATION::TRANSLATE;
 			}
@@ -282,7 +289,7 @@ namespace Karem {
 
 			ImGuizmo::Manipulate(glm::value_ptr(viewMatrix), glm::value_ptr(projMatrix), (ImGuizmo::OPERATION)m_CurrentGizmoType, ImGuizmo::MODE::LOCAL, glm::value_ptr(transform), nullptr);
 
-			if(ImGuizmo::IsUsing())
+			if (ImGuizmo::IsUsing())
 			{
 				glm::vec3 translation, rotation, scale;
 
@@ -290,7 +297,7 @@ namespace Karem {
 
 				tc.Translation = translation;
 
-				// TODO :: FIX ROTATION
+				// TODO::FIX ROTATION
 				//glm::vec3 deltaRotation = rotation - tc.Rotation;
 				//tc.Rotation += deltaRotation;
 
