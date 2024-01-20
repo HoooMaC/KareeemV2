@@ -175,14 +175,14 @@ namespace Karem {
 
 		if (m_ColorAttachments.size() > 1)
 		{
-			ENGINE_ASSERT(m_ColorAttachments.size() <= 4, "Only supports 4 color attachments");
+			ENGINE_ASSERT(!(m_ColorAttachments.size() <= 4), "Only supports 4 color attachments");
 			GLenum buffers[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
 			glDrawBuffers(m_ColorAttachments.size(), buffers);
 		}
 		else if(m_ColorAttachments.empty())
 		{
 			// Only depth pass
-			glDrawBuffers(GL_FRAMEBUFFER, 0);
+			glDrawBuffer(GL_NONE);
 		}
 
 #if 0
@@ -242,7 +242,7 @@ namespace Karem {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 #endif
 
-		ENGINE_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Framebuffer is incomplete!");
+		ENGINE_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE, "Framebuffer is incomplete!");
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}

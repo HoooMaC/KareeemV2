@@ -32,7 +32,7 @@ namespace Karem {
 		template<typename T>
 		T& GetComponent()
 		{
-			ENGINE_ASSERT(IsHasComponent<T>(), "The entity doesn't have the component");
+			ENGINE_ASSERT(!IsHasComponent<T>(), "The entity doesn't have the component");
 			return m_SceneContext->m_Registry.get<T>(m_EntityId);
 		}
 			

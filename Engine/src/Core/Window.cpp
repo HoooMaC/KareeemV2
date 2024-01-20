@@ -42,7 +42,7 @@ namespace Karem {
 		{
 			int succes = glfwInit();
 
-			ENGINE_ASSERT(succes, "Failed to Initialized GLFW");
+			ENGINE_ASSERT(!succes, "Failed to Initialized GLFW");
 
 			//glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 			glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);

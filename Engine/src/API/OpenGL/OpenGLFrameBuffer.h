@@ -15,7 +15,7 @@ namespace Karem {
 
 		uint32_t GetTextureColorAttachmentID(uint32_t index = 0) const override
 		{
-			ENGINE_ASSERT(index < m_ColorAttachments.size(), "INVALID COLOR ATTACHMENT INDEX");
+			ENGINE_ASSERT(!(index < m_ColorAttachments.size()), "INVALID COLOR ATTACHMENT INDEX");
 			return m_ColorAttachments[index];
 		}
 		float GetFramebufferWidth() const override { return (float)m_Specifications.Width; }

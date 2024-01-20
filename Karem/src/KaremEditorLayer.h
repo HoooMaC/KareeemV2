@@ -27,6 +27,7 @@ namespace Karem {
 	private:
 		bool WindowResizeAction(WindowResizeEvent& event);
 		bool KeyPressedAction(KeyPressedEvent& event);
+		bool MouseButtonAction(MouseButtonPressedEvent& event);
 
 		void NewScene()
 		{

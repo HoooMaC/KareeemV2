@@ -33,7 +33,7 @@ namespace Karem {
 		FrameBufferSpecifications fbSpecs;
 		fbSpecs.Width = 1280;
 		fbSpecs.Height = 720;
-		fbSpecs.Attachments = { FrameBufferTextureFormat::RGBA8,FrameBufferTextureFormat::DEPTH24STENCIL8 };
+		fbSpecs.Attachments = { FrameBufferTextureFormat::RGBA8, FrameBufferTextureFormat::RGBA8, FrameBufferTextureFormat::RGBA8, FrameBufferTextureFormat::RED_INTEGER, FrameBufferTextureFormat::DEPTH24STENCIL8 };
 		m_FrameBuffer = CreateFrameBuffer(fbSpecs);
 
 		m_ActiveScene = std::make_shared<Scene>();
@@ -65,20 +65,18 @@ namespace Karem {
 
 	void KaremEditorLayer::Update(TimeStep ts)
 	{
-		float titleBarHeight = 0.0f;
-		if (Karem::IsImGuiContextValid())
-		{
-			if (auto viewportWindow = ImGui::FindWindowByName("Viewport"))
-			{
-				m_CurrentViewportSize = { viewportWindow->Size.x, viewportWindow->Size.y };
-				titleBarHeight = viewportWindow->TitleBarHeight();
-			}
-		}
+		//if (Karem::IsImGuiContextValid())
+		//{
+		//	if (auto viewportWindow = ImGui::FindWindowByName("Viewport"))
+		//	{
+		//		m_CurrentViewportSize = *(glm::vec2*)&viewportWindow->Size;
+		//		m_CurrentViewportSize.y -= viewportWindow->TitleBarHeight();
+		//	}
+		//}
 
 		if (m_CurrentViewportSize != m_PreviousViewportSize and (m_CurrentViewportSize.x > 0 and m_CurrentViewportSize.y > 0))
 		{
 			m_PreviousViewportSize = m_CurrentViewportSize;
-			m_CurrentViewportSize.y -= titleBarHeight;
 			m_FrameBuffer->Resize((int32_t)m_CurrentViewportSize.x, (int32_t)m_CurrentViewportSize.y);
 			m_ActiveScene->OnViewportResize((float)m_CurrentViewportSize.x, (float)m_CurrentViewportSize.y);
 			m_EditorCamera.SetViewportSize((float)m_CurrentViewportSize.x, (float)m_CurrentViewportSize.y);
@@ -150,6 +148,7 @@ namespace Karem {
 	void KaremEditorLayer::EventHandler(Event& event)
 	{
 		EventDispatcher dispatcher(event);
+		dispatcher.Dispatch<MouseButtonPressedEvent>(std::bind(&KaremEditorLayer::MouseButtonAction, this, std::placeholders::_1));
 
 		m_ActiveScene->EventHandler(event);
 		m_Panels.EventHandler(event);
@@ -232,11 +231,12 @@ namespace Karem {
 
 		ImGui::Begin("Viewport");
 
-		ImVec2 currentPannelSize = ImGui::GetContentRegionAvail();
-		m_CurrentViewportSize = *(glm::vec2*)&currentPannelSize;
+		auto currentViewportSize = ImGui::GetContentRegionAvail();
+		m_CurrentViewportSize = *(glm::vec2*)&currentViewportSize;
+
 		float fbWidth = m_FrameBuffer->GetFramebufferWidth();
 		float fbHeight = m_FrameBuffer->GetFramebufferHeight();
-		uint64_t textureID = m_FrameBuffer->GetTextureColorAttachmentID();
+		uint64_t textureID = m_FrameBuffer->GetTextureColorAttachmentID(0);
 		ImGui::Image(
 			reinterpret_cast<void*>(textureID),
 			{ fbWidth, fbHeight },
@@ -321,4 +321,32 @@ namespace Karem {
 		return false;
 	}
 
+	bool Karem::KaremEditorLayer::MouseButtonAction(MouseButtonPressedEvent& event)
+	{
+		if(event.GetMouseButton() == Mouse::ButtonLeft)
+		{
+			// Get the viewport 
+			// TODO::m_Viewport.GetSize()
+			// TODO::m_Viewport.GetMinBounds()
+			const auto viewport = ImGui::FindWindowByName("Viewport");
+			const auto viewportRect = viewport->InnerRect;
+			const auto [viewportSizeX, viewportSizeY] = viewportRect.GetSize();
+
+			auto [mx, my] = ImGui::GetMousePos();
+
+			my -= viewportRect.Min.y;
+			mx -= viewportRect.Min.x;
+			my = viewportSizeY - my;
+
+			if (mx > 0 and my > 0 and mx < viewportSizeX and my < viewportSizeY)
+			{
+				ENGINE_DEBUG("{} | {}", mx, my);
+				// Need to read pixel from here
+
+				// If on the pixel there is an entity != -1, put into the 
+				// m_Panels.SetSelectedEntity(id);
+			}
+		}
+		return false;
+	}
 }
