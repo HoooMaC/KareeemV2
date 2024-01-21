@@ -13,6 +13,8 @@ namespace Karem {
 		void Bind() const override;	
 		void UnBind() const override;
 
+		void ClearColorAttachment(uint32_t attachmentIndex, int value) override;
+
 		uint32_t GetTextureColorAttachmentID(uint32_t index = 0) const override
 		{
 			ENGINE_ASSERT(!(index < m_ColorAttachments.size()), "INVALID COLOR ATTACHMENT INDEX");
@@ -20,6 +22,8 @@ namespace Karem {
 		}
 		float GetFramebufferWidth() const override { return (float)m_Specifications.Width; }
 		float GetFramebufferHeight() const override { return (float)m_Specifications.Height; }
+
+		int GetEntityId(uint32_t attachmentIndex, uint32_t x, uint32_t y) const override;
 
 		void Resize(int32_t width, int32_t height) override;
 		void Invalidate() override;

@@ -54,11 +54,15 @@ namespace Karem {
 		virtual void Bind() const = 0;
 		virtual void UnBind() const = 0;
 
+		virtual void ClearColorAttachment(uint32_t attachmentIndex, int value) = 0;
+
 		virtual uint32_t GetTextureColorAttachmentID(uint32_t index = 0) const = 0;
 
 		virtual float GetFramebufferWidth() const = 0;
 		virtual float GetFramebufferHeight() const = 0;
-			
+		
+		virtual int GetEntityId(uint32_t attachmentIndex, uint32_t x, uint32_t y) const = 0;
+
 		virtual void Resize(int32_t width, int32_t height) = 0;
 		virtual void Invalidate() = 0;
 	};

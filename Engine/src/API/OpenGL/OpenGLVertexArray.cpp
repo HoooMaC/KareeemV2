@@ -76,14 +76,35 @@ namespace Karem {
 		for (const auto& [location, element] : layout)
 		{
 			glEnableVertexAttribArray(location);
-			glVertexAttribPointer(
-				location,
-				element.GetCount(),
-				OpenGLToShaderDataType(element.Type),
-				element.Normalized ? GL_TRUE : GL_FALSE,
-				layout.GetStride(),
-				(const void*)element.Offset
-			);
+			switch (element.Type)
+			{
+				case ShaderDataType::Float:
+				case ShaderDataType::Vec2:
+				case ShaderDataType::Vec3:
+				case ShaderDataType::Vec4:
+				case ShaderDataType::Mat2:
+				case ShaderDataType::Mat3:
+				case ShaderDataType::Mat4:
+					glVertexAttribPointer(
+						location,
+						element.GetCount(),
+						OpenGLToShaderDataType(element.Type),
+						element.Normalized ? GL_TRUE : GL_FALSE,
+						layout.GetStride(),
+						(const void*)element.Offset);
+					break;
+				case ShaderDataType::Int:
+				case ShaderDataType::Int2:
+				case ShaderDataType::Int3:
+				case ShaderDataType::Int4:
+				case ShaderDataType::Bool:
+					glVertexAttribIPointer(location, 
+						element.GetCount(), 
+						OpenGLToShaderDataType(element.Type), 
+						layout.GetStride(), 
+						(const void*)element.Offset);
+					break;
+			}
 		}
 	}
 

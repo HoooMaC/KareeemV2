@@ -33,7 +33,7 @@ namespace Karem {
 		FrameBufferSpecifications fbSpecs;
 		fbSpecs.Width = 1280;
 		fbSpecs.Height = 720;
-		fbSpecs.Attachments = { FrameBufferTextureFormat::RGBA8, FrameBufferTextureFormat::RGBA8, FrameBufferTextureFormat::RGBA8, FrameBufferTextureFormat::RED_INTEGER, FrameBufferTextureFormat::DEPTH24STENCIL8 };
+		fbSpecs.Attachments = { FrameBufferTextureFormat::RGBA8, FrameBufferTextureFormat::RED_INTEGER, FrameBufferTextureFormat::DEPTH24STENCIL8 };
 		m_FrameBuffer = CreateFrameBuffer(fbSpecs);
 
 		m_ActiveScene = std::make_shared<Scene>();
@@ -55,9 +55,9 @@ namespace Karem {
 			Entity SquareEntity = m_ActiveScene->CreateEntity("Square Entity");
 			auto& squareScale = SquareEntity.GetComponent<TransformComponent>().Scale;
 			SquareEntity.AddComponent<ColorComponent>(glm::vec4{ 0.4f, 0.0f, 1.0f, 1.0f });
-	}
+		}
 #endif
-}
+	}
 
 	void KaremEditorLayer::OnDetach()
 	{
@@ -85,8 +85,10 @@ namespace Karem {
 		m_FrameBuffer->Bind();
 
 		// testing the renderer for texture
-		RendererCommand::Clear();
 		RendererCommand::ClearColor(Color::ViewportBackground);
+		RendererCommand::Clear();
+
+		m_FrameBuffer->ClearColorAttachment(1, -1);
 
 #if OLD_RENDERER
 		static glm::vec4 quadPos = glm::vec4(1.0f);
@@ -109,7 +111,7 @@ namespace Karem {
 				float red = i / 10.0f, green = j / 10.0f;
 				const glm::vec4 color = { red, green, 0.5f, 1.0f };
 				Renderer2D::SubmitQuad({ i, j, -0.1f, 1.0f }, { 3.0f, 3.0f }, color);
-	}
+			}
 		}
 		Renderer2D::EndScene();
 #endif
@@ -169,35 +171,6 @@ namespace Karem {
 
 	void KaremEditorLayer::RenderDockspace()
 	{
-#if OLD_VIEWPORT
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-
-		ImGuiViewport* viewport = ImGui::GetMainViewport();
-
-		ImGui::SetNextWindowPos(viewport->WorkPos);
-		ImGui::SetNextWindowSize(viewport->WorkSize);
-		ImGui::SetNextWindowViewport(viewport->ID);
-
-		ImGuiWindowFlags docks_window_flags = ImGuiWindowFlags_NoCollapse
-			| ImGuiWindowFlags_AlwaysAutoResize
-			| ImGuiWindowFlags_NoBringToFrontOnFocus
-			| ImGuiWindowFlags_NoNavFocus
-			| ImGuiWindowFlags_MenuBar;
-		//| ImGuiWindowFlags_NoResize
-		//| ImGuiWindowFlags_NoMove
-
-		ImGui::Begin("DockSpaceViewport", NULL, docks_window_flags);
-
-		MenuBar();
-
-		ImGuiID dockspace_id = ImGui::GetID("DockSpace");
-		ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f));
-		ImGui::End();
-
-		ImGui::PopStyleVar(3);
-#endif
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
@@ -237,6 +210,7 @@ namespace Karem {
 		float fbWidth = m_FrameBuffer->GetFramebufferWidth();
 		float fbHeight = m_FrameBuffer->GetFramebufferHeight();
 		uint64_t textureID = m_FrameBuffer->GetTextureColorAttachmentID(0);
+
 		ImGui::Image(
 			reinterpret_cast<void*>(textureID),
 			{ fbWidth, fbHeight },
@@ -245,7 +219,6 @@ namespace Karem {
 		);
 
 		// Gizmos Here
-
 		if (ImGui::IsWindowHovered())
 		{
 			if (Input::IsKeyPressed(Key::V))
@@ -303,7 +276,6 @@ namespace Karem {
 
 				tc.Scale = scale;
 			}
-
 		}
 		ImGui::End();
 
@@ -317,13 +289,12 @@ namespace Karem {
 
 	bool KaremEditorLayer::KeyPressedAction(KeyPressedEvent& event)
 	{
-		event.GetKeyCode();
 		return false;
 	}
 
 	bool Karem::KaremEditorLayer::MouseButtonAction(MouseButtonPressedEvent& event)
 	{
-		if(event.GetMouseButton() == Mouse::ButtonLeft)
+		if (event.GetMouseButton() == Mouse::ButtonLeft)
 		{
 			// Get the viewport 
 			// TODO::m_Viewport.GetSize()
@@ -340,13 +311,18 @@ namespace Karem {
 
 			if (mx > 0 and my > 0 and mx < viewportSizeX and my < viewportSizeY)
 			{
-				ENGINE_DEBUG("{} | {}", mx, my);
-				// Need to read pixel from here
+				m_FrameBuffer->Bind();
+				int selectedEntity = m_FrameBuffer->GetEntityId(1, mx, my);
+				m_FrameBuffer->UnBind();
 
-				// If on the pixel there is an entity != -1, put into the 
-				// m_Panels.SetSelectedEntity(id);
+				//ENGINE_DEBUG("Entity Id {}", selectedEntity);
+				if (selectedEntity != -1)
+					m_Panels.SetSelectedEntity(selectedEntity);
+				else
+					m_Panels.SetSelectedEntity();
 			}
 		}
 		return false;
 	}
+
 }

@@ -74,6 +74,17 @@ namespace Karem {
 			return false;
 		}
 
+		static GLenum TextureFormatFBToGL(FrameBufferTextureFormat format)
+		{
+			switch (format)
+			{
+				case Karem::FrameBufferTextureFormat::RGBA8: return GL_RGBA8;
+				case Karem::FrameBufferTextureFormat::RED_INTEGER: return GL_RED_INTEGER;
+			}
+			ENGINE_ASSERT(false, "Invalid format");
+			return 0;
+		}
+
 	}
 
 	OpenGLFrameBuffer::OpenGLFrameBuffer(FrameBufferSpecifications specifications)
@@ -110,6 +121,24 @@ namespace Karem {
 	void OpenGLFrameBuffer::UnBind() const
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+
+	void OpenGLFrameBuffer::ClearColorAttachment(uint32_t attachmentIndex, int value)
+	{
+		ENGINE_ASSERT(!(attachmentIndex < m_ColorAttachments.size()), "Invalid color attachment");
+
+		auto spec = m_ColorAttachmentSpecifications[attachmentIndex].TextureFormat;
+		glClearTexImage(m_ColorAttachments[attachmentIndex], 0, Utils::TextureFormatFBToGL(spec), GL_INT, &value);
+	}
+
+	int OpenGLFrameBuffer::GetEntityId(uint32_t attachmentIndex, uint32_t x, uint32_t y) const
+	{
+		ENGINE_ASSERT(!(attachmentIndex < m_ColorAttachments.size()), "Invalid color attachment");
+
+		int pixelData;
+		glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
+		glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixelData);
+		return pixelData;
 	}
 
 	void OpenGLFrameBuffer::Resize(int32_t width, int32_t height)

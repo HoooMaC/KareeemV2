@@ -18,6 +18,7 @@ namespace Karem {
 		void EventHandler(Event& event);
 
 		Entity& GetSelectedEntity() { return m_SelectedEntity; }
+		void SetSelectedEntity() { m_SelectedEntity = {}; }
 		void SetSelectedEntity(uint32_t entityId) { m_SelectedEntity = { entt::entity(entityId), m_ContextScene.get() }; }
 
 		void SetNewSceneFuction(std::function<void()> function);

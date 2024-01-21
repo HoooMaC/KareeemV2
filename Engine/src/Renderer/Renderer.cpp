@@ -96,7 +96,7 @@ namespace Karem {
 		Flush();
 	}
 
-	void Renderer::SubmitQuad(const glm::vec4& pos, const glm::vec2& size, const glm::vec4& color, float texIndex)
+	void Renderer::SubmitQuad(const glm::vec4& pos, const glm::vec2& size, const glm::vec4& color, int entityId, float texIndex)
 	{
 		if (BufferData::vertexIndex + 4 >= BufferData::maxVertex or BufferData::indicesIndex + 6 >= BufferData::maxIndexBuffer)
 		{
@@ -107,10 +107,10 @@ namespace Karem {
 		float halfWidth = size.x / 2.0f;
 		float halfHeight = size.y / 2.0f;
 
-		s_Buffer->vertexData[BufferData::vertexIndex + 0] = Vertex{ glm::vec4(pos.x - halfWidth, pos.y - halfHeight, pos.z, 1.0f), color, glm::vec2(0.0f, 0.0f), texIndex };
-		s_Buffer->vertexData[BufferData::vertexIndex + 1] = Vertex{ glm::vec4(pos.x + halfWidth, pos.y - halfHeight, pos.z, 1.0f), color, glm::vec2(1.0f, 0.0f), texIndex };
-		s_Buffer->vertexData[BufferData::vertexIndex + 2] = Vertex{ glm::vec4(pos.x + halfWidth, pos.y + halfHeight, pos.z, 1.0f), color, glm::vec2(1.0f, 1.0f), texIndex };
-		s_Buffer->vertexData[BufferData::vertexIndex + 3] = Vertex{ glm::vec4(pos.x - halfWidth, pos.y + halfHeight, pos.z, 1.0f), color, glm::vec2(0.0f, 1.0f), texIndex };
+		s_Buffer->vertexData[BufferData::vertexIndex + 0] = Vertex{ glm::vec4(pos.x - halfWidth, pos.y - halfHeight, pos.z, 1.0f), color, glm::vec2(0.0f, 0.0f), texIndex, entityId };
+		s_Buffer->vertexData[BufferData::vertexIndex + 1] = Vertex{ glm::vec4(pos.x + halfWidth, pos.y - halfHeight, pos.z, 1.0f), color, glm::vec2(1.0f, 0.0f), texIndex, entityId };
+		s_Buffer->vertexData[BufferData::vertexIndex + 2] = Vertex{ glm::vec4(pos.x + halfWidth, pos.y + halfHeight, pos.z, 1.0f), color, glm::vec2(1.0f, 1.0f), texIndex, entityId };
+		s_Buffer->vertexData[BufferData::vertexIndex + 3] = Vertex{ glm::vec4(pos.x - halfWidth, pos.y + halfHeight, pos.z, 1.0f), color, glm::vec2(0.0f, 1.0f), texIndex, entityId };
 
 		s_Buffer->indicesData[BufferData::indicesIndex + 0] = offset + 0;
 		s_Buffer->indicesData[BufferData::indicesIndex + 1] = offset + 1;
@@ -124,38 +124,14 @@ namespace Karem {
 		BufferData::indicesOffset += 4;
 	}
 
-	void Renderer::SubmitQuad(const glm::vec4& pos, const glm::vec2& size, const std::shared_ptr<Texture2D>& texture, float texIndex, const glm::vec4& color)
+	void Renderer::SubmitQuad(const glm::vec4& pos, const glm::vec2& size, const std::shared_ptr<Texture2D>& texture, int entityId, float texIndex, const glm::vec4& color)
 	{
-		if (BufferData::vertexIndex + 4 >= BufferData::maxVertex or BufferData::indicesIndex + 6 >= BufferData::maxIndexBuffer)
-		{
-			EndScene();
-		}
-
-		uint32_t offset = BufferData::indicesOffset;
-
-		float halfWidth = size.x / 2.0f;
-		float halfHeight = size.y / 2.0f;
-
-		s_Buffer->vertexData[BufferData::vertexIndex + 0] = Vertex{ glm::vec4(pos.x - halfWidth, pos.y - halfHeight, pos.z, 1.0f), color, glm::vec2(0.0f, 0.0f), texIndex };
-		s_Buffer->vertexData[BufferData::vertexIndex + 1] = Vertex{ glm::vec4(pos.x + halfWidth, pos.y - halfHeight, pos.z, 1.0f), color, glm::vec2(1.0f, 0.0f), texIndex };
-		s_Buffer->vertexData[BufferData::vertexIndex + 2] = Vertex{ glm::vec4(pos.x + halfWidth, pos.y + halfHeight, pos.z, 1.0f), color, glm::vec2(1.0f, 1.0f), texIndex };
-		s_Buffer->vertexData[BufferData::vertexIndex + 3] = Vertex{ glm::vec4(pos.x - halfWidth, pos.y + halfHeight, pos.z, 1.0f), color, glm::vec2(0.0f, 1.0f), texIndex };
-
-		s_Buffer->indicesData[BufferData::indicesIndex + 0] = offset + 0;
-		s_Buffer->indicesData[BufferData::indicesIndex + 1] = offset + 1;
-		s_Buffer->indicesData[BufferData::indicesIndex + 2] = offset + 2;
-		s_Buffer->indicesData[BufferData::indicesIndex + 3] = offset + 2;
-		s_Buffer->indicesData[BufferData::indicesIndex + 4] = offset + 3;
-		s_Buffer->indicesData[BufferData::indicesIndex + 5] = offset + 0;
+		SubmitQuad(pos, size, color, entityId, texIndex);
 
 		s_Buffer->TextureContainer[(int)texIndex] = texture;
-
-		BufferData::vertexIndex += 4;
-		BufferData::indicesIndex += 6;
-		BufferData::indicesOffset += 4;
 	}
 
-	void Renderer::SubmitQuad(const glm::mat4& transform, const glm::vec4& color, float texIndex)
+	void Renderer::SubmitQuad(const glm::mat4& transform, const glm::vec4& color, int entityId, float texIndex)
 	{
 		if (BufferData::vertexIndex + 4 >= BufferData::maxVertex or BufferData::indicesIndex + 6 >= BufferData::maxIndexBuffer)
 		{
@@ -164,10 +140,10 @@ namespace Karem {
 
 		uint32_t offset = BufferData::indicesOffset;
 
-		s_Buffer->vertexData[BufferData::vertexIndex + 0] = Vertex{ transform * defaultQuadPosition[0], color, glm::vec2(0.0f, 0.0f), texIndex };
-		s_Buffer->vertexData[BufferData::vertexIndex + 1] = Vertex{ transform * defaultQuadPosition[1], color, glm::vec2(1.0f, 0.0f), texIndex };
-		s_Buffer->vertexData[BufferData::vertexIndex + 2] = Vertex{ transform * defaultQuadPosition[2], color, glm::vec2(1.0f, 1.0f), texIndex };
-		s_Buffer->vertexData[BufferData::vertexIndex + 3] = Vertex{ transform * defaultQuadPosition[3], color, glm::vec2(0.0f, 1.0f), texIndex };
+		s_Buffer->vertexData[BufferData::vertexIndex + 0] = Vertex{ transform * defaultQuadPosition[0], color, glm::vec2(0.0f, 0.0f), texIndex, entityId };
+		s_Buffer->vertexData[BufferData::vertexIndex + 1] = Vertex{ transform * defaultQuadPosition[1], color, glm::vec2(1.0f, 0.0f), texIndex, entityId };
+		s_Buffer->vertexData[BufferData::vertexIndex + 2] = Vertex{ transform * defaultQuadPosition[2], color, glm::vec2(1.0f, 1.0f), texIndex, entityId };
+		s_Buffer->vertexData[BufferData::vertexIndex + 3] = Vertex{ transform * defaultQuadPosition[3], color, glm::vec2(0.0f, 1.0f), texIndex, entityId };
 
 		s_Buffer->indicesData[BufferData::indicesIndex + 0] = offset + 0;
 		s_Buffer->indicesData[BufferData::indicesIndex + 1] = offset + 1;
@@ -181,50 +157,28 @@ namespace Karem {
 		BufferData::indicesOffset += 4;
 	}
 
-	void Renderer::SubmitQuad(const glm::mat4& transform, Rahman::SmartRef<Texture2D> texture, float texIndex, const glm::vec4& color)
+	void Renderer::SubmitQuad(const glm::mat4& transform, Rahman::SmartRef<Texture2D> texture, int entityId, float texIndex, const glm::vec4& color)
 	{
-		if (BufferData::vertexIndex + 4 >= BufferData::maxVertex or BufferData::indicesIndex + 6 >= BufferData::maxIndexBuffer)
-		{
-			EndScene();
-		}
-
-		uint32_t offset = BufferData::indicesOffset;
-
-		s_Buffer->vertexData[BufferData::vertexIndex + 0] = Vertex{ transform * glm::vec4(-0.5f, -0.5f, 0.0f, 1.0f), color, glm::vec2(0.0f, 0.0f), texIndex };
-		s_Buffer->vertexData[BufferData::vertexIndex + 1] = Vertex{ transform * glm::vec4( 0.5f, -0.5f, 0.0f, 1.0f),  color, glm::vec2(1.0f, 0.0f), texIndex };
-		s_Buffer->vertexData[BufferData::vertexIndex + 2] = Vertex{ transform * glm::vec4( 0.5f,  0.5f, 0.0f, 1.0f),  color, glm::vec2(1.0f, 1.0f), texIndex };
-		s_Buffer->vertexData[BufferData::vertexIndex + 3] = Vertex{ transform * glm::vec4(-0.5f,  0.5f, 0.0f, 1.0f), color, glm::vec2(0.0f, 1.0f), texIndex };
-
-		s_Buffer->indicesData[BufferData::indicesIndex + 0] = offset + 0;
-		s_Buffer->indicesData[BufferData::indicesIndex + 1] = offset + 1;
-		s_Buffer->indicesData[BufferData::indicesIndex + 2] = offset + 2;
-		s_Buffer->indicesData[BufferData::indicesIndex + 3] = offset + 2;
-		s_Buffer->indicesData[BufferData::indicesIndex + 4] = offset + 3;
-		s_Buffer->indicesData[BufferData::indicesIndex + 5] = offset + 0;
+		SubmitQuad(transform, color, entityId, texIndex);
 
 		s_Buffer->TextureContainer[(int)texIndex] = texture;
-
-		BufferData::vertexIndex += 4;
-		BufferData::indicesIndex += 6;
-		BufferData::indicesOffset += 4;
 	}
 
-	void Renderer::SubmitQuad(const glm::mat4& transform, const SubTexture2D& subTexture, float texIndex, const glm::vec4& color)
+	void Renderer::SubmitQuad(const glm::mat4& transform, const SubTexture2D& subTexture, int entityId, float texIndex, const glm::vec4& color)
 	{
 		if (BufferData::vertexIndex + 4 >= BufferData::maxVertex or BufferData::indicesIndex + 6 >= BufferData::maxIndexBuffer)
 		{
 			EndScene();
 		}
 
-		s_Buffer->TextureContainer[(int)texIndex] = subTexture.GetTextureReference();
 		const glm::vec2* texCoord = subTexture.GetTexCoord();
 
 		uint32_t offset = BufferData::indicesOffset;
 
-		s_Buffer->vertexData[BufferData::vertexIndex + 0] = Vertex{ transform * defaultQuadPosition[0], color, *(texCoord + 0), texIndex }; // kiri bawah;
-		s_Buffer->vertexData[BufferData::vertexIndex + 1] = Vertex{ transform * defaultQuadPosition[1], color, *(texCoord + 1), texIndex }; // kiri bawah;
-		s_Buffer->vertexData[BufferData::vertexIndex + 2] = Vertex{ transform * defaultQuadPosition[2], color, *(texCoord + 2), texIndex }; // kiri bawah;
-		s_Buffer->vertexData[BufferData::vertexIndex + 3] = Vertex{ transform * defaultQuadPosition[3], color, *(texCoord + 3), texIndex }; // kiri bawah;
+		s_Buffer->vertexData[BufferData::vertexIndex + 0] = Vertex{ transform * defaultQuadPosition[0], color, *(texCoord + 0), texIndex, entityId }; // kiri bawah;
+		s_Buffer->vertexData[BufferData::vertexIndex + 1] = Vertex{ transform * defaultQuadPosition[1], color, *(texCoord + 1), texIndex, entityId }; // kiri bawah;
+		s_Buffer->vertexData[BufferData::vertexIndex + 2] = Vertex{ transform * defaultQuadPosition[2], color, *(texCoord + 2), texIndex, entityId }; // kiri bawah;
+		s_Buffer->vertexData[BufferData::vertexIndex + 3] = Vertex{ transform * defaultQuadPosition[3], color, *(texCoord + 3), texIndex, entityId }; // kiri bawah;
 
 		s_Buffer->indicesData[BufferData::indicesIndex + 0] = offset + 0;
 		s_Buffer->indicesData[BufferData::indicesIndex + 1] = offset + 1;
@@ -236,16 +190,17 @@ namespace Karem {
 		BufferData::vertexIndex += 4;
 		BufferData::indicesIndex += 6;
 		BufferData::indicesOffset += 4;
+
+		s_Buffer->TextureContainer[(int)texIndex] = subTexture.GetTextureReference();
 	}
 
-	void Renderer::SubmitSubTexturedQuad(const glm::vec4& pos, const glm::vec2& size, const SubTexture2D& subTexture, float texIndex, const glm::vec4& color)
+	void Renderer::SubmitSubTexturedQuad(const glm::vec4& pos, const glm::vec2& size, const SubTexture2D& subTexture, int entityId, float texIndex, const glm::vec4& color)
 	{
 		if (BufferData::vertexIndex + 4 >= BufferData::maxVertex or BufferData::indicesIndex + 6 >= BufferData::maxIndexBuffer)
 		{
 			EndScene();
 		}
 
-		s_Buffer->TextureContainer[(int)texIndex] = subTexture.GetTextureReference();
 		const glm::vec2* texCoord = subTexture.GetTexCoord();
 
 		uint32_t offset = BufferData::indicesOffset;
@@ -253,10 +208,10 @@ namespace Karem {
 		float halfWidth = size.x / 2.0f;
 		float halfHeight = size.y / 2.0f;
 
-		s_Buffer->vertexData[BufferData::vertexIndex + 0] = Vertex{ glm::vec4(pos.x - halfWidth, pos.y - halfHeight, pos.z, 1.0f), color, *(texCoord + 0), texIndex };
-		s_Buffer->vertexData[BufferData::vertexIndex + 1] = Vertex{ glm::vec4(pos.x + halfWidth, pos.y - halfHeight, pos.z, 1.0f), color, *(texCoord + 1), texIndex };
-		s_Buffer->vertexData[BufferData::vertexIndex + 2] = Vertex{ glm::vec4(pos.x + halfWidth, pos.y + halfHeight, pos.z, 1.0f), color, *(texCoord + 2), texIndex };
-		s_Buffer->vertexData[BufferData::vertexIndex + 3] = Vertex{ glm::vec4(pos.x - halfWidth, pos.y + halfHeight, pos.z, 1.0f), color, *(texCoord + 3), texIndex };
+		s_Buffer->vertexData[BufferData::vertexIndex + 0] = Vertex{ glm::vec4(pos.x - halfWidth, pos.y - halfHeight, pos.z, 1.0f), color, *(texCoord + 0), texIndex, entityId };
+		s_Buffer->vertexData[BufferData::vertexIndex + 1] = Vertex{ glm::vec4(pos.x + halfWidth, pos.y - halfHeight, pos.z, 1.0f), color, *(texCoord + 1), texIndex, entityId };
+		s_Buffer->vertexData[BufferData::vertexIndex + 2] = Vertex{ glm::vec4(pos.x + halfWidth, pos.y + halfHeight, pos.z, 1.0f), color, *(texCoord + 2), texIndex, entityId };
+		s_Buffer->vertexData[BufferData::vertexIndex + 3] = Vertex{ glm::vec4(pos.x - halfWidth, pos.y + halfHeight, pos.z, 1.0f), color, *(texCoord + 3), texIndex, entityId };
 
 		s_Buffer->indicesData[BufferData::indicesIndex + 0] = offset + 0;
 		s_Buffer->indicesData[BufferData::indicesIndex + 1] = offset + 1;
@@ -268,9 +223,11 @@ namespace Karem {
 		BufferData::vertexIndex += 4;
 		BufferData::indicesIndex += 6;
 		BufferData::indicesOffset += 4;
+
+		s_Buffer->TextureContainer[(int)texIndex] = subTexture.GetTextureReference();
 	}
 
-	void Renderer::SubmitRotatedQuad(const glm::vec4& pos, const glm::vec2& size, float rotation, const glm::vec4& color, float texIndex)
+	void Renderer::SubmitRotatedQuad(const glm::vec4& pos, const glm::vec2& size, float rotation, const glm::vec4& color, int entityId, float texIndex)
 	{
 		if (BufferData::vertexIndex + 4 >= BufferData::maxVertex || BufferData::indicesIndex + 6 >= BufferData::maxIndexBuffer)
 		{
@@ -296,10 +253,10 @@ namespace Karem {
 		topRight = glm::vec4(rotationMatrix * topRight);
 		topLeft = glm::vec4(rotationMatrix * topLeft);
 
-		s_Buffer->vertexData[BufferData::vertexIndex + 0] = Vertex{ bottomLeft + pos,  color, glm::vec2(0.0f, 0.0f), texIndex };
-		s_Buffer->vertexData[BufferData::vertexIndex + 1] = Vertex{ bottomRight + pos, color, glm::vec2(1.0f, 0.0f), texIndex };
-		s_Buffer->vertexData[BufferData::vertexIndex + 2] = Vertex{ topRight + pos,    color, glm::vec2(1.0f, 1.0f), texIndex };
-		s_Buffer->vertexData[BufferData::vertexIndex + 3] = Vertex{ topLeft + pos,     color, glm::vec2(0.0f, 1.0f), texIndex };
+		s_Buffer->vertexData[BufferData::vertexIndex + 0] = Vertex{ bottomLeft + pos,  color, glm::vec2(0.0f, 0.0f), texIndex, entityId };
+		s_Buffer->vertexData[BufferData::vertexIndex + 1] = Vertex{ bottomRight + pos, color, glm::vec2(1.0f, 0.0f), texIndex, entityId };
+		s_Buffer->vertexData[BufferData::vertexIndex + 2] = Vertex{ topRight + pos,    color, glm::vec2(1.0f, 1.0f), texIndex, entityId };
+		s_Buffer->vertexData[BufferData::vertexIndex + 3] = Vertex{ topLeft + pos,     color, glm::vec2(0.0f, 1.0f), texIndex, entityId };
 
 		s_Buffer->indicesData[BufferData::indicesIndex + 0] = offset + 0;
 		s_Buffer->indicesData[BufferData::indicesIndex + 1] = offset + 1;
@@ -313,7 +270,7 @@ namespace Karem {
 		BufferData::indicesOffset += 4;
 	}
 
-	void Renderer::SubmitRotatedQuad(const glm::vec4& pos, const glm::vec2& size, float rotation, Rahman::SmartRef<Texture2D> texture, float texIndex, const glm::vec4& color)
+	void Renderer::SubmitRotatedQuad(const glm::vec4& pos, const glm::vec2& size, float rotation, Rahman::SmartRef<Texture2D> texture, int entityId, float texIndex, const glm::vec4& color)
 	{
 		if (BufferData::vertexIndex + 4 >= BufferData::maxVertex || BufferData::indicesIndex + 6 >= BufferData::maxIndexBuffer)
 		{
@@ -338,10 +295,10 @@ namespace Karem {
 		topRight = glm::vec4(rotationMatrix * topRight);
 		topLeft = glm::vec4(rotationMatrix * topLeft);
 
-		s_Buffer->vertexData[BufferData::vertexIndex + 0] = Vertex{ bottomLeft + pos,  color, glm::vec2(0.0f, 0.0f), texIndex };
-		s_Buffer->vertexData[BufferData::vertexIndex + 1] = Vertex{ bottomRight + pos, color, glm::vec2(1.0f, 0.0f), texIndex };
-		s_Buffer->vertexData[BufferData::vertexIndex + 2] = Vertex{ topRight + pos,    color, glm::vec2(1.0f, 1.0f), texIndex };
-		s_Buffer->vertexData[BufferData::vertexIndex + 3] = Vertex{ topLeft + pos,     color, glm::vec2(0.0f, 1.0f), texIndex };
+		s_Buffer->vertexData[BufferData::vertexIndex + 0] = Vertex{ bottomLeft + pos,  color, glm::vec2(0.0f, 0.0f), texIndex, entityId };
+		s_Buffer->vertexData[BufferData::vertexIndex + 1] = Vertex{ bottomRight + pos, color, glm::vec2(1.0f, 0.0f), texIndex, entityId };
+		s_Buffer->vertexData[BufferData::vertexIndex + 2] = Vertex{ topRight + pos,    color, glm::vec2(1.0f, 1.0f), texIndex, entityId };
+		s_Buffer->vertexData[BufferData::vertexIndex + 3] = Vertex{ topLeft + pos,     color, glm::vec2(0.0f, 1.0f), texIndex, entityId };
 
 		s_Buffer->indicesData[BufferData::indicesIndex + 0] = offset + 0;
 		s_Buffer->indicesData[BufferData::indicesIndex + 1] = offset + 1;
@@ -350,14 +307,14 @@ namespace Karem {
 		s_Buffer->indicesData[BufferData::indicesIndex + 4] = offset + 3;
 		s_Buffer->indicesData[BufferData::indicesIndex + 5] = offset + 0;
 
-		s_Buffer->TextureContainer[(int)texIndex] = texture;
-
 		BufferData::vertexIndex += 4;
 		BufferData::indicesIndex += 6;
 		BufferData::indicesOffset += 4;
+
+		s_Buffer->TextureContainer[(int)texIndex] = texture;
 	}
 
-	void Renderer::SubmitTriangle(const glm::vec4& pos, const glm::vec2& size, const glm::vec4& color, float texIndex)
+	void Renderer::SubmitTriangle(const glm::vec4& pos, const glm::vec2& size, const glm::vec4& color, int entityId, float texIndex)
 	{
 		if (BufferData::vertexIndex + 3 >= BufferData::maxVertex || BufferData::indicesIndex + 3 >= BufferData::maxIndexBuffer)
 		{
@@ -370,9 +327,9 @@ namespace Karem {
 		float halfWidth = size.x / 2.0f;
 		float halfHeight = size.y / 2.0f;
 
-		s_Buffer->vertexData[BufferData::vertexIndex + 0] = Vertex{ glm::vec4(pos.x - halfWidth, pos.y - halfHeight, pos.z, 1.0f), color, glm::vec2(0.0f, 0.0f), texIndex };
-		s_Buffer->vertexData[BufferData::vertexIndex + 1] = Vertex{ glm::vec4(pos.x + halfWidth, pos.y - halfHeight, pos.z, 1.0f), color, glm::vec2(1.0f, 0.0f), texIndex };
-		s_Buffer->vertexData[BufferData::vertexIndex + 2] = Vertex{ glm::vec4(pos.x, pos.y + halfHeight, pos.z, 1.0f),             color, glm::vec2(0.5f, 1.0f), texIndex };
+		s_Buffer->vertexData[BufferData::vertexIndex + 0] = Vertex{ glm::vec4(pos.x - halfWidth, pos.y - halfHeight, pos.z, 1.0f), color, glm::vec2(0.0f, 0.0f), texIndex, entityId };
+		s_Buffer->vertexData[BufferData::vertexIndex + 1] = Vertex{ glm::vec4(pos.x + halfWidth, pos.y - halfHeight, pos.z, 1.0f), color, glm::vec2(1.0f, 0.0f), texIndex, entityId };
+		s_Buffer->vertexData[BufferData::vertexIndex + 2] = Vertex{ glm::vec4(pos.x, pos.y + halfHeight, pos.z, 1.0f),             color, glm::vec2(0.5f, 1.0f), texIndex, entityId };
 
 		s_Buffer->indicesData[BufferData::indicesIndex + 0] = offset + 0;
 		s_Buffer->indicesData[BufferData::indicesIndex + 1] = offset + 1;
