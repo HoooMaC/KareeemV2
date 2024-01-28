@@ -36,12 +36,19 @@ namespace Karem {
 
 	void Panels::RenderMenubar()
 	{
-		m_Menubar.Render(m_HierarcyPanel.GetPanelStatus());
+		m_Menubar.Render();
 	}
 
 	void Panels::RenderHierarcyPanel()
 	{
-		m_HierarcyPanel.Render(m_SelectedEntity, m_MainCamera, m_ContextScene);
+		if(m_Menubar.CheckPanelStatus(PanelsStatus::EntityList))
+			m_HierarcyPanel.RenderEntityList(m_SelectedEntity, m_MainCamera, m_ContextScene, m_Menubar.GetPanelPointer(PanelsStatus::EntityList));
+
+		if (m_Menubar.CheckPanelStatus(PanelsStatus::EntityComponent))
+			m_HierarcyPanel.RenderEntityComponent(m_SelectedEntity, m_MainCamera, m_Menubar.GetPanelPointer(PanelsStatus::EntityComponent));
+
+		if (m_Menubar.CheckPanelStatus(PanelsStatus::CameraPanel))
+			m_HierarcyPanel.RenderCameraPanel(m_MainCamera, m_ContextScene, m_Menubar.GetPanelPointer(PanelsStatus::CameraPanel));
 	}
 
 	void Panels::EventHandler(Event& event)

@@ -180,13 +180,11 @@ namespace Karem {
 		ImGui::SetNextWindowSize(viewport->WorkSize);
 		ImGui::SetNextWindowViewport(viewport->ID);
 
-		ImGuiWindowFlags docks_window_flags = ImGuiWindowFlags_NoCollapse
-			| ImGuiWindowFlags_NoTitleBar
-			| ImGuiWindowFlags_MenuBar;
+		ImGuiWindowFlags docks_window_flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_MenuBar;
 
 		ImGui::Begin("DockSpaceViewport", NULL, docks_window_flags);
-
 		m_Panels.RenderMenubar();
+
 
 		ImGuiID dockspace_id = ImGui::GetID("DockSpace");
 		ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f));

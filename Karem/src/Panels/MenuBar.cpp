@@ -11,7 +11,7 @@
 
 namespace Karem {
 
-	void MenubarPanel::Render(bool* statusArray)
+	void MenubarPanel::Render()
 	{
 		if (ImGui::BeginMenuBar())
 		{
@@ -36,9 +36,9 @@ namespace Karem {
 
 			if (ImGui::BeginMenu("Entity"))
 			{
-				ImGui::MenuItem("Entity List", nullptr, &statusArray[(int16_t)SceneHierarcyPanel::PanelsStatus::EntityList]);
-				ImGui::MenuItem("Entity Component", nullptr, &statusArray[(int16_t)SceneHierarcyPanel::PanelsStatus::EntityComponent]);
-				ImGui::MenuItem("Camera", nullptr, &statusArray[(int16_t)SceneHierarcyPanel::PanelsStatus::CameraPanel]);
+				for (int i = 0; i < PanelsStatus::Counts; i++)
+					DrawPanelMenuItem((PanelsStatus)i);
+
 				ImGui::EndMenu();
 			}
 
@@ -63,6 +63,11 @@ namespace Karem {
 	{
 		EventDispatcher dispatcher(event);
 		dispatcher.Dispatch<KeyPressedEvent>(std::bind(&MenubarPanel::KeyPressedAction, this, std::placeholders::_1));
+	}
+
+	void MenubarPanel::DrawPanelMenuItem(PanelsStatus panel)
+	{
+		ImGui::MenuItem(GetPanelString(panel), nullptr, &m_Panels[(int)panel]);
 	}
 
 	bool MenubarPanel::KeyPressedAction(KeyPressedEvent& event)

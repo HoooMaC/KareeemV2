@@ -2,6 +2,7 @@
 
 #include "KaremEngine.h"
 
+#include "PanelsStatus.h"
 #include "SceneHierarcyPanel.h"
 #include "Menubar.h"
 
