@@ -24,19 +24,19 @@ namespace Karem {
 		static void BeginScene(const glm::mat4& projection, const glm::mat4& cameraTransform);
 		static void EndScene();
 
-		static void SubmitQuad(const glm::vec4& pos, const glm::vec2& size, const glm::vec4& color, int EntityId, float texIndex = 0.0f);
-		static void SubmitQuad(const glm::vec4& pos, const glm::vec2& size, const std::shared_ptr<Texture2D>& texture, int entityId, float texIndex = 1.0f, const glm::vec4& color = glm::vec4(1.0f));
+		static void SubmitQuad(const glm::vec4& pos, const glm::vec2& size, const glm::vec4& color, int EntityId, int texIndex = 0);
+		static void SubmitQuad(const glm::vec4& pos, const glm::vec2& size, const std::shared_ptr<Texture2D>& texture, int entityId, int texIndex = 1, const glm::vec4& color = glm::vec4(1.0f));
 
-		static void SubmitQuad(const glm::mat4& transform, const glm::vec4& color, int entityId, float texIndex = 0.0f);
-		static void SubmitQuad(const glm::mat4& transform, const Rahman::SmartRef<Texture2D> texture, int entityId, float texIndex = 1.0f, const glm::vec4& color = glm::vec4(1.0f));
-		static void SubmitQuad(const glm::mat4& transform, const SubTexture2D& subTexture, int entityId, float texIndex = 1.0f, const glm::vec4& color = glm::vec4(1.0f));
+		static void SubmitQuad(const glm::mat4& transform, const glm::vec4& color, int entityId, int texIndex = 0);
+		static void SubmitQuad(const glm::mat4& transform, const Rahman::SmartRef<Texture2D> texture, int entityId, int texIndex = 1, const glm::vec4& color = glm::vec4(1.0f));
+		static void SubmitQuad(const glm::mat4& transform, const SubTexture2D& subTexture, int entityId, int texIndex = 1, const glm::vec4& color = glm::vec4(1.0f));
 
-		static void SubmitSubTexturedQuad(const glm::vec4& pos, const glm::vec2& size, const SubTexture2D& subTexture, int entityId, float texIndex = 1.0f, const glm::vec4& color = glm::vec4(1.0f));
+		static void SubmitSubTexturedQuad(const glm::vec4& pos, const glm::vec2& size, const SubTexture2D& subTexture, int entityId, int texIndex = 1, const glm::vec4& color = glm::vec4(1.0f));
 
-		static void SubmitRotatedQuad(const glm::vec4& pos, const glm::vec2& size, float rotation, const glm::vec4& color, int entityId, float texIndex = 0.0f);
-		static void SubmitRotatedQuad(const glm::vec4& pos, const glm::vec2& size, float rotation, Rahman::SmartRef<Texture2D> texture, int entityId, float texIndex = 1.0f, const glm::vec4& color = glm::vec4(1.0f));
+		static void SubmitRotatedQuad(const glm::vec4& pos, const glm::vec2& size, float rotation, const glm::vec4& color, int entityId, int texIndex = 0);
+		static void SubmitRotatedQuad(const glm::vec4& pos, const glm::vec2& size, float rotation, Rahman::SmartRef<Texture2D> texture, int entityId, int texIndex = 1, const glm::vec4& color = glm::vec4(1.0f));
 
-		static void SubmitTriangle(const glm::vec4& pos, const glm::vec2& size, const glm::vec4& color, int entityId, float texIndex = 0.0f);
+		static void SubmitTriangle(const glm::vec4& pos, const glm::vec2& size, const glm::vec4& color, int entityId, int texIndex = 0);
 
 	private:
 		// this is just checking uniform for debug
@@ -51,13 +51,13 @@ namespace Karem {
 			glm::vec4 Position;
 			glm::vec4 Color;
 			glm::vec2 TexCoord;
-			float TexIndex;
+			int TexIndex;
 			int EntityId;
 
 			Vertex()
-				: Position(glm::vec4(0.0f)), Color(glm::vec4(0.0f)), TexCoord(glm::vec2(0.0f)), TexIndex(0.0f), EntityId(-1) {}
+				: Position(glm::vec4(0.0f)), Color(glm::vec4(0.0f)), TexCoord(glm::vec2(0.0f)), TexIndex(0), EntityId(-1) {}
 
-			Vertex(const glm::vec4& position, const glm::vec4& color, const glm::vec2& texCoord, float texIndex, int entityId)
+			Vertex(const glm::vec4& position, const glm::vec4& color, const glm::vec2& texCoord, int texIndex, int entityId)
 				: Position(position), Color(color), TexCoord(texCoord), TexIndex(texIndex), EntityId(entityId) {}
 		};
 

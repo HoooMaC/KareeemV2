@@ -96,7 +96,7 @@ namespace Karem {
 		Flush();
 	}
 
-	void Renderer::SubmitQuad(const glm::vec4& pos, const glm::vec2& size, const glm::vec4& color, int entityId, float texIndex)
+	void Renderer::SubmitQuad(const glm::vec4& pos, const glm::vec2& size, const glm::vec4& color, int entityId, int texIndex)
 	{
 		if (BufferData::vertexIndex + 4 >= BufferData::maxVertex or BufferData::indicesIndex + 6 >= BufferData::maxIndexBuffer)
 		{
@@ -124,14 +124,14 @@ namespace Karem {
 		BufferData::indicesOffset += 4;
 	}
 
-	void Renderer::SubmitQuad(const glm::vec4& pos, const glm::vec2& size, const std::shared_ptr<Texture2D>& texture, int entityId, float texIndex, const glm::vec4& color)
+	void Renderer::SubmitQuad(const glm::vec4& pos, const glm::vec2& size, const std::shared_ptr<Texture2D>& texture, int entityId, int texIndex, const glm::vec4& color)
 	{
 		SubmitQuad(pos, size, color, entityId, texIndex);
 
 		s_Buffer->TextureContainer[(int)texIndex] = texture;
 	}
 
-	void Renderer::SubmitQuad(const glm::mat4& transform, const glm::vec4& color, int entityId, float texIndex)
+	void Renderer::SubmitQuad(const glm::mat4& transform, const glm::vec4& color, int entityId, int texIndex)
 	{
 		if (BufferData::vertexIndex + 4 >= BufferData::maxVertex or BufferData::indicesIndex + 6 >= BufferData::maxIndexBuffer)
 		{
@@ -157,14 +157,14 @@ namespace Karem {
 		BufferData::indicesOffset += 4;
 	}
 
-	void Renderer::SubmitQuad(const glm::mat4& transform, Rahman::SmartRef<Texture2D> texture, int entityId, float texIndex, const glm::vec4& color)
+	void Renderer::SubmitQuad(const glm::mat4& transform, Rahman::SmartRef<Texture2D> texture, int entityId, int texIndex, const glm::vec4& color)
 	{
 		SubmitQuad(transform, color, entityId, texIndex);
 
 		s_Buffer->TextureContainer[(int)texIndex] = texture;
 	}
 
-	void Renderer::SubmitQuad(const glm::mat4& transform, const SubTexture2D& subTexture, int entityId, float texIndex, const glm::vec4& color)
+	void Renderer::SubmitQuad(const glm::mat4& transform, const SubTexture2D& subTexture, int entityId, int texIndex, const glm::vec4& color)
 	{
 		if (BufferData::vertexIndex + 4 >= BufferData::maxVertex or BufferData::indicesIndex + 6 >= BufferData::maxIndexBuffer)
 		{
@@ -194,7 +194,7 @@ namespace Karem {
 		s_Buffer->TextureContainer[(int)texIndex] = subTexture.GetTextureReference();
 	}
 
-	void Renderer::SubmitSubTexturedQuad(const glm::vec4& pos, const glm::vec2& size, const SubTexture2D& subTexture, int entityId, float texIndex, const glm::vec4& color)
+	void Renderer::SubmitSubTexturedQuad(const glm::vec4& pos, const glm::vec2& size, const SubTexture2D& subTexture, int entityId, int texIndex, const glm::vec4& color)
 	{
 		if (BufferData::vertexIndex + 4 >= BufferData::maxVertex or BufferData::indicesIndex + 6 >= BufferData::maxIndexBuffer)
 		{
@@ -227,7 +227,7 @@ namespace Karem {
 		s_Buffer->TextureContainer[(int)texIndex] = subTexture.GetTextureReference();
 	}
 
-	void Renderer::SubmitRotatedQuad(const glm::vec4& pos, const glm::vec2& size, float rotation, const glm::vec4& color, int entityId, float texIndex)
+	void Renderer::SubmitRotatedQuad(const glm::vec4& pos, const glm::vec2& size, float rotation, const glm::vec4& color, int entityId, int texIndex)
 	{
 		if (BufferData::vertexIndex + 4 >= BufferData::maxVertex || BufferData::indicesIndex + 6 >= BufferData::maxIndexBuffer)
 		{
@@ -270,7 +270,7 @@ namespace Karem {
 		BufferData::indicesOffset += 4;
 	}
 
-	void Renderer::SubmitRotatedQuad(const glm::vec4& pos, const glm::vec2& size, float rotation, Rahman::SmartRef<Texture2D> texture, int entityId, float texIndex, const glm::vec4& color)
+	void Renderer::SubmitRotatedQuad(const glm::vec4& pos, const glm::vec2& size, float rotation, Rahman::SmartRef<Texture2D> texture, int entityId, int texIndex, const glm::vec4& color)
 	{
 		if (BufferData::vertexIndex + 4 >= BufferData::maxVertex || BufferData::indicesIndex + 6 >= BufferData::maxIndexBuffer)
 		{
@@ -314,7 +314,7 @@ namespace Karem {
 		s_Buffer->TextureContainer[(int)texIndex] = texture;
 	}
 
-	void Renderer::SubmitTriangle(const glm::vec4& pos, const glm::vec2& size, const glm::vec4& color, int entityId, float texIndex)
+	void Renderer::SubmitTriangle(const glm::vec4& pos, const glm::vec2& size, const glm::vec4& color, int entityId, int texIndex)
 	{
 		if (BufferData::vertexIndex + 3 >= BufferData::maxVertex || BufferData::indicesIndex + 3 >= BufferData::maxIndexBuffer)
 		{

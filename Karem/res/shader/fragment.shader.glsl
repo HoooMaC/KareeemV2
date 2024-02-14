@@ -2,7 +2,7 @@
 
 in vec2 vTexCoord;
 in vec4 vColor;
-in float vTexIndex;
+in flat int vTexIndex;
 in flat int vEntityId;
 
 layout (location = 0) out vec4 oFragColor;
@@ -12,7 +12,6 @@ uniform sampler2D uTexture[32];
 
 void main()
 {
-    int texIndex = int(vTexIndex);
-    oFragColor = texture(uTexture[texIndex], vTexCoord) * vColor;
+    oFragColor = texture(uTexture[vTexIndex], vTexCoord) * vColor;
     oEntityId = vEntityId;
 }

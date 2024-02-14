@@ -60,7 +60,8 @@ namespace Karem {
 		if (!success) {
 			char infoLog[512];
 			glGetShaderInfoLog(shaderId, 512, nullptr, infoLog);
-			ENGINE_ERROR("Error compiling shader :\n{}", infoLog);
+			ENGINE_ERROR("Error compiling shader [{}] : \n{}", type == GL_VERTEX_SHADER ? "Vertex" : "Fragment", infoLog);
+			ENGINE_ASSERT(true, "");
 			glDeleteShader(shaderId);
 			return 0; // or appropriate error value
 		}
