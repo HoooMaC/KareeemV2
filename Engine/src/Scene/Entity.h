@@ -29,7 +29,12 @@ namespace Karem {
 			return m_SceneContext->m_Registry.emplace<T>(m_EntityId, std::forward<Args>(args)...);
 		}
 
-		template<typename T>
+		UUID GetUUID() const
+		{
+			return m_SceneContext->m_Registry.get<IdComponent>(m_EntityId).Id;
+		}
+
+		template<typename T>	
 		T& GetComponent()
 		{
 			ENGINE_ASSERT(!IsHasComponent<T>(), "The entity doesn't have the component");

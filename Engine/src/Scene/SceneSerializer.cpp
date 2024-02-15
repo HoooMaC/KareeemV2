@@ -79,8 +79,10 @@ namespace Karem {
 
 	static void SerializeEntity(YAML::Emitter& out, Entity entity)
 	{
+		ENGINE_ASSERT(!entity.IsHasComponent<IdComponent>(), "Invalid Entity");
+
 		out << YAML::BeginMap; // Entity
-		out << YAML::Key << "Entity" << YAML::Value << "12837192831273"; // TODO: Entity ID goes here
+		out << YAML::Key << "Entity" << YAML::Value << entity.GetUUID();
 
 		if (entity.IsHasComponent<TagComponent>())
 		{
@@ -184,7 +186,7 @@ namespace Karem {
 		{
 			for (auto entity : entities)
 			{
-				uint64_t uuid = entity["Entity"].as<uint64_t>(); // TODO
+				uint64_t uuid = entity["Entity"].as<uint64_t>();
 
 				std::string name;
 				auto tagComponent = entity["TagComponent"];
@@ -193,7 +195,7 @@ namespace Karem {
 
 				ENGINE_TRACE("Deserialized entity with ID = {}, name = {}", uuid, name);
 
-				Entity deserializedEntity = scene->CreateEntity(name);
+				Entity deserializedEntity = scene->CreateEntityWithUUID(uuid, name);
 
 				auto transformComponent = entity["TransformComponent"];
 				if (transformComponent)

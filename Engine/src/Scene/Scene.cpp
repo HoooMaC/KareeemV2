@@ -20,7 +20,13 @@ namespace Karem{
 
 	Entity Scene::CreateEntity(const std::string& entityName)
 	{
+		return CreateEntityWithUUID(UUID(), entityName);
+	}
+
+	Entity Scene::CreateEntityWithUUID(uint64_t uuid, const std::string& entityName)
+	{
 		Entity newEntity{ m_Registry.create(), this };
+		newEntity.AddComponent<IdComponent>(uuid);
 		newEntity.AddComponent<TagComponent>(entityName.c_str());
 		newEntity.AddComponent<TransformComponent>();
 		return newEntity;

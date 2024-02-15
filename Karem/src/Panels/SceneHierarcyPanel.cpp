@@ -359,6 +359,17 @@ namespace Karem {
 
 		if (opened)
 		{
+			DrawComponent<IdComponent>("Tag", selectedEntity, [&](IdComponent& component)
+				{
+					uint64_t id = selectedEntity.GetComponent<IdComponent>().Id;
+					std::string text = "ID : " + std::to_string(id);
+
+					ImGui::PushStyleColor(ImGuiCol_Text, HexToVec4<ImVec4>(Color::White, 0.7f));
+					ImGui::Text(text.c_str());
+					ImGui::PopStyleColor();
+
+				}, false); // TODO : The argument false here is very weird. Think to move into the component itself
+
 			DrawComponent<TagComponent>("Tag", selectedEntity, [&](TagComponent& component)
 				{
 					std::string& tag = selectedEntity.GetComponent<TagComponent>().Tag;

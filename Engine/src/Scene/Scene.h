@@ -24,6 +24,8 @@ namespace Karem {
 		~Scene() = default;
 
 		Entity CreateEntity(const std::string& entityName = "Undefined");
+		Entity CreateEntityWithUUID(uint64_t uuid, const std::string& entityName = "Undefined");
+
 		void DestroyEntity(entt::entity entity);
 
 		void UpdateOnPlay(TimeStep ts);

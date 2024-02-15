@@ -1,12 +1,25 @@
 #pragma once
 
+#include "Core/UUID.h"
+
 #include "Renderer/SubTexture.h"
 #include "Renderer/CameraHandler.h"
+
 #include <string>
 
 #include <glm/glm.hpp>
 
 namespace Karem {
+
+	struct IdComponent
+	{
+		UUID Id;
+
+		IdComponent() = default;
+		IdComponent(const IdComponent&) = default;
+		IdComponent(uint64_t id)
+			: Id(id) {}	
+	};
 
 	struct TagComponent
 	{
