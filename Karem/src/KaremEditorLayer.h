@@ -4,6 +4,9 @@
 
 #include "Panels/Panel.h"
 
+// TEMP
+#include "Panels/ContentBrowserPanel.h"
+
 namespace Karem {
 
 	class KaremEditorLayer : public Layer
@@ -59,6 +62,7 @@ namespace Karem {
 		glm::vec2 m_PreviousViewportSize = { 0.0f, 0.0f };
 
 		Panels m_Panels;
+		ContentBrowserPanel m_BrowserPanel;
 
 		std::shared_ptr<FrameBuffer> m_FrameBuffer; // who owns the frame buffer
 		std::shared_ptr<Scene> m_ActiveScene;

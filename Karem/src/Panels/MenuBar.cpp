@@ -34,7 +34,7 @@ namespace Karem {
 				ImGui::EndMenu();
 			}
 
-			if (ImGui::BeginMenu("Entity"))
+			if (ImGui::BeginMenu("Panels"))
 			{
 				for (int i = 0; i < PanelsStatus::Counts; i++)
 					DrawPanelMenuItem((PanelsStatus)i);

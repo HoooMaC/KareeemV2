@@ -143,6 +143,7 @@ namespace Karem {
 		ImGui::ShowDemoWindow();
 
 		m_Panels.RenderHierarcyPanel();
+		m_BrowserPanel.Render();
 
 		imgui::EndFrame();
 	}
