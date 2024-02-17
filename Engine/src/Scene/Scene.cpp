@@ -78,7 +78,10 @@ namespace Karem{
 		for (const auto entity : group)
 		{
 			auto [transform, color] = group.get(entity);
-			Renderer::SubmitQuad(transform.GetTransformMatrix(), color.Color, (int)entity);
+			//Renderer::SubmitQuad(transform.GetTransformMatrix(), color.Color, (int)entity);
+			//Renderer::SubmitQuad(transform.GetTransformMatrix(), color.Texture, (int)entity, color.Texture->GetSlot(), color.Color);
+			int textureIndex = color.Texture ? color.Texture->GetSlot() : 0;
+			Renderer::SubmitQuad(transform.GetTransformMatrix(), color.Color, color.Texture.get(), textureIndex, (int)entity);
 		}
 		Renderer::EndScene();
 	}

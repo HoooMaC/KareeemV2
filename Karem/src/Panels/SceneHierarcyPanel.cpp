@@ -2,6 +2,8 @@
 
 #include "SceneHierarcyPanel.h"
 
+#include "Platform/Utils/FileDialog.h"
+
 #include <imgui.h>
 #include <imgui_internal.h>
 
@@ -308,7 +310,7 @@ namespace Karem {
 			| ImGuiTreeNodeFlags_AllowItemOverlap
 			| ImGuiTreeNodeFlags_SpanAvailWidth;
 
-		const auto contentRegionAvail = ImGui::GetContentRegionAvail();
+		const auto contentRegionAvail = ImGui::GetContentRegionMax();
 
 		const auto fontSize = ImGui::GetFontSize();
 		const auto& style = ImGui::GetStyle();
@@ -321,8 +323,8 @@ namespace Karem {
 		ImGui::Separator();
 		bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)selectedEntity, flags, tag.c_str());
 		ImGui::PopStyleVar();
-
-		ImGui::SameLine(contentRegionAvail.x - buttonSize.x * 0.5f);
+		
+		ImGui::SameLine((contentRegionAvail.x - (buttonSize.x / 2)) - 8.0f); //TODO::Need to fix 8.0f here
 		if (ImGui::Button("+", buttonSize))
 			ImGui::OpenPopup("Add Component");
 
@@ -357,156 +359,165 @@ namespace Karem {
 			ImGui::EndPopup();
 		}
 
+		uint64_t id = selectedEntity.GetUUID();
+		std::string text = "ID : " + std::to_string(id);
+
+		ImGui::PushStyleColor(ImGuiCol_Text, HexToVec4<ImVec4>(Color::White, 0.7f));
+		ImGui::SetCursorPosX(ImGui::GetWindowContentRegionMin().x);
+		ImGui::Text(text.c_str());
+		ImGui::PopStyleColor();
+
 		if (opened)
 		{
-			DrawComponent<IdComponent>("Tag", selectedEntity, [&](IdComponent& component)
-				{
-					uint64_t id = selectedEntity.GetComponent<IdComponent>().Id;
-					std::string text = "ID : " + std::to_string(id);
-
-					ImGui::PushStyleColor(ImGuiCol_Text, HexToVec4<ImVec4>(Color::White, 0.7f));
-					ImGui::Text(text.c_str());
-					ImGui::PopStyleColor();
-
-				}, false); // TODO : The argument false here is very weird. Think to move into the component itself
-
 			DrawComponent<TagComponent>("Tag", selectedEntity, [&](TagComponent& component)
-				{
-					std::string& tag = selectedEntity.GetComponent<TagComponent>().Tag;
-					const char* tc = tag.c_str();
+			{		
+				std::string& tag = selectedEntity.GetComponent<TagComponent>().Tag;
+				const char* tc = tag.c_str();
 
-					char tagBuffer[256];
-					strcpy_s(tagBuffer, sizeof(tagBuffer), tc);
-					ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0);
-					auto regionAvail = ImGui::GetContentRegionAvail();
-					ImGui::SetNextItemWidth(regionAvail.x);
-					if (ImGui::InputText("##InputText", tagBuffer, IM_ARRAYSIZE(tagBuffer), ImGuiInputTextFlags_EnterReturnsTrue))
-						tag = tagBuffer;
+				char tagBuffer[256];
+				strcpy_s(tagBuffer, sizeof(tagBuffer), tc);
+				ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0);
+				auto regionAvail = ImGui::GetContentRegionAvail();
+				ImGui::SetNextItemWidth(regionAvail.x);
+				if (ImGui::InputText("##InputText", tagBuffer, IM_ARRAYSIZE(tagBuffer), ImGuiInputTextFlags_EnterReturnsTrue))
+					tag = tagBuffer;
 
-					ImGui::PopStyleVar();
-				}, false); // TODO : The argument false here is very weird. Think to move into the component itself
+				ImGui::PopStyleVar();
+			}, false); // TODO : The argument false here is very weird. Think to move into the component itself
 
 			DrawComponent<TransformComponent>("Transform", selectedEntity, [](TransformComponent& component)
-				{
-					static constexpr ImGuiTableFlags transfromTableFlags = ImGuiTableFlags_BordersInnerV
-						| ImGuiTableFlags_SizingFixedFit
-						| ImGuiTableFlags_SizingFixedSame
-						| ImGuiTableFlags_SizingStretchProp
-						| ImGuiTableFlags_NoPadOuterX;
+			{
+				static constexpr ImGuiTableFlags transfromTableFlags = ImGuiTableFlags_BordersInnerV
+					| ImGuiTableFlags_SizingFixedFit
+					| ImGuiTableFlags_SizingFixedSame
+					| ImGuiTableFlags_SizingStretchProp
+					| ImGuiTableFlags_NoPadOuterX;
 
-					ImGui::BeginTable("Transform Table", 2, transfromTableFlags);
+				ImGui::BeginTable("Transform Table", 2, transfromTableFlags);
 
-					DrawFloat3Component("Translation", component.Translation);
+				DrawFloat3Component("Translation", component.Translation);
 
-					glm::vec3 rotation = glm::degrees(component.Rotation);
-					DrawFloat3Component("Rotation", rotation);
-					component.Rotation = glm::radians(rotation);
+				glm::vec3 rotation = glm::degrees(component.Rotation);
+				DrawFloat3Component("Rotation", rotation);
+				component.Rotation = glm::radians(rotation);
 
-					// TODO: consider of the reset value in Scale
-					// TODO: maybe the reset value should be following the first value, not any constant value
-					DrawFloat3Component("Scale", component.Scale, 1.0f);
+				// TODO: consider of the reset value in Scale
+				// TODO: maybe the reset value should be following the first value, not any constant value
+				DrawFloat3Component("Scale", component.Scale, 1.0f);
 
-					ImGui::EndTable();
-				}
-			);
+				ImGui::EndTable();
+			});
 
 			DrawComponent<SpriteRendererComponent>("Color", selectedEntity, [](SpriteRendererComponent& component)
+			{
+				ImGui::ColorEdit4("##Color", glm::value_ptr(component.Color));
+
+				ImGui::PushStyleColor(ImGuiCol_Button, HexToVec4<ImVec4>(Color::Header, 0.4f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, HexToVec4<ImVec4>(Color::Header, 0.6f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive, HexToVec4<ImVec4>(Color::Header, 0.8f));
+
+				ImGui::Button("Texture");
+				if(ImGui::IsItemHovered() and ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 				{
-					ImGui::ColorEdit4("##Color", glm::value_ptr(component.Color));
+					std::string texturePath = FileDialog::OpenFile("png\0*.png\0");
+					//TODO::Concern about the path here, maybe we can use popup window. Whatever
+					std::shared_ptr<Texture2D> newTexture = CreateTexture2D(texturePath, 1);
+					component.Texture = newTexture;
 				}
-			);
+
+				ImGui::PopStyleColor(3);
+			});
 
 			DrawComponent<CameraComponent>("Camera", selectedEntity, [](CameraComponent& component)
+			{
+				static constexpr ImGuiTableFlags cameraTableFlags = ImGuiTableFlags_BordersInnerV
+					| ImGuiTableFlags_SizingFixedFit
+					| ImGuiTableFlags_SizingFixedSame
+					| ImGuiTableFlags_SizingStretchProp
+					| ImGuiTableFlags_NoPadOuterX;
+
+				CameraHandler& camera = component.Camera;
+				ImGui::BeginTable("Camera Table", 2, cameraTableFlags);
+
+				ImGui::TableNextRow();
+
+				ImGui::TableSetColumnIndex(0);
+				ImGui::Text("Projection");
+				ImGui::TableSetColumnIndex(1);
+				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 0,0 });
+
+				auto regionAvail = ImGui::GetContentRegionAvail();
+				ImGui::SetNextItemWidth(regionAvail.x);
+				if (ImGui::BeginCombo("##Projection", camera.GetCameraStringType()))
 				{
-					static constexpr ImGuiTableFlags cameraTableFlags = ImGuiTableFlags_BordersInnerV
-						| ImGuiTableFlags_SizingFixedFit
-						| ImGuiTableFlags_SizingFixedSame
-						| ImGuiTableFlags_SizingStretchProp
-						| ImGuiTableFlags_NoPadOuterX;
-
-					CameraHandler& camera = component.Camera;
-					ImGui::BeginTable("Camera Table", 2, cameraTableFlags);
-
-					ImGui::TableNextRow();
-
-					ImGui::TableSetColumnIndex(0);
-					ImGui::Text("Projection");
-					ImGui::TableSetColumnIndex(1);
-					ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 0,0 });
-
-					auto regionAvail = ImGui::GetContentRegionAvail();
-					ImGui::SetNextItemWidth(regionAvail.x);
-					if (ImGui::BeginCombo("##Projection", camera.GetCameraStringType()))
+					bool isOrthographicSelected = "Orthographic" == camera.GetCameraStringType() ? true : false;
+					bool isPerspectiveSelected = isOrthographicSelected ^ 1;
+					if (ImGui::Selectable("Orthographic", isOrthographicSelected))
 					{
-						bool isOrthographicSelected = "Orthographic" == camera.GetCameraStringType() ? true : false;
-						bool isPerspectiveSelected = isOrthographicSelected ^ 1;
-						if (ImGui::Selectable("Orthographic", isOrthographicSelected))
-						{
-							camera.SetTypeToOrthographic();
-						}
-
-						if (ImGui::Selectable("Perspective", isPerspectiveSelected))
-						{
-							camera.SetTypeToPerspective();
-						}
-						ImGui::EndCombo();
+						camera.SetTypeToOrthographic();
 					}
 
-					ImGui::TableNextRow();
-
-					ImGui::TableSetColumnIndex(0);
-					if (camera.IsOrthographic())
+					if (ImGui::Selectable("Perspective", isPerspectiveSelected))
 					{
-						ImGui::Text("Size");
-						ImGui::TableSetColumnIndex(1);
-
-						float orthoSize = camera.GetOrthographicSize();
-						regionAvail = ImGui::GetContentRegionAvail();
-						ImGui::SetNextItemWidth(regionAvail.x);
-						if (ImGui::DragFloat("##OrthoSize", &orthoSize))
-							camera.SetOrthographicSize(orthoSize);
+						camera.SetTypeToPerspective();
 					}
-					else
-					{
-						ImGui::Text("FOV");
-						ImGui::TableSetColumnIndex(1);
+					ImGui::EndCombo();
+				}
 
-						float verticalFOV = camera.GetPerspectiveVerticalFOV();
-						regionAvail = ImGui::GetContentRegionAvail();
-						ImGui::SetNextItemWidth(regionAvail.x);
-						if (ImGui::DragFloat("##FOV", &verticalFOV))
-							camera.SetPerspectiveVerticalFOV(verticalFOV);
-					}
+				ImGui::TableNextRow();
 
-					ImGui::TableNextRow();
-
-					ImGui::TableSetColumnIndex(0);
-					ImGui::Text("Near");
+				ImGui::TableSetColumnIndex(0);
+				if (camera.IsOrthographic())
+				{
+					ImGui::Text("Size");
 					ImGui::TableSetColumnIndex(1);
 
-					float nearClip = camera.GetCameraNear();
+					float orthoSize = camera.GetOrthographicSize();
 					regionAvail = ImGui::GetContentRegionAvail();
 					ImGui::SetNextItemWidth(regionAvail.x);
-					if (ImGui::DragFloat("##Near", &nearClip))
-						camera.SetCameraNear(nearClip);
-
-					ImGui::TableNextRow();
-
-					ImGui::TableSetColumnIndex(0);
-					ImGui::Text("Far");
+					if (ImGui::DragFloat("##OrthoSize", &orthoSize))
+						camera.SetOrthographicSize(orthoSize);
+				}
+				else
+				{
+					ImGui::Text("FOV");
 					ImGui::TableSetColumnIndex(1);
 
-
-					float farClip = camera.GetCameraFar();
+					float verticalFOV = camera.GetPerspectiveVerticalFOV();
 					regionAvail = ImGui::GetContentRegionAvail();
 					ImGui::SetNextItemWidth(regionAvail.x);
-					if (ImGui::DragFloat("##Far", &farClip))
-						camera.SetCameraFar(farClip);
+					if (ImGui::DragFloat("##FOV", &verticalFOV))
+						camera.SetPerspectiveVerticalFOV(verticalFOV);
+				}
 
-					ImGui::PopStyleVar();
-					ImGui::EndTable();
-				}, selectedEntity == mainCamera ? false : true // TODO: THIS IS WEIRD
-			);
+				ImGui::TableNextRow();
+
+				ImGui::TableSetColumnIndex(0);
+				ImGui::Text("Near");
+				ImGui::TableSetColumnIndex(1);
+
+				float nearClip = camera.GetCameraNear();
+				regionAvail = ImGui::GetContentRegionAvail();
+				ImGui::SetNextItemWidth(regionAvail.x);
+				if (ImGui::DragFloat("##Near", &nearClip))
+					camera.SetCameraNear(nearClip);
+
+				ImGui::TableNextRow();
+
+				ImGui::TableSetColumnIndex(0);
+				ImGui::Text("Far");
+				ImGui::TableSetColumnIndex(1);
+
+
+				float farClip = camera.GetCameraFar();
+				regionAvail = ImGui::GetContentRegionAvail();
+				ImGui::SetNextItemWidth(regionAvail.x);
+				if (ImGui::DragFloat("##Far", &farClip))
+					camera.SetCameraFar(farClip);
+
+				ImGui::PopStyleVar();
+				ImGui::EndTable();
+			}, selectedEntity == mainCamera ? false : true ); // TODO: THIS IS WEIRD
 
 			ImGui::TreePop();
 		}

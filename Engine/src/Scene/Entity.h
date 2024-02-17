@@ -20,8 +20,7 @@ namespace Karem {
 		template<typename T, typename ...Args>
 		inline T& AddComponent(Args&& ...args)
 		{
-			bool isHas = IsHasComponent<T>();
-			if (isHas)
+			if (IsHasComponent<T>())
 			{
 				ENGINE_WARN("This entity already have the component");	
 				return m_SceneContext->m_Registry.get<T>(m_EntityId);

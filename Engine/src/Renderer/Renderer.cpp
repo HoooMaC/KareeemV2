@@ -157,11 +157,12 @@ namespace Karem {
 		BufferData::indicesOffset += 4;
 	}
 
-	void Renderer::SubmitQuad(const glm::mat4& transform, Rahman::SmartRef<Texture2D> texture, int entityId, int texIndex, const glm::vec4& color)
+	void Renderer::SubmitQuad(const glm::mat4& transform, const glm::vec4& color, const Rahman::SmartRef<Texture2D> texture, int texIndex, int entityId)
 	{
 		SubmitQuad(transform, color, entityId, texIndex);
 
-		s_Buffer->TextureContainer[(int)texIndex] = texture;
+		if(texture)
+			s_Buffer->TextureContainer[(int)texIndex] = texture;
 	}
 
 	void Renderer::SubmitQuad(const glm::mat4& transform, const SubTexture2D& subTexture, int entityId, int texIndex, const glm::vec4& color)

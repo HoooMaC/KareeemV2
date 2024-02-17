@@ -2,7 +2,7 @@
 
 #include <filesystem>
 
-#include "Renderer/BaseTexture.h"
+#include "Renderer/SubTexture.h"
 
 namespace Karem {
 
@@ -13,7 +13,6 @@ namespace Karem {
 		void Render();
 
 	private:
-		std::shared_ptr<Texture2D> m_DirectoryIcon, m_FileIcon;
 		std::filesystem::path m_CurrentPath;
 	};
 

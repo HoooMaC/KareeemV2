@@ -58,6 +58,7 @@ namespace Karem {
 	struct SpriteRendererComponent
 	{
 		glm::vec4 Color = glm::vec4(1.0f);
+		std::shared_ptr<Texture2D> Texture = nullptr;
 
 		SpriteRendererComponent() = default;
 		SpriteRendererComponent(const SpriteRendererComponent&) = default;

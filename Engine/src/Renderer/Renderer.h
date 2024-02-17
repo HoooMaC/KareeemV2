@@ -28,7 +28,8 @@ namespace Karem {
 		static void SubmitQuad(const glm::vec4& pos, const glm::vec2& size, const std::shared_ptr<Texture2D>& texture, int entityId, int texIndex = 1, const glm::vec4& color = glm::vec4(1.0f));
 
 		static void SubmitQuad(const glm::mat4& transform, const glm::vec4& color, int entityId, int texIndex = 0);
-		static void SubmitQuad(const glm::mat4& transform, const Rahman::SmartRef<Texture2D> texture, int entityId, int texIndex = 1, const glm::vec4& color = glm::vec4(1.0f));
+		// TODO::Fix this arrange of the arguments
+		static void SubmitQuad(const glm::mat4& transform, const glm::vec4& color, const Rahman::SmartRef<Texture2D> texture, int texIndex, int entityId);
 		static void SubmitQuad(const glm::mat4& transform, const SubTexture2D& subTexture, int entityId, int texIndex = 1, const glm::vec4& color = glm::vec4(1.0f));
 
 		static void SubmitSubTexturedQuad(const glm::vec4& pos, const glm::vec2& size, const SubTexture2D& subTexture, int entityId, int texIndex = 1, const glm::vec4& color = glm::vec4(1.0f));

@@ -65,7 +65,7 @@ namespace Karem {
 		}
 		else 
 		{
-			ENGINE_ASSERT(false, "Failed to load image : {}", m_FilePath);
+			ENGINE_ASSERT(true, "Failed to load image : {}", m_FilePath);
 		}
 		stbi_image_free(data);
 	}
