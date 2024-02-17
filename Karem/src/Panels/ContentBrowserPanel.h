@@ -6,8 +6,6 @@
 
 namespace Karem {
 
-	static std::filesystem::path s_ParentDirectory = "C:\\Code\\C++\\Karem\\Karem";
-
 	class ContentBrowserPanel
 	{
 	public:
@@ -15,9 +13,8 @@ namespace Karem {
 		void Render();
 
 	private:
-		std::filesystem::path m_CurrentPath = s_ParentDirectory;
-	private:
-		std::shared_ptr<Texture2D> m_DirectoryTexture;
+		std::shared_ptr<Texture2D> m_DirectoryIcon, m_FileIcon;
+		std::filesystem::path m_CurrentPath;
 	};
 
 }
