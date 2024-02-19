@@ -70,12 +70,13 @@ namespace Karem {
 		}
 		
 		ImGui::Columns(1);
+		//ImGui::PopStyleColor(3);
 
+		//ImGui::NewLine();
 		//TODO::Give the value for the min max and speed
 		ImGui::DragFloat("Button Size", &thumbnailSize, 5.0f, 50.0f, 200.0f, "%.f");
-		ImGui::DragFloat("Padding", &padding, 1.0f, 5.0f, 32.0f, "%.f");
-		s_DirectoryIcons->UnBind();
-		s_SceneIcons->UnBind();
+		ImGui::DragFloat("Padding", &padding);
+
 		ImGui::End();
 	}
 
