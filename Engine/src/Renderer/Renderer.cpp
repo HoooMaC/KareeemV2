@@ -10,6 +10,7 @@ namespace Karem {
 	uint32_t Renderer::BufferData::indicesIndex = 0;
 	uint32_t Renderer::BufferData::indicesOffset = 0;
 
+	// TODO::CHECK THIS
 	Renderer::BufferData* Renderer::s_Buffer = new BufferData;
 	Renderer::Meshes* Renderer::s_Meshes = new Meshes;
 
@@ -26,6 +27,7 @@ namespace Karem {
 
 	void Renderer::Initialize()
 	{
+		// TODO::CHECK THIS
 		s_Meshes = new Meshes;
 		s_Buffer = new BufferData;
 
@@ -70,6 +72,7 @@ namespace Karem {
 
 		s_Buffer->vertexData.resize(BufferData::maxVertex);
 		s_Buffer->indicesData.resize(BufferData::maxIndexBuffer);
+		s_Buffer->TextureContainer.resize(32);
 	}
 
 	void Renderer::BeginScene(const glm::mat4& projection, const glm::mat4& cameraTransform)
@@ -78,6 +81,7 @@ namespace Karem {
 
 		s_Buffer->vertexData.resize(BufferData::maxVertex);
 		s_Buffer->indicesData.resize(BufferData::maxIndexBuffer);
+		s_Buffer->TextureContainer.resize(32);
 	}
 
 	void Renderer::EndScene()
@@ -94,6 +98,7 @@ namespace Karem {
 		RendererCommand::Draw(s_Buffer->indicesIndex);
 
 		Flush();
+		s_Buffer->TextureContainer.clear();
 	}
 
 	void Renderer::SubmitQuad(const glm::vec4& pos, const glm::vec2& size, const glm::vec4& color, int entityId, int texIndex)

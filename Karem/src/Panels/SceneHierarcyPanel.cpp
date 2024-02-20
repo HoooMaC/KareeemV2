@@ -7,6 +7,8 @@
 #include <imgui.h>
 #include <imgui_internal.h>
 
+#include <filesystem>
+
 namespace Karem {
 
 	void SceneHierarcyPanel::RenderEntityList(Entity& selectedEntity, Entity& mainCamera, const std::shared_ptr<Scene>& m_ContextScene, bool* panelPointer)
@@ -416,13 +418,40 @@ namespace Karem {
 				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, HexToVec4<ImVec4>(Color::Header, 0.6f));
 				ImGui::PushStyleColor(ImGuiCol_ButtonActive, HexToVec4<ImVec4>(Color::Header, 0.8f));
 
-				ImGui::Button("Texture");
+				ImVec2 buttonSize = { ImGui::GetContentRegionMax().x, 25.0f };
+				std::string buttonTitle = "Texture";
+
+				std::filesystem::path buttonPath;
+				bool isHasTexture = component.Texture != nullptr;
+				if (isHasTexture)
+				{
+					buttonPath = std::filesystem::path(component.Texture->GetFilePath());
+					buttonTitle.append(" : " + buttonPath.filename().string());
+					buttonSize.x -= 62.5f;
+				}
+
+				ImGui::Button(buttonTitle.c_str(), buttonSize);
 				if(ImGui::IsItemHovered() and ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 				{
-					std::string texturePath = FileDialog::OpenFile("png\0*.png\0");
-					//TODO::Concern about the path here, maybe we can use popup window. Whatever
-					std::shared_ptr<Texture2D> newTexture = CreateTexture2D(texturePath, 1);
-					component.Texture = newTexture;
+					const std::string texturePath = FileDialog::OpenFile("png\0*.png\0");
+					if(!texturePath.empty())
+					{
+						//TODO::Concern about the path here, maybe we can use popup window. Whatever
+						std::shared_ptr<Texture2D> newTexture = CreateTexture2D(texturePath, 3);
+						component.Texture = newTexture;
+					}
+				}
+
+				ImGui::SameLine();
+
+				if(isHasTexture)
+				{
+					ImGui::Button("-", { 25.0f, 25.0f });
+					if (ImGui::IsItemHovered() and ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+					{
+						// TODO::Later, maybe we can add some validation with popup window
+						component.Texture = nullptr;
+					}
 				}
 
 				ImGui::PopStyleColor(3);

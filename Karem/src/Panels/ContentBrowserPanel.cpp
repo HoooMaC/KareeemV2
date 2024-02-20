@@ -17,8 +17,8 @@ namespace Karem {
 	ContentBrowserPanel::ContentBrowserPanel()
 		: m_CurrentPath(s_ParentDirectory)
 	{
-		s_DirectoryIcons = CreateTexture2D("res/texture/icons/directory_icon.png");
-		s_SceneIcons = CreateTexture2D("res/texture/icons/scene_icon.png");
+		s_DirectoryIcons = CreateTexture2D("res/texture/icons/directory_icon.png", 1);
+		s_SceneIcons = CreateTexture2D("res/texture/icons/scene_icon.png", 2);
 	}
 
 	void ContentBrowserPanel::Render()
