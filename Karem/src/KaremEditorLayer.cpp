@@ -314,11 +314,16 @@ namespace Karem {
 				int selectedEntity = m_FrameBuffer->GetEntityId(1, mx, my);
 				m_FrameBuffer->UnBind();
 
+
+				
 				//ENGINE_DEBUG("Entity Id {}", selectedEntity);
-				if (selectedEntity != -1)
-					m_Panels.SetSelectedEntity(selectedEntity);
-				else
-					m_Panels.SetSelectedEntity();
+				if(!ImGuizmo::IsOver())
+				{
+					if (selectedEntity != -1)
+						m_Panels.SetSelectedEntity(selectedEntity);
+					else
+						m_Panels.SetSelectedEntity();
+				}
 			}
 		}
 		return false;
