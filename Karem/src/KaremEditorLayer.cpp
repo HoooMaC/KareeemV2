@@ -217,6 +217,22 @@ namespace Karem {
 			ImVec2(1, 0)
 		);
 
+		// TODO::Check this if we already have play state
+		if(m_CurrentState == State::Edit)
+		{
+			if (ImGui::BeginDragDropTarget())
+			{
+				const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM");
+				if (payload)
+				{
+					const char* receivedData = (const char*)payload->Data;
+					OpenScene(receivedData);
+				}
+
+				ImGui::EndDragDropTarget();
+			}
+		}
+
 		// Gizmos Here
 		if (ImGui::IsWindowHovered())
 		{
@@ -259,21 +275,30 @@ namespace Karem {
 			glm::mat4 viewMatrix = m_EditorCamera.GetViewMatrix();
 			glm::mat4 projMatrix = m_EditorCamera.GetProjectionMatrix();
 
-			ImGuizmo::Manipulate(glm::value_ptr(viewMatrix), glm::value_ptr(projMatrix), (ImGuizmo::OPERATION)m_CurrentGizmoType, ImGuizmo::MODE::LOCAL, glm::value_ptr(transform), nullptr);
+			bool manipulated = ImGuizmo::Manipulate(
+				glm::value_ptr(viewMatrix), 
+				glm::value_ptr(projMatrix),
+				(ImGuizmo::OPERATION)m_CurrentGizmoType,
+				ImGuizmo::MODE::LOCAL,
+				glm::value_ptr(transform), //MATRIX
+				nullptr // DELTA MATRIX
+			);
 
-			if (ImGuizmo::IsUsing())
+			if (manipulated)
 			{
-				glm::vec3 translation, rotation, scale;
+				glm::vec3 translation = glm::vec3(1.0f), rotation = glm::vec3(1.0f), scale = glm::vec3(1.0f);
 
-				Math::DecomposeMatrix(transform, translation, rotation, scale);
+				//ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(transform), glm::value_ptr(translation), glm::value_ptr(rotation), glm::value_ptr(scale));
+				if(Math::DecomposeMatrix(transform, translation, rotation, scale))
+				{
+					tc.Translation = translation;
 
-				tc.Translation = translation;
+					// TODO::FIX ROTATION
+					glm::vec3 deltaRotation = rotation - tc.Rotation;
+					tc.Rotation += deltaRotation;
 
-				// TODO::FIX ROTATION
-				//glm::vec3 deltaRotation = rotation - tc.Rotation;
-				//tc.Rotation += deltaRotation;
-
-				tc.Scale = scale;
+					tc.Scale = scale;
+				}
 			}
 		}
 		ImGui::End();
@@ -314,8 +339,6 @@ namespace Karem {
 				int selectedEntity = m_FrameBuffer->GetEntityId(1, mx, my);
 				m_FrameBuffer->UnBind();
 
-
-				
 				//ENGINE_DEBUG("Entity Id {}", selectedEntity);
 				if(!ImGuizmo::IsOver())
 				{

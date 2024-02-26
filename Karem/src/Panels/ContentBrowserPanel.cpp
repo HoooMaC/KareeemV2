@@ -56,7 +56,19 @@ namespace Karem {
 			ImGui::PushStyleColor(ImGuiCol_Button, { 0,0,0,0 });
 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, HexToVec4<ImVec4>(Color::AntiqueWhite, 0.5f));
 			ImGui::PushStyleColor(ImGuiCol_ButtonActive, HexToVec4<ImVec4>(Color::White, 0.7f));
+
+			ImGui::PushID(filenameString.c_str());
+
 			ImGui::ImageButton((ImTextureID)textureID, { thumbnailSize, thumbnailSize }, { 0,1 }, { 1,0 });
+			if (ImGui::BeginDragDropSource())
+			{
+				std::string payloadSource = path.string();
+				ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", payloadSource.c_str(), payloadSource.length() + 1, ImGuiCond_Once);
+				ImGui::EndDragDropSource();
+			}
+
+			ImGui::PopID();
+
 			ImGui::PopStyleColor(3);
 			if (ImGui::IsItemHovered() and ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 			{

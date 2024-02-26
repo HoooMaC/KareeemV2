@@ -8,7 +8,6 @@ namespace Karem::Math {
 
 	bool Math::DecomposeMatrix(const glm::mat4& transform, glm::vec3& translation, glm::vec3& rotation, glm::vec3& scale)
 	{
-
 		using namespace glm;
 		using T = float;
 
@@ -16,8 +15,11 @@ namespace Karem::Math {
 
 		// Normalize the matrix.
 		if (epsilonEqual(LocalMatrix[3][3], static_cast<float>(0), epsilon<T>()))
-			//return false;
-			ENGINE_ASSERT(false, "Invalid Matrix");
+		{
+			//ENGINE_ASSERT(false, "Invalid Matrix");
+			ENGINE_WARN("DFLKSAJFSAJKL");
+			return false;
+		}
 
 		// First, isolate perspective.  This is the messiest.
 		if (
