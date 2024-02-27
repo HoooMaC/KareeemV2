@@ -7,6 +7,8 @@
 
 namespace Karem {
 
+	std::unordered_map<std::string, uint32_t> g_Texture;
+
 	OpenGLTexture2D::OpenGLTexture2D(uint32_t slot)
 		: m_FilePath(""), m_Slot(slot), m_Width(0), m_Height(0), m_BPP(0), m_RendererID(0)
 	{
@@ -20,6 +22,8 @@ namespace Karem {
 
 		glTexImage2D(GL_TEXTURE_2D, 0, format, m_Width, m_Height, 0, format, GL_UNSIGNED_BYTE, whitePixel);
 		glGenerateMipmap(GL_TEXTURE_2D);
+
+		g_Texture["White Texture"] = m_RendererID;
 	}
 
 	OpenGLTexture2D::OpenGLTexture2D(std::string_view filePath, uint32_t slot, uint32_t filter)
@@ -68,6 +72,7 @@ namespace Karem {
 			ENGINE_ASSERT(true, "Failed to load image : {}", m_FilePath);
 		}
 		stbi_image_free(data);
+		g_Texture[m_FilePath] = m_RendererID;
 	}
 
 	void OpenGLTexture2D::ClearTexture()

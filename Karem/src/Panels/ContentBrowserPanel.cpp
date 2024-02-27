@@ -5,28 +5,30 @@
 #include "Env/Color.h"
 
 #include "Renderer/SubTexture.h"
+#include "Renderer/SmartTexture.h"
 
 #include <imgui.h>
 
 namespace Karem {
 
 	static std::filesystem::path s_ParentDirectory = "assets";
-	static std::shared_ptr<Texture2D> s_DirectoryIcons;
-	static std::shared_ptr<Texture2D> s_SceneIcons;
+	//static std::shared_ptr<Texture2D> s_DirectoryIcons;
+	//static std::shared_ptr<Texture2D> s_SceneIcons;
 
 	ContentBrowserPanel::ContentBrowserPanel()
-		: m_CurrentPath(s_ParentDirectory)
+		: m_CurrentPath(s_ParentDirectory), m_ButtonIcons("res/button_icons/first.png", 512, 512, 1, 7)
 	{
-		s_DirectoryIcons = CreateTexture2D("res/texture/icons/directory_icon.png", 1);
-		s_SceneIcons = CreateTexture2D("res/texture/icons/scene_icon.png", 2);
+		//s_DirectoryIcons = CreateTexture2D("res/texture/icons/directory_icon.png", 1);
+		//s_SceneIcons = CreateTexture2D("res/texture/icons/scene_icon.png", 2);
 	}
 
 	void ContentBrowserPanel::Render()
 	{
 		ImGui::Begin("ContentBrowserPanel");
-		s_SceneIcons->Bind();
-		s_DirectoryIcons->Bind();
-		
+		//s_SceneIcons->Bind();
+		//s_DirectoryIcons->Bind();
+		//m_ButtonIcons.Bind();
+
 		if (m_CurrentPath != s_ParentDirectory)
 		{
 			if (ImGui::Button("<-"))
@@ -52,14 +54,29 @@ namespace Karem {
 			auto relativePath = std::filesystem::relative(path, s_ParentDirectory);
 			std::string filenameString = relativePath.filename().string();
 
-			auto textureID = directoryEntry.is_directory() ? s_DirectoryIcons->GetTextureID() : s_SceneIcons->GetTextureID();
+			auto textureID = m_ButtonIcons.GetTextureID();
+			std::array<glm::vec2, 2> texCoord;
+			if(directoryEntry.is_directory())
+				texCoord = m_ButtonIcons.GetTexCoord(3, 0, 1, 1);
+			else if(directoryEntry.path().extension() == std::filesystem::path(".karem"))
+				texCoord = m_ButtonIcons.GetTexCoord(4, 0, 1, 1);
+			else if(directoryEntry.path().extension() == std::filesystem::path(".png"))
+				texCoord = m_ButtonIcons.GetTexCoord(5, 0, 1, 1);
+			// TODO::The default icon still same with directory icon
+			else
+				texCoord = m_ButtonIcons.GetTexCoord(3, 0, 1, 1);
+
+			ImVec2 uv0{ texCoord[0].x, texCoord[0].y };
+			ImVec2 uv1{ texCoord[1].x, texCoord[1].y };
+
 			ImGui::PushStyleColor(ImGuiCol_Button, { 0,0,0,0 });
 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, HexToVec4<ImVec4>(Color::AntiqueWhite, 0.5f));
 			ImGui::PushStyleColor(ImGuiCol_ButtonActive, HexToVec4<ImVec4>(Color::White, 0.7f));
 
 			ImGui::PushID(filenameString.c_str());
 
-			ImGui::ImageButton((ImTextureID)textureID, { thumbnailSize, thumbnailSize }, { 0,1 }, { 1,0 });
+			ImGui::ImageButton((ImTextureID)textureID, { thumbnailSize, thumbnailSize }, uv0, uv1);
+			//ImGui::ImageButton((ImTextureID)textureID, { thumbnailSize, thumbnailSize }, {0,1},{1,0});
 			if (ImGui::BeginDragDropSource())
 			{
 				std::string payloadSource = path.string();

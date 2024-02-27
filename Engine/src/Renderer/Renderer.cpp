@@ -73,6 +73,7 @@ namespace Karem {
 		s_Buffer->vertexData.resize(BufferData::maxVertex);
 		s_Buffer->indicesData.resize(BufferData::maxIndexBuffer);
 		s_Buffer->TextureContainer.resize(32);
+		s_Buffer->TextureContainer[0] = s_WhiteTexture;
 	}
 
 	void Renderer::BeginScene(const glm::mat4& projection, const glm::mat4& cameraTransform)
@@ -82,6 +83,7 @@ namespace Karem {
 		s_Buffer->vertexData.resize(BufferData::maxVertex);
 		s_Buffer->indicesData.resize(BufferData::maxIndexBuffer);
 		s_Buffer->TextureContainer.resize(32);
+		s_Buffer->TextureContainer[0] = s_WhiteTexture;
 	}
 
 	void Renderer::EndScene()

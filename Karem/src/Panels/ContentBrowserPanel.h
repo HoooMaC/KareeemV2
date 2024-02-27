@@ -2,7 +2,7 @@
 
 #include <filesystem>
 
-#include "Renderer/SubTexture.h"
+#include "Renderer/SmartTexture.h"
 
 namespace Karem {
 
@@ -12,6 +12,8 @@ namespace Karem {
 		ContentBrowserPanel();
 		void Render();
 
+	private:
+		SmartTexture m_ButtonIcons;
 	private:
 		std::filesystem::path m_CurrentPath;
 	};

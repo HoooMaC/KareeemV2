@@ -294,8 +294,8 @@ namespace Karem {
 					tc.Translation = translation;
 
 					// TODO::FIX ROTATION
-					glm::vec3 deltaRotation = rotation - tc.Rotation;
-					tc.Rotation += deltaRotation;
+					//glm::vec3 deltaRotation = rotation - tc.Rotation;
+					//tc.Rotation += deltaRotation;
 
 					tc.Scale = scale;
 				}
