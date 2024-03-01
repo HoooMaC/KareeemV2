@@ -38,6 +38,8 @@
 #include "Renderer/PerspectiveCamera.h"
 #include "Renderer/OrthographicCamera.h"
 
+// TODO::Smart texture here still only OpenGL, there is no virtual function or something like that
+#include "Renderer/SmartTexture.h"
 // THIS IS SPECIFIC TO WINDOW
 // #define KAREM_WINDOWS
 #include "Platform/Platform.h"

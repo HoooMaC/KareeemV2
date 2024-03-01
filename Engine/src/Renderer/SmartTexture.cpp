@@ -35,7 +35,10 @@ namespace Karem {
 		}
 		stbi_image_free(data);
 		
-		g_Texture[path] = m_TextureID;
+		std::hash<std::string> hasher;
+		size_t hashValue = hasher(path + m_TextureID);
+
+		g_Texture[std::to_string(hashValue)] = m_TextureID;
 		//glActiveTexture(GL_TEXTURE0 + 1);
 		//glBindTexture(GL_TEXTURE, m_TextureID);
 	}

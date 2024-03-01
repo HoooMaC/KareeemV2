@@ -1,8 +1,11 @@
 #pragma once
 
-#include <filesystem>
 
 #include "Renderer/SmartTexture.h"
+
+#include <Rahman/SmartRef.h>
+
+#include <filesystem>
 
 namespace Karem {
 
@@ -13,7 +16,7 @@ namespace Karem {
 		void Render();
 
 	private:
-		SmartTexture m_ButtonIcons;
+		Rahman::SmartRef<SmartTexture> m_ButtonIcons;
 	private:
 		std::filesystem::path m_CurrentPath;
 	};

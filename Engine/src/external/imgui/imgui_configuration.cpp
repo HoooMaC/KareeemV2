@@ -112,8 +112,8 @@ namespace Karem {
 		ImVec4      Colors[ImGuiCol_COUNT];
 #endif
 		auto& style = ImGui::GetStyle();
-		style.WindowPadding = { 10.0f, 10.0f };
-		style.FramePadding = { 4.f, 4.f };
+		style.WindowPadding = { 0.0f, 0.0f };
+		style.FramePadding = { 3.f, 4.f };
 		style.CellPadding = { 8.f, 2.f };
 		style.ItemSpacing = { 10.0f, 4.f };
 		style.ItemInnerSpacing = { 5.0f, 0.0f };

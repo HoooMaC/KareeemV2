@@ -257,7 +257,6 @@ namespace Karem {
 		{
 			T& component = entity.GetComponent<T>();
 			ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 0.0f);
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4,4 });
 			const auto contentRegionAvail = ImGui::GetContentRegionAvail();
 			const auto fontSize = ImGui::GetFontSize();
 			const auto& style = ImGui::GetStyle();
@@ -265,14 +264,15 @@ namespace Karem {
 			ImVec2 buttonSize = { lineHeight, lineHeight };
 
 			bool componentOpened = ImGui::TreeNodeEx((void*)typeid(T).hash_code(), flags, label.data());
-			ImGui::PopStyleVar();
+
+			//ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
 
 			std::string popupLabel = "RemoveComponent";
 			popupLabel.insert(6, label.data());
 
 			if (isRemovable)
 			{
-				ImGui::SameLine(contentRegionAvail.x + lineHeight / 2.0f);
+				ImGui::SameLine(contentRegionAvail.x - lineHeight);
 				if (ImGui::Button("-", buttonSize))
 					ImGui::OpenPopup(popupLabel.c_str());
 			}
@@ -318,7 +318,7 @@ namespace Karem {
 		const auto& style = ImGui::GetStyle();
 		const float lineHeight = fontSize + style.FramePadding.y * 2.0f;
 		const ImVec2 buttonSize = { lineHeight, lineHeight };
-
+		//ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4,4 });
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4,4 });
 		std::string& tag = selectedEntity.GetComponent<TagComponent>().Tag;
 
@@ -369,8 +369,11 @@ namespace Karem {
 		ImGui::Text(text.c_str());
 		ImGui::PopStyleColor();
 
+
 		if (opened)
 		{
+			ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
+
 			DrawComponent<TagComponent>("Tag", selectedEntity, [&](TagComponent& component)
 			{		
 				std::string& tag = selectedEntity.GetComponent<TagComponent>().Tag;

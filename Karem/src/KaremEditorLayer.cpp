@@ -18,6 +18,8 @@ static constexpr int32_t appWidth = 1280, appHeight = 720;
 
 namespace Karem {
 
+	extern std::shared_ptr<SmartTexture> s_ButtonIcons;
+
 	void KaremEditorLayer::OnAttach()
 	{
 		// @
@@ -28,6 +30,9 @@ namespace Karem {
 		//m_Texture = CreateTexture2D("res/texture/spritesheet/city_tilemap.png", 1);
 		//m_SpriteSheet = SubTexture2D(m_Texture, { 0,4 }, { 8,8 }, { 5,4 });
 		//------------------------------------------------------------------------
+
+		m_ToolbbarIcons = s_ButtonIcons;
+
 		m_EditorCamera = EditorCamera(45.f, 1.777f, 0.0001f, 1000.f);
 
 		FrameBufferSpecifications fbSpecs;
@@ -61,6 +66,8 @@ namespace Karem {
 
 	void KaremEditorLayer::OnDetach()
 	{
+		s_ButtonIcons = nullptr;
+		m_ToolbbarIcons = nullptr;
 	}
 
 	void KaremEditorLayer::Update(TimeStep ts)
@@ -140,6 +147,7 @@ namespace Karem {
 		RenderDockspace();
 		RenderViewportPanel();
 
+
 		ImGui::ShowDemoWindow();
 
 		m_Panels.RenderHierarcyPanel();
@@ -201,7 +209,7 @@ namespace Karem {
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
-		ImGui::Begin("Viewport");
+		ImGui::Begin("Viewport", nullptr, ImGuiWindowFlags_NoTitleBar);
 
 		auto currentViewportSize = ImGui::GetContentRegionAvail();
 		m_CurrentViewportSize = *(glm::vec2*)&currentViewportSize;
@@ -301,9 +309,39 @@ namespace Karem {
 				}
 			}
 		}
+
+		RenderToolbar();
+
 		ImGui::End();
 
 		ImGui::PopStyleVar(3);
+	}
+
+	void KaremEditorLayer::RenderToolbar()
+	{
+		ImGui::Begin("##toolbar", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoNav);
+
+		float buttonSize = 30.0f;
+		float maxWidth = ImGui::GetContentRegionMax().x;
+
+		ImGui::SetCursorPosX((maxWidth / 2) - (buttonSize / 2));
+
+		ImGui::PushStyleColor(ImGuiCol_Button, { 0,0,0,0 });
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, HexToVec4<ImVec4>(Color::AntiqueWhite, 0.5f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, HexToVec4<ImVec4>(Color::White, 0.7f));
+
+		ImTextureID texID = (ImTextureID)m_ToolbbarIcons->GetTextureID();
+
+		auto texCoord = m_ToolbbarIcons->GetTexCoord(0, 0, 1, 1);
+
+		ImVec2 min = { texCoord[0].x, texCoord[0].y };
+		ImVec2 max = { texCoord[1].x, texCoord[1].y };
+
+		ImGui::ImageButton(texID, { buttonSize, buttonSize }, min, max, 0);
+
+		ImGui::PopStyleColor(3);
+
+		ImGui::End();
 	}
 
 	bool KaremEditorLayer::WindowResizeAction(WindowResizeEvent& event)

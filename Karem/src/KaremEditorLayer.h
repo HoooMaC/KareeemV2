@@ -26,6 +26,8 @@ namespace Karem {
 	private:
 		void RenderDockspace();
 		void RenderViewportPanel();
+		void RenderToolbar();
+
 		void ChangeScene() {} // TODO : Need to implemented
 	private:
 		bool WindowResizeAction(WindowResizeEvent& event);
@@ -60,6 +62,8 @@ namespace Karem {
 	private:
 		glm::vec2 m_CurrentViewportSize = { 0.0f, 0.0f };
 		glm::vec2 m_PreviousViewportSize = { 0.0f, 0.0f };
+
+		Rahman::SmartRef<SmartTexture> m_ToolbbarIcons;
 
 		Panels m_Panels;
 		ContentBrowserPanel m_BrowserPanel;

@@ -7,6 +7,7 @@
 
 namespace Karem {
 
+	// TODO::REMOVE OR REFACTOR
 	std::unordered_map<std::string, uint32_t> g_Texture;
 
 	OpenGLTexture2D::OpenGLTexture2D(uint32_t slot)
